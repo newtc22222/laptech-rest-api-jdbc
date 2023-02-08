@@ -29,7 +29,7 @@ import java.util.Objects;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class BrandDAOImpl implements BrandDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
