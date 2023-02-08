@@ -26,7 +26,7 @@ import java.util.List;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class InvoiceDAOImpl implements InvoiceDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -42,7 +42,6 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     private final String UPDATE_ORDER_STATUS = String.format("update %s set status=?, modified_date=now() where id=?", TABLE_NAME);
     private final String UPDATE_PAYMENT_TYPE_AND_PAID_STATUS =
             String.format("update %s set payment_type=?, is_paid=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String UPDATE_PAID_STATUS = String.format("update %s set is_paid=?, modified_date=now() where id=?", TABLE_NAME);
     private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
 
     private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
@@ -136,20 +135,6 @@ public class InvoiceDAOImpl implements InvoiceDAO {
             return jdbcTemplate.update(
                     UPDATE_PAYMENT_TYPE_AND_PAID_STATUS,
                     paymentType,
-                    isPaid,
-                    invoiceId
-            );
-        } catch (DataAccessException err) {
-            log.error(err);
-            return 0;
-        }
-    }
-
-    @Override
-    public int updatePaidStatus(String invoiceId, boolean isPaid) {
-        try {
-            return jdbcTemplate.update(
-                    UPDATE_PAID_STATUS,
                     isPaid,
                     invoiceId
             );

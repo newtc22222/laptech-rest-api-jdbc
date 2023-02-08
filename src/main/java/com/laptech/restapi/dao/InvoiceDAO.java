@@ -16,9 +16,6 @@ public interface InvoiceDAO extends BaseDAO<Invoice, String> {
 
     int updateInvoicePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid);
 
-    @Deprecated
-    int updatePaidStatus(String invoiceId, boolean isPaid); // true -> was paid
-
     List<Invoice> findInvoicesByUserId(long userId);
 
     List<Invoice> findInvoicesByAddress(String address);
