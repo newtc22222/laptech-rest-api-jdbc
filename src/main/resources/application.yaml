@@ -1,0 +1,18 @@
+server:
+  port: 8088
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/laptech
+    username: nhatphi
+    password: 123
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
+  main:
+    allow-circular-references: true
+
+#springdoc:
+#  swagger-ui:
+#    path: /swagger-ui.html
