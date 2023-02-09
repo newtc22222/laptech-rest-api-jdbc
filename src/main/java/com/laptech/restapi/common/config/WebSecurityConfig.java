@@ -1,5 +1,6 @@
 package com.laptech.restapi.common.config;
 
+import com.laptech.restapi.jwt.config.JwtAccessDeniedHandler;
 import com.laptech.restapi.jwt.config.JwtAuthenticationEntryPoint;
 import com.laptech.restapi.jwt.filter.JwtRequestFilter;
 import com.laptech.restapi.jwt.service.JwtService;
@@ -20,18 +21,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * <a href=https://stackoverflow.com/questions/56349296/how-to-do-for-authorize-endpoints-for-anonymous-user-with-spring-security>Spring security</a>
+ * <a href=https://stackoverflow.com/questions/56349296/how-to-do-for-authorize-endpoints-for-anonymous-user-with-spring-security>Link</a>
  *
  * @author Nhat Phi
  * @since 2023-01-06
  */
-@SuppressWarnings({"Security custom config", "deprecation"})
+@SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    @Autowired
+    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
@@ -61,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "feedbacks",
             "files/**",
             "products",
-            "products/**"   
+            "products/**"
     };
 
     private static String[] getGetMethodApiList() {
@@ -97,6 +100,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(jwtAccessDeniedHandler)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
