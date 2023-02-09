@@ -31,7 +31,6 @@ public class BannerServiceImpl implements BannerService {
         if (bannerDAO.isExists(banner)) {
             throw new ResourceAlreadyExistsException("[Info] This banner has already existed in system!");
         }
-
         Long newBannerId = bannerDAO.insert(banner);
         if (newBannerId == null) {
             throw new InternalServerErrorException("[Error] Failed to insert new banner!");
@@ -49,6 +48,8 @@ public class BannerServiceImpl implements BannerService {
         } else {
             oldBanner.setPath(banner.getPath());
             oldBanner.setType(banner.getType());
+            oldBanner.setTitle(banner.getTitle());
+            oldBanner.setLinkProduct(banner.getLinkProduct());
             oldBanner.setUsedDate(banner.getUsedDate());
             oldBanner.setEndedDate(banner.getEndedDate());
 

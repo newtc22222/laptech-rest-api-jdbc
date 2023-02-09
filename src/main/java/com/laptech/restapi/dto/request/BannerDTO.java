@@ -19,6 +19,8 @@ import java.time.LocalDate;
 public class BannerDTO {
     private String path;
     private String type;
+    private String title;
+    private String linkProduct;
     @ApiModelProperty(example = "2022-12-22")
     private String usedDate;
     @ApiModelProperty(example = "2022-12-22")
@@ -29,6 +31,8 @@ public class BannerDTO {
         banner.setId(0L);
         banner.setPath(bannerDTO.getPath());
         banner.setType(bannerDTO.getType());
+        banner.setTitle(bannerDTO.getTitle());
+        banner.setLinkProduct(bannerDTO.getLinkProduct());
         banner.setUsedDate(LocalDate.parse(bannerDTO.getUsedDate()));
         banner.setEndedDate(LocalDate.parse(bannerDTO.getEndedDate()));
         return banner;

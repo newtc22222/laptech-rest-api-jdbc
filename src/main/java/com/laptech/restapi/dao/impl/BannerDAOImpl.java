@@ -28,22 +28,22 @@ import java.util.Objects;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class BannerDAOImpl implements BannerDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_banner";
-    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, now(), now())", TABLE_NAME);
+    private final String TABLE_NAME = "tbl_banner";
+    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
-            "set path=?, type=?, used_date=?, ended_date=?, modified_date=now() where id=?", TABLE_NAME);
+            "set path=?, type=?, title=?, link_product=?, used_date=?, ended_date=?, modified_date=now() where id=?", TABLE_NAME);
     private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
 
     private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
     private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
     private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
     private final String QUERY_CHECK_EXISTS = String.format("select * from %s where " +
-            "path=? and type=? and used_date=? and ended_date=?", TABLE_NAME);
+            "path=? and type=? and title=? and link_product=? and used_date=? and ended_date=?", TABLE_NAME);
     // started_date - using_date(use-end) - ended_date
     private final String QUERY_BANNERS_BY_DATE_RANGE = String.format("select * from %s " +
             "where ended_date > ? or used_date < ?", TABLE_NAME);
@@ -59,8 +59,10 @@ public class BannerDAOImpl implements BannerDAO {
                 PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, banner.getPath());
                 ps.setNString(2, banner.getType());
-                ps.setDate(3, Date.valueOf(banner.getUsedDate()));
-                ps.setDate(4, Date.valueOf(banner.getEndedDate()));
+                ps.setNString(3, banner.getTitle());
+                ps.setString(4, banner.getLinkProduct());
+                ps.setDate(5, Date.valueOf(banner.getUsedDate()));
+                ps.setDate(6, Date.valueOf(banner.getEndedDate()));
                 return ps;
             }, keyHolder);
             return Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -77,6 +79,8 @@ public class BannerDAOImpl implements BannerDAO {
                     UPDATE,
                     banner.getPath(),
                     banner.getType(),
+                    banner.getTitle(),
+                    banner.getLinkProduct(),
                     banner.getUsedDate(),
                     banner.getEndedDate(),
                     banner.getId()
@@ -114,6 +118,8 @@ public class BannerDAOImpl implements BannerDAO {
                 new BannerMapper(),
                 banner.getPath(),
                 banner.getType(),
+                banner.getTitle(),
+                banner.getLinkProduct(),
                 banner.getUsedDate(),
                 banner.getEndedDate()
         );

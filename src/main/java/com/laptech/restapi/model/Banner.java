@@ -12,7 +12,6 @@ import java.util.Objects;
  * @author Nhat Phi
  * @since 2022-11-20 (update 2023-02-02)
  */
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,6 +20,8 @@ public class Banner extends SetupDate {
     private long id;
     private String path;
     private String type;
+    private String title;
+    private String linkProduct;
     private LocalDate usedDate;
     private LocalDate endedDate;
 
@@ -32,6 +33,8 @@ public class Banner extends SetupDate {
         return id == banner.id
                 && path.equals(banner.path)
                 && type.equals(banner.type)
+                && title.equals(banner.title)
+                && linkProduct.equals(banner.linkProduct)
                 && usedDate.equals(banner.usedDate)
                 && endedDate.equals(banner.endedDate);
     }
@@ -47,8 +50,11 @@ public class Banner extends SetupDate {
                 "id=" + id +
                 ", path='" + path + '\'' +
                 ", type='" + type + '\'' +
+                ", title='" + title + '\'' +
+                ", linkProduct='" + linkProduct + '\'' +
                 ", usedDate=" + usedDate +
                 ", endedDate=" + endedDate +
-                "} " + super.toString();
+                super.toString() +
+                '}';
     }
 }

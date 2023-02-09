@@ -17,7 +17,9 @@ public class BannerMapper implements RowMapper<Banner> {
         Banner banner = new Banner();
         banner.setId(rs.getLong("id"));
         banner.setPath(rs.getString("path"));
-        banner.setType(rs.getString("type"));
+        banner.setType(rs.getNString("type"));
+        banner.setTitle(rs.getNString("title"));
+        banner.setLinkProduct(rs.getString("link_product"));
         banner.setUsedDate(rs.getDate("used_date").toLocalDate());
         banner.setEndedDate(rs.getDate("ended_date").toLocalDate());
         banner.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
