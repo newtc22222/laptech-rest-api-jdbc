@@ -22,13 +22,13 @@ import java.util.List;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class FeedbackDAOImpl implements FeedbackDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     // Query String
-    private final String TABLE_NAME = "joshua_tbl_feedback";
+    private final String TABLE_NAME = "tbl_feedback";
     private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, , now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
             "set content=?, rating_point=?, modified_date=now() where id=? and product_id=? and user_id=?", TABLE_NAME);

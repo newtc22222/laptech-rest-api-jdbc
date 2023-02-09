@@ -23,16 +23,15 @@ import java.util.Objects;
  * @author Nhat Phi
  * @since 2022-11-21
  */
-
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class CategoryDAOImpl implements CategoryDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_category";
+    private final String TABLE_NAME = "tbl_category";
     private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
             "set name=?, image=?, description=?, modified_date=now() where id=?", TABLE_NAME);

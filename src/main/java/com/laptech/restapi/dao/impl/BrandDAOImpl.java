@@ -25,7 +25,6 @@ import java.util.Objects;
  * @author Nhat Phi
  * @since 2022-11-18
  */
-
 @Transactional
 @Log4j2
 @Component
@@ -41,7 +40,7 @@ public class BrandDAOImpl implements BrandDAO {
     @Value("${sp_DeleteBrand}")
     private String DELETE;
 
-    @Value("${sp_GetAllBrands}")
+    @Value("${sp_GetAllBrand}")
     private String QUERY_ALL;
     @Value("${sp_GetBrandWithId}")
     private String QUERY_ONE_BY_ID;

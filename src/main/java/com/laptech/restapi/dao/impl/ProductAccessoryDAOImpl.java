@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class ProductAccessoryDAOImpl implements ProductAccessoryDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_product_test"; // tbl_product_accessory
+    private final String TABLE_NAME = "tbl_product_accessory";
     private final String INSERT = String.format("insert into %s values (?, ?)", TABLE_NAME);
     private final String REMOVE = String.format("delete from %s where product_id=? and accessory_id=?", TABLE_NAME);
 

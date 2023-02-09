@@ -22,12 +22,12 @@ import java.util.List;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class ProductImageDAOImpl implements ProductImageDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_product_image";
+    private final String TABLE_NAME = "tbl_product_image";
     private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
             "set feedback_id=?, url=?, type=?, modified_date=now() where id=? and product_id=?", TABLE_NAME);

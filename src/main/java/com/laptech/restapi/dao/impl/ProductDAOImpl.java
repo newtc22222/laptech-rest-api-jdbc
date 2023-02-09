@@ -24,13 +24,13 @@ import java.util.List;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class ProductDAOImpl implements ProductDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     // Query String
-    private final String TABLE_NAME = "joshua_tbl_product";
+    private final String TABLE_NAME = "tbl_product";
     private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE_ALL = String.format("update %s " +
             "set brand_id=?, category_id=?, name=?, released_date=?, quantity_in_stock=?, listed_price=?, " +
@@ -49,7 +49,7 @@ public class ProductDAOImpl implements ProductDAO {
             "brand_id=? and category_id=? and name=? and released_date=? and quantity_in_stock=? and listed_price=? and " +
             "specifications=? and description_detail=?", TABLE_NAME);
     private final String QUERY_ACCESSORIES = String.format("select * from %s " +
-            "where id in (select accessory_id from %s where product_id=?)", TABLE_NAME, "joshua_tbl_product_test"); // tbl_product_accessory
+            "where id in (select accessory_id from %s where product_id=?)", TABLE_NAME, "tbl_product_accessory");
 
     private final String QUERY_PRODUCTS_BY_NAME =
             String.format("select * from %s where name like ?", TABLE_NAME);

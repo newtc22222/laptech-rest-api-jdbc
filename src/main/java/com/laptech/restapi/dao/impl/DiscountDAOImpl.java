@@ -31,13 +31,13 @@ import java.util.Objects;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class DiscountDAOImpl implements DiscountDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     // Query String
-    private final String TABLE_NAME = "joshua_tbl_discount";
+    private final String TABLE_NAME = "tbl_discount";
     private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
             "set code=?, rate=?, applied_type=?, max_amount=?, applied_date=?, ended_date=?, modified_date=now() where id=?", TABLE_NAME);

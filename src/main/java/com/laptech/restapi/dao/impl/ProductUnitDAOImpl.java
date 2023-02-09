@@ -22,12 +22,12 @@ import java.util.List;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class ProductUnitDAOImpl implements ProductUnitDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_product_item";
+    private final String TABLE_NAME = "tbl_product_unit";
     private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
     // Use with transform (cart -> invoice)
     private final String UPDATE = String.format("update %s " +

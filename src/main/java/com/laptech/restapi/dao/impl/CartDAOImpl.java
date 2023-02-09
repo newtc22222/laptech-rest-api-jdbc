@@ -18,17 +18,16 @@ import java.util.List;
  * @author Nhat Phi
  * @since 2022-11-21
  */
-
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class CartDAOImpl implements CartDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     // Query String
-    private final String TABLE_NAME = "joshua_tbl_cart";
+    private final String TABLE_NAME = "tbl_cart";
     private final String INSERT = String.format("insert into %s values (?, ?, ?)", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
             "set discount_id=? where id=? and user_id=?", TABLE_NAME);

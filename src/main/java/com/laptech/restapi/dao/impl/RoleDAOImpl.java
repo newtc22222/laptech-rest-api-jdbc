@@ -26,12 +26,12 @@ import java.util.Objects;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class RoleDAOImpl implements RoleDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_hard_drive"; // tbl_role
+    private final String TABLE_NAME = "tbl_role";
     private final String INSERT = String.format("insert into %s values (0, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
             "set name=?, description=?, modified_date=now() where id=?", TABLE_NAME);
@@ -44,7 +44,7 @@ public class RoleDAOImpl implements RoleDAO {
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where name=?", TABLE_NAME); // maybe upgrade
 
     private final String QUERY_ROLE_BY_USER_ID = String.format("select r.* from %s ur, %s r where ur.user_id=? and ur.role_id=r.id",
-            "joshua_tbl_product_hard_drive", TABLE_NAME);
+            "tbl_user_role", TABLE_NAME);
 
     @Override
     public Integer insert(Role role) {

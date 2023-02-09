@@ -22,13 +22,13 @@ import java.util.List;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class CommentDAOImpl implements CommentDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     // Query String
-    private final String TABLE_NAME = "joshua_tbl_comment";
+    private final String TABLE_NAME = "tbl_comment";
     private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
             "set root_comment_id=?, product_id=?, username=?, phone=?, content=?, modified_date=now() where id=?", TABLE_NAME);

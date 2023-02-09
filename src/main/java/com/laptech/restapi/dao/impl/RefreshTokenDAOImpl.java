@@ -20,12 +20,12 @@ import java.util.List;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class RefreshTokenDAOImpl implements RefreshTokenDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_manager_account"; // tbl_refresh_token
+    private final String TABLE_NAME = "tbl_refresh_token"; // tbl_refresh_token
     
     private final String TIME_USE = "2 day";
     private final String INSERT = String.format("insert into %s value(?, ?, now(), addDate(now(), interval %s))", TABLE_NAME, TIME_USE);

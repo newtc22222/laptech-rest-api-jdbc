@@ -30,13 +30,12 @@ import java.util.Objects;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class UserDAOImpl implements UserDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Query String
-    private final String TABLE_NAME = "joshua_tbl_user";
+    private final String TABLE_NAME = "tbl_user";
     private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
             "set name=?, gender=?, date_of_birth=?, phone=?, email=?, password=?, modified_date=now() where id=?", TABLE_NAME);
@@ -56,12 +55,12 @@ public class UserDAOImpl implements UserDAO {
     private final String QUERY_ONE_BY_REFRESH_TOKEN =
             String.format("select u.* from %s u, %s rf " +
                     "where rf.refresh_token=? and rf.expired_date < now() and u.id = rf.user_id",
-                    TABLE_NAME, "joshua_tbl_manager_account"); // joshua_tbl_refresh_token
+                    TABLE_NAME, "tbl_refresh_token");
 
     private final String QUERY_USERS_BY_NAME = String.format("select * from %s where name like ?", TABLE_NAME);
     private final String QUERY_USERS_BY_GENDER = String.format("select * from %s where gender=?", TABLE_NAME);
     private final String QUERY_USERS_BY_ROLE = String.format("select * from %s where id in " +
-            "(select ur.user_id from joshua_tbl_hard_drive ur, joshua_tbl_hard_drive r" +
+            "(select ur.user_id from tbl_user_role ur, tbl_role r" +
             " where r.name=? and ur.role_id=r.id)", TABLE_NAME); // is fixing
 
     @Override

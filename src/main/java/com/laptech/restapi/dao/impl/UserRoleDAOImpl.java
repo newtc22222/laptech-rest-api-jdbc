@@ -16,12 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class UserRoleDAOImpl implements UserRoleDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_product_hard_drive"; // tbl_user_role
+    private final String TABLE_NAME = "tbl_user_role";
     private final String INSERT = String.format("insert into %s values (?, ?)", TABLE_NAME);
     private final String REMOVE = String.format("delete from %s where user_id=? and role_id=?", TABLE_NAME);
 
