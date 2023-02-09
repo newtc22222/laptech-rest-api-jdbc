@@ -60,6 +60,7 @@ public class AddressServiceImpl implements AddressService {
             oldAddress.setLine2(address.getLine2());
             oldAddress.setLine3(address.getLine3());
             oldAddress.setStreet(address.getStreet());
+            oldAddress.setDefault(address.isDefault());
 
             if (addressDAO.update(oldAddress) == 0) {
                 throw new InternalServerErrorException("[Error] Fail to update this address!");

@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,15 +26,15 @@ import java.util.Objects;
 @Transactional
 @Log4j2
 @Component
-@PropertySource("query.properties")
+@PropertySource("classpath:query.properties")
 public class AddressDAOImpl implements AddressDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "joshua_tbl_address";
-    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, ?, ?)", TABLE_NAME);
+    private final String TABLE_NAME = "tbl_address";
+    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?,?, ?, ?)", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
-            "set user_id=?, country=?, line1=?, line2=?, line3=?, street=? where id=?", TABLE_NAME);
+            "set user_id=?, country=?, line1=?, line2=?, line3=?, street=?, is_default=? where id=?", TABLE_NAME);
     private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
 
     private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
@@ -77,6 +76,7 @@ public class AddressDAOImpl implements AddressDAO {
                     address.getLine2(),
                     address.getLine3(),
                     address.getStreet(),
+                    address.isDefault(),
                     address.getId()
             );
         } catch (DataAccessException err) {
@@ -104,20 +104,21 @@ public class AddressDAOImpl implements AddressDAO {
     public boolean isExists(Address address) {
         try {
 
-        Address existAddress =
-                jdbcTemplate.queryForObject(
-                        QUERY_CHECK_EXISTS,
-                        new AddressMapper(),
-                        address.getUserId(),
-                        address.getCountry(),
-                        address.getLine1(),
-                        address.getLine2(),
-                        address.getLine3(),
-                        address.getStreet()
-                );
-        return existAddress != null;
-        }
-        catch (DataAccessException err) {
+            Address existAddress =
+                    jdbcTemplate.queryForObject(
+                            QUERY_CHECK_EXISTS,
+                            new AddressMapper(),
+                            address.getUserId(),
+                            address.getCountry(),
+                            address.getLine1(),
+                            address.getLine2(),
+                            address.getLine3(),
+                            address.getStreet(),
+                            address.isDefault()
+                    );
+            return existAddress != null;
+        } catch (DataAccessException err) {
+            log.warn(err);
             return false;
         }
     }
@@ -125,11 +126,11 @@ public class AddressDAOImpl implements AddressDAO {
     @Override
     public List<Address> findAll() {
         try {
-        return jdbcTemplate.query(
-                QUERY_ALL,
-                new AddressMapper()
-        );
-        }catch (EmptyResultDataAccessException err) {
+            return jdbcTemplate.query(
+                    QUERY_ALL,
+                    new AddressMapper()
+            );
+        } catch (EmptyResultDataAccessException err) {
             log.warn(err);
             return null;
         }
@@ -139,12 +140,12 @@ public class AddressDAOImpl implements AddressDAO {
     public List<Address> findAll(long limit, long skip) {
         try {
 
-        return jdbcTemplate.query(
-                QUERY_LIMIT,
-                new AddressMapper(),
-                limit,
-                skip
-        );
+            return jdbcTemplate.query(
+                    QUERY_LIMIT,
+                    new AddressMapper(),
+                    limit,
+                    skip
+            );
         } catch (EmptyResultDataAccessException err) {
             log.warn(err);
             return null;

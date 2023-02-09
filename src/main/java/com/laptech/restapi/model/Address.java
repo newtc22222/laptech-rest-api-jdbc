@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address {
+public class Address extends SetupDate{
     private String id;
     private long userId;
     private String country;
@@ -29,6 +29,7 @@ public class Address {
     private String line2;
     private String line3;
     private String street;
+    private boolean isDefault;
 
     @Override
     public String toString() {
@@ -40,6 +41,8 @@ public class Address {
                 ", line2='" + line2 + '\'' +
                 ", line3='" + line3 + '\'' +
                 ", street='" + street + '\'' +
+                ", isDefault='" + isDefault + '\'' +
+                ", '" + super.toString() + '\'' +
                 '}';
     }
 }
