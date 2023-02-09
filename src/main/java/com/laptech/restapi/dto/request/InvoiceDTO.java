@@ -23,6 +23,8 @@ public class InvoiceDTO {
     @ApiModelProperty(required = true)
     private String address;
     @ApiModelProperty(required = true)
+    private String phone;
+    @ApiModelProperty(required = true)
     private BigDecimal paymentAmount;
 
     private Double shipCost;
@@ -44,6 +46,7 @@ public class InvoiceDTO {
         invoice.setId(UUID.randomUUID().toString());
         invoice.setUserId(invoiceDTO.getUserId());
         invoice.setAddress(invoiceDTO.getAddress());
+        invoice.setPhone(invoiceDTO.getPhone());
         invoice.setPaymentAmount(invoiceDTO.getPaymentAmount());
         invoice.setShipCost(invoiceDTO.getShipCost());
         invoice.setDiscountAmount(invoiceDTO.getDiscountAmount());

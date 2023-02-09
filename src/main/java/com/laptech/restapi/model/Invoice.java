@@ -21,6 +21,7 @@ public class Invoice extends SetupDate {
     private String id;
     private long userId;
     private String address;
+    private String phone;
     private BigDecimal paymentAmount;
     private Double shipCost;
     private BigDecimal discountAmount;
@@ -40,6 +41,7 @@ public class Invoice extends SetupDate {
                 && isPaid == invoice.isPaid
                 && id.equals(invoice.id)
                 && address.equals(invoice.address)
+                && phone.equals(invoice.phone)
                 && paymentAmount.equals(invoice.paymentAmount)
                 && shipCost.equals(invoice.shipCost)
                 && discountAmount.equals(invoice.discountAmount)
@@ -61,6 +63,7 @@ public class Invoice extends SetupDate {
                 "id='" + id + '\'' +
                 ", userId=" + userId +
                 ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
                 ", paymentAmount=" + paymentAmount +
                 ", shipCost=" + shipCost +
                 ", discountAmount=" + discountAmount +

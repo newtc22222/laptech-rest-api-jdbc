@@ -19,6 +19,7 @@ public class InvoiceMapper implements RowMapper<Invoice> {
         invoice.setId(rs.getString("id"));
         invoice.setUserId(rs.getLong("user_id"));
         invoice.setAddress(rs.getNString("address"));
+        invoice.setPhone(rs.getString("phone"));
         invoice.setPaymentAmount(rs.getBigDecimal("payment_amount"));
         invoice.setShipCost(rs.getDouble("ship_cost"));
         invoice.setDiscountAmount(rs.getBigDecimal("discount_amount"));

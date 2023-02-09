@@ -56,6 +56,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         } else {
             oldInvoice.setUserId(invoice.getUserId());
             oldInvoice.setAddress(invoice.getAddress());
+            oldInvoice.setPhone(invoice.getPhone());
             oldInvoice.setPaymentAmount(invoice.getPaymentAmount());
             oldInvoice.setShipCost(invoice.getShipCost());
             oldInvoice.setDiscountAmount(invoice.getDiscountAmount());

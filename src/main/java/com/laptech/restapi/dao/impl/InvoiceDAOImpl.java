@@ -32,11 +32,11 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     private JdbcTemplate jdbcTemplate;
 
     // Query String
-    private final String TABLE_NAME = "joshua_tbl_invoice";
+    private final String TABLE_NAME = "tbl_invoice";
     private final String INSERT =
-            String.format("insert into %s values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
+            String.format("insert into %s values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
     private final String UPDATE = String.format("update %s " +
-            "set user_id=?, address=?, payment_amount=?, ship_cost=?, discount_amount=?, " +
+            "set user_id=?, address=?, phone=?, payment_amount=?, ship_cost=?, discount_amount=?, " +
             "tax=?, payment_total=?, payment_type=?, is_paid=?, order_status=?, " +
             "note=?, modified_date=now() where id=?", TABLE_NAME);
     private final String UPDATE_ORDER_STATUS = String.format("update %s set status=?, modified_date=now() where id=?", TABLE_NAME);
@@ -48,7 +48,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
     private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "user_id=? and address=? and payment_amount=? and ship_cost=? and discount_amount=? and " +
+            "user_id=? and address=? and phone=? and payment_amount=? and ship_cost=? and discount_amount=? and " +
             "tax=? and payment_total=? and payment_type=? and is_paid=? and order_status=? and note=?", TABLE_NAME);
 
     private final String QUERY_INVOICES_BY_USER_ID =
@@ -98,6 +98,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     UPDATE,
                     invoice.getUserId(),
                     invoice.getAddress(),
+                    invoice.getPhone(),
                     invoice.getPaymentAmount().doubleValue(),
                     invoice.getShipCost(),
                     invoice.getDiscountAmount().doubleValue(),
@@ -171,6 +172,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                 new InvoiceMapper(),
                 invoice.getUserId(),
                 invoice.getAddress(),
+                invoice.getPhone(),
                 invoice.getPaymentAmount().doubleValue(),
                 invoice.getShipCost(),
                 invoice.getDiscountAmount().doubleValue(),
