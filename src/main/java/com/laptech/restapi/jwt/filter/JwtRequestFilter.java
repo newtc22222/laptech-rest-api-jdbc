@@ -3,6 +3,7 @@ package com.laptech.restapi.jwt.filter;
 import com.laptech.restapi.jwt.service.JwtService;
 import com.laptech.restapi.jwt.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,8 +39,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwtToken = header.substring(7);
             try {
                 userPhone = jwtUtil.getUserPhoneFromToken(jwtToken);
-            } catch (IllegalArgumentException | ExpiredJwtException e) {
-                log.warn("Authorization error: {0}", e);
+            } catch (ExpiredJwtException err_ex) {
+                log.warn("[ERROR] Authorization error: {0}", err_ex);
+                request.setAttribute("expired", err_ex.getMessage());
+            } catch (SignatureException err_s) {
+                log.warn("[ERROR] Invalid token: {0}", err_s);
+                request.setAttribute("signature", err_s.getMessage());
+            } catch (IllegalArgumentException err_i) {
+                log.warn("[ERROR] {}", err_i.getMessage());
+                throw new IllegalArgumentException("[INFO] Your data is invalid!");
             }
         }
 
