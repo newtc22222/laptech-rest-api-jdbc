@@ -131,7 +131,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public int updateInvoicePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid) {
+    public int updatePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid) {
         try {
             return jdbcTemplate.update(
                     UPDATE_PAYMENT_TYPE_AND_PAID_STATUS,
@@ -233,7 +233,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoicesByUserId(long userId) {
+    public List<Invoice> findInvoiceByUserId(long userId) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_USER_ID,
@@ -247,7 +247,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoicesByAddress(String address) {
+    public List<Invoice> findInvoiceByAddress(String address) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_ADDRESS,
@@ -261,7 +261,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoicesByDate(LocalDate date) {
+    public List<Invoice> findInvoiceByDate(LocalDate date) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_DATE,
@@ -275,7 +275,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoicesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<Invoice> findInvoiceByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_DATE_RANGE,
@@ -290,7 +290,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoicesByPaymentType(String paymentType) {
+    public List<Invoice> findInvoiceByPaymentType(String paymentType) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_PAYMENT_TYPE,
@@ -304,7 +304,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoicesByOrderStatus(OrderStatus status) {
+    public List<Invoice> findInvoiceByOrderStatus(OrderStatus status) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_ORDER_STATUS,
@@ -318,7 +318,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoicesByPaidStatus(boolean isPaid) {
+    public List<Invoice> findInvoiceByPaidStatus(boolean isPaid) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_PAID_STATUS,

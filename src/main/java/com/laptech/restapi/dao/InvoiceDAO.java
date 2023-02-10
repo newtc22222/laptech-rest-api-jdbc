@@ -14,19 +14,19 @@ import java.util.List;
 public interface InvoiceDAO extends BaseDAO<Invoice, String> {
     int updateStatus(String invoiceId, OrderStatus status);
 
-    int updateInvoicePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid);
+    int updatePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid);
 
-    List<Invoice> findInvoicesByUserId(long userId);
+    List<Invoice> findInvoiceByUserId(long userId);
 
-    List<Invoice> findInvoicesByAddress(String address);
+    List<Invoice> findInvoiceByAddress(String address);
 
-    List<Invoice> findInvoicesByDate(LocalDate date);
+    List<Invoice> findInvoiceByDate(LocalDate date);
 
-    List<Invoice> findInvoicesByDateRange(LocalDateTime startDate, LocalDateTime endDate);
+    List<Invoice> findInvoiceByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 
-    List<Invoice> findInvoicesByPaymentType(String paymentType);
+    List<Invoice> findInvoiceByPaymentType(String paymentType);
 
-    List<Invoice> findInvoicesByOrderStatus(OrderStatus status);
+    List<Invoice> findInvoiceByOrderStatus(OrderStatus status);
 
-    List<Invoice> findInvoicesByPaidStatus(boolean isPaid); // true -> was paid
+    List<Invoice> findInvoiceByPaidStatus(boolean isPaid); // true -> was paid
 }

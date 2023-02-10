@@ -97,7 +97,7 @@ public class ImportProductServiceImpl implements ImportProductService {
         if (productDAO.findById(productId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
         }
-        return importProductDAO.findImportProductTicketByProductId(productId);
+        return importProductDAO.findImportProductByProductId(productId);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class ImportProductServiceImpl implements ImportProductService {
         Set<ImportProduct> notSuit = new HashSet<>();
 
         if (params.containsKey("productId")) {
-            List<ImportProduct> ticketList = importProductDAO.findImportProductTicketByProductId(params.get("productId"));
+            List<ImportProduct> ticketList = importProductDAO.findImportProductByProductId(params.get("productId"));
             ticketList.forEach(ticket -> {
                 if (!ticketSet.contains(ticket)) {
                     notSuit.add(ticket);
@@ -114,7 +114,7 @@ public class ImportProductServiceImpl implements ImportProductService {
             });
         }
         if (params.containsKey("date")) {
-            List<ImportProduct> ticketList = importProductDAO.findImportProductTicketByDate(
+            List<ImportProduct> ticketList = importProductDAO.findImportProductByDate(
                     LocalDate.parse(params.get("date"), DateTimeFormatter.ISO_LOCAL_DATE));
             ticketList.forEach(ticket -> {
                 if (!ticketSet.contains(ticket)) {
@@ -123,7 +123,7 @@ public class ImportProductServiceImpl implements ImportProductService {
             });
         }
         if (params.containsKey("startDate") && params.containsKey("endedDate")) {
-            List<ImportProduct> ticketList = importProductDAO.findImportProductTicketByDateRange(
+            List<ImportProduct> ticketList = importProductDAO.findImportProductByDateRange(
                     ConvertDateTime.getDateTimeFromString(params.get("startDate")),
                     ConvertDateTime.getDateTimeFromString(params.get("endDate"))
             );

@@ -1,7 +1,6 @@
 package com.laptech.restapi.service.impl;
 
 import com.laptech.restapi.common.enums.OrderStatus;
-import com.laptech.restapi.common.exception.ForbiddenException;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -126,7 +125,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (invoiceDAO.findById(invoiceId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find invoice with id=" + invoiceId);
         } else {
-            if (invoiceDAO.updateInvoicePaymentMethodAndPaidStatus(invoiceId, paymentType, isPaid) == 0) {
+            if (invoiceDAO.updatePaymentMethodAndPaidStatus(invoiceId, paymentType, isPaid) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update payment method and paid status for this invoice!");
             }
         }
@@ -137,7 +136,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (userDAO.findById(userId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         }
-        return invoiceDAO.findInvoicesByUserId(userId);
+        return invoiceDAO.findInvoiceByUserId(userId);
     }
 
     @Override
@@ -145,31 +144,31 @@ public class InvoiceServiceImpl implements InvoiceService {
         Set<Invoice> invoiceSet = new HashSet<>(invoiceDAO.findAll());
 
         if (params.containsKey("address")) {
-            List<Invoice> invoiceList = invoiceDAO.findInvoicesByAddress(params.get("address"));
+            List<Invoice> invoiceList = invoiceDAO.findInvoiceByAddress(params.get("address"));
             invoiceSet.removeIf(item -> !invoiceList.contains(item));
         }
         if (params.containsKey("date")) {
-            List<Invoice> invoiceList = invoiceDAO.findInvoicesByDate(
+            List<Invoice> invoiceList = invoiceDAO.findInvoiceByDate(
                     LocalDate.parse(params.get("date"), DateTimeFormatter.ISO_LOCAL_DATE));
             invoiceSet.removeIf(item -> !invoiceList.contains(item));
         }
         if (params.containsKey("startDate") && params.containsKey("endDate")) {
-            List<Invoice> invoiceList = invoiceDAO.findInvoicesByDateRange(
+            List<Invoice> invoiceList = invoiceDAO.findInvoiceByDateRange(
                     LocalDateTime.parse(params.get("startDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                     LocalDateTime.parse(params.get("endDate"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             );
             invoiceSet.removeIf(item -> !invoiceList.contains(item));
         }
         if (params.containsKey("paymentType")) {
-            List<Invoice> invoiceList = invoiceDAO.findInvoicesByPaymentType(params.get("paymentType"));
+            List<Invoice> invoiceList = invoiceDAO.findInvoiceByPaymentType(params.get("paymentType"));
             invoiceSet.removeIf(item -> !invoiceList.contains(item));
         }
         if (params.containsKey("status")) {
-            List<Invoice> invoiceList = invoiceDAO.findInvoicesByOrderStatus(OrderStatus.valueOf(params.get("status")));
+            List<Invoice> invoiceList = invoiceDAO.findInvoiceByOrderStatus(OrderStatus.valueOf(params.get("status")));
             invoiceSet.removeIf(item -> !invoiceList.contains(item));
         }
         if (params.containsKey("isPaid")) {
-            List<Invoice> invoiceList = invoiceDAO.findInvoicesByPaidStatus(Boolean.parseBoolean(params.get("isPaid")));
+            List<Invoice> invoiceList = invoiceDAO.findInvoiceByPaidStatus(Boolean.parseBoolean(params.get("isPaid")));
             invoiceSet.removeIf(item -> !invoiceList.contains(item));
         }
 

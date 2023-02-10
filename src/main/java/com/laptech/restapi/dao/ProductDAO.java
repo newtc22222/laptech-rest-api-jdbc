@@ -18,9 +18,9 @@ public interface ProductDAO extends BaseDAO<Product, String> {
     // For product searching...
     List<Product> findProductByName(String name);
 
-    List<Product> findProductByBrand(long brandId);
+    List<Product> findProductByBrandId(long brandId);
 
-    List<Product> findProductByCategory(long categoryId);
+    List<Product> findProductByCategoryId(long categoryId);
 
     List<Product> findProductByReleasedYear(int year);
 

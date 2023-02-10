@@ -263,14 +263,14 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> findProductByBrandId(long brandId) {
         if (brandDAO.findById(brandId) == null)
             throw new ResourceNotFoundException("[Info] Cannot find brand with id=" + brandId);
-        return productDAO.findProductByBrand(brandId);
+        return productDAO.findProductByBrandId(brandId);
     }
 
     @Override
     public List<Product> findProductByCategoryId(long categoryId) {
         if (categoryDAO.findById(categoryId) == null)
             throw new ResourceNotFoundException("[Info] Cannot find category with id=" + categoryId);
-        return productDAO.findProductByCategory(categoryId);
+        return productDAO.findProductByCategoryId(categoryId);
     }
 
     @Override
@@ -285,7 +285,7 @@ public class ProductServiceImpl implements ProductService {
             List<String> brandIdList = (List<String>) params.get("brandId");
             List<Product> productList = new ArrayList<>();
             brandIdList.forEach(brandId -> productList.addAll(
-                    productDAO.findProductByBrand(Long.parseLong(brandId))
+                    productDAO.findProductByBrandId(Long.parseLong(brandId))
             ));
             productSet.removeIf(item -> !productList.contains(item));
         }
@@ -293,7 +293,7 @@ public class ProductServiceImpl implements ProductService {
             List<String> categoryIdList = (List<String>) params.get("categoryId");
             List<Product> productList = new ArrayList<>();
             categoryIdList.forEach(categoryId -> productList.addAll(
-                    productDAO.findProductByCategory(Long.parseLong(categoryId))
+                    productDAO.findProductByCategoryId(Long.parseLong(categoryId))
             ));
             productSet.removeIf(item -> !productList.contains(item));
         }

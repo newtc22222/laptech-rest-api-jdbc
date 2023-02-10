@@ -11,11 +11,11 @@ import java.util.List;
  * @since 2022-11-21
  */
 public interface ImportProductDAO extends BaseDAO<ImportProduct, String> {
-    List<ImportProduct> findImportProductTicketByProductId(String productId);
+    List<ImportProduct> findImportProductByProductId(String productId);
 
-    List<ImportProduct> findImportProductTicketByDate(LocalDate date);
+    List<ImportProduct> findImportProductByDate(LocalDate date);
 
-    List<ImportProduct> findImportProductTicketByDateRange(LocalDateTime startDate, LocalDateTime endDate);
+    List<ImportProduct> findImportProductByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 
 //    List<ImportProduct> findImportProductTicketByProductIdAndDate(String productId, LocalDate date);
 //    List<ImportProduct> findImportProductTicketByProductIdAndDateRange(String productId, LocalDateTime startDate, LocalDateTime endDate);

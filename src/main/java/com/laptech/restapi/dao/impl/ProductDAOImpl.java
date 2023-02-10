@@ -235,7 +235,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findProductByBrand(long brandId) {
+    public List<Product> findProductByBrandId(long brandId) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCTS_BY_BRAND_ID,
@@ -249,7 +249,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findProductByCategory(long categoryId) {
+    public List<Product> findProductByCategoryId(long categoryId) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCTS_BY_CATEGORY_ID,

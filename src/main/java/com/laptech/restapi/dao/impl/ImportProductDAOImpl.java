@@ -164,7 +164,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public List<ImportProduct> findImportProductTicketByProductId(String productId) {
+    public List<ImportProduct> findImportProductByProductId(String productId) {
         try {
             return jdbcTemplate.query(
                     QUERY_IMPORT_PRODUCT_TICKETS_BY_PRODUCT_ID,
@@ -178,7 +178,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public List<ImportProduct> findImportProductTicketByDate(LocalDate date) {
+    public List<ImportProduct> findImportProductByDate(LocalDate date) {
         try {
             return jdbcTemplate.query(
                     QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE,
@@ -192,7 +192,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public List<ImportProduct> findImportProductTicketByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<ImportProduct> findImportProductByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         try {
             return jdbcTemplate.query(
                     QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE_RANGE,
