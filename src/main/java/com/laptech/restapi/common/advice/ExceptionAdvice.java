@@ -40,7 +40,7 @@ public class ExceptionAdvice {
         List<String> detail = new ArrayList<>();
         detail.add(ex.getLocalizedMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Resource Already Exist", detail));
     }
 
@@ -49,7 +49,7 @@ public class ExceptionAdvice {
         List<String> detail = new ArrayList<>();
         detail.add(ex.getLocalizedMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid data", detail));
     }
 
@@ -58,7 +58,7 @@ public class ExceptionAdvice {
         List<String> detail = new ArrayList<>();
         detail.add(ex.getLocalizedMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Server error", detail));
     }
 
@@ -67,7 +67,7 @@ public class ExceptionAdvice {
         List<String> detail = new ArrayList<>();
         detail.add(ex.getLocalizedMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid token", detail));
     }
 
@@ -76,7 +76,7 @@ public class ExceptionAdvice {
         List<String> detail = new ArrayList<>();
         detail.add(ex.getLocalizedMessage());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(HttpStatus.FORBIDDEN, "Deny access to information", detail));
     }
 }
