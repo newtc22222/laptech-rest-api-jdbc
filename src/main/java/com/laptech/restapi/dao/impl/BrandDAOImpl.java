@@ -33,17 +33,14 @@ public class BrandDAOImpl implements BrandDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Value("${sp_CreateNewBrand}")
-    private String INSERT;
-    @Value("${sp_UpdateBrand}")
-    private String UPDATE;
-    @Value("${sp_DeleteBrand}")
-    private String DELETE;
-
-    @Value("${sp_GetAllBrand}")
-    private String QUERY_ALL;
-    @Value("${sp_GetBrandWithId}")
-    private String QUERY_ONE_BY_ID;
+    private final String TABLE_NAME = "tbl_brand";
+    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, now(), now())", TABLE_NAME);
+    private final String UPDATE = String.format("update %s set name=?, country=?, establish_date=?, logo=?, modified_date=now() where id=?", TABLE_NAME);
+    private final String DELETE = String.format("delete from %s where id=?", TABLE_NAME);
+    private final String QUERY_CHECK_EXISTS = String.format("select * from %s " +
+            "where name=? and country=? and establish_date=? and logo=?", TABLE_NAME);
+    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
+    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
 
     @Override
     public Long insert(Brand brand) {
@@ -101,8 +98,6 @@ public class BrandDAOImpl implements BrandDAO {
 
     @Override
     public boolean isExists(Brand brand) {
-        String QUERY_CHECK_EXISTS = "select * from joshua_tbl_brand where " +
-                "name=? and country=? and establish_date=? and logo=?";
         Brand existBrand = jdbcTemplate.queryForObject(
                 QUERY_CHECK_EXISTS,
                 new BrandMapper(),

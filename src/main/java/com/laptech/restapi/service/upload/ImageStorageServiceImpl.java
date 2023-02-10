@@ -22,7 +22,6 @@ import java.util.stream.Stream;
  * @author Nhat Phi
  * @since 2022-12-01
  */
-
 @Service
 public class ImageStorageServiceImpl implements IStorageService {
     private static final String WEB_ABSOLUTE_PATH = "http://localhost:8088/api/v1/files/";
@@ -70,7 +69,6 @@ public class ImageStorageServiceImpl implements IStorageService {
                 Files.copy(inputStream, destinationFilePath, StandardCopyOption.REPLACE_EXISTING);
             }
             return WEB_ABSOLUTE_PATH + destinationFilePath.getFileName().toString();
-//            return RequestFetcher.getCurrentRequest() + destinationFilePath.getFileName().toString();
         } catch (IOException err) {
             throw new RuntimeException(err);
         }
