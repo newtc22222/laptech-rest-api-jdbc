@@ -17,13 +17,13 @@ public class JwtResponse {
     private User user;
     private List<Role> roleList;
     private final String type = "Bearer";
-    private String jwtToken;
+    private String accessToken;
     private String refreshToken;
 
-    public JwtResponse(User user, List<Role> roleList, String jwtToken, String refreshToken) {
+    public JwtResponse(User user, List<Role> roleList, String accessToken, String refreshToken) {
         this.user = user;
         this.roleList = roleList;
-        this.jwtToken = jwtToken;
+        this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
 }
