@@ -66,11 +66,11 @@ public class BrandDAOImpl implements BrandDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
-                    brand.getId(),
                     brand.getName(),
                     brand.getCountry(),
                     brand.getEstablishDate(),
-                    brand.getLogo()
+                    brand.getLogo(),
+                    brand.getId()
             );
         } catch (DataAccessException err) {
             log.error(err);
@@ -98,15 +98,20 @@ public class BrandDAOImpl implements BrandDAO {
 
     @Override
     public boolean isExists(Brand brand) {
-        Brand existBrand = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXISTS,
-                new BrandMapper(),
-                brand.getName(),
-                brand.getCountry(),
-                brand.getEstablishDate(),
-                brand.getLogo()
-        );
-        return existBrand != null;
+        try {
+            Brand existBrand = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXISTS,
+                    new BrandMapper(),
+                    brand.getName(),
+                    brand.getCountry(),
+                    brand.getEstablishDate(),
+                    brand.getLogo()
+            );
+            return existBrand != null;
+        } catch (DataAccessException err) {
+            log.warn(err);
+            return false;
+        }
     }
 
     @Override
