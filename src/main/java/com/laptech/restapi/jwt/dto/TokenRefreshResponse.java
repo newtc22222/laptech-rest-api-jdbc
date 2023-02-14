@@ -6,7 +6,8 @@ import lombok.Setter;
 /**
  * @since 2023-02-08
  */
-@Getter @Setter
+@Getter
+@Setter
 public class TokenRefreshResponse {
     private final String type = "Bearer";
     private String accessToken;

@@ -1,7 +1,6 @@
 package com.laptech.restapi.dto.response;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 /**
  * @author Nhat Phi

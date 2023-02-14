@@ -11,7 +11,8 @@ import java.util.List;
  * @author Nhat Phi
  * @since 2022-11-20
  */
-@Getter @Setter
+@Getter
+@Setter
 public class ErrorResponse extends BaseResponse {
     private LocalDateTime timestamp;
     private List<String> detail;

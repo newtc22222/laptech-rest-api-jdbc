@@ -54,7 +54,7 @@ public class UserDAOImpl implements UserDAO {
     private final String QUERY_ONE_BY_PHONE = String.format("select * from %s where phone=? limit 1", TABLE_NAME);
     private final String QUERY_ONE_BY_REFRESH_TOKEN =
             String.format("select u.* from %s u, %s rf " +
-                    "where rf.refresh_token=? and rf.expired_date < now() and u.id = rf.user_id",
+                            "where rf.refresh_token=? and rf.expired_date < now() and u.id = rf.user_id",
                     TABLE_NAME, "tbl_refresh_token");
 
     private final String QUERY_USERS_BY_NAME = String.format("select * from %s where name like ?", TABLE_NAME);

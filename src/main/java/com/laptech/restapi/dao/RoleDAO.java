@@ -10,5 +10,6 @@ import java.util.List;
  */
 public interface RoleDAO extends BaseDAO<Role, Integer> {
     Role findRoleByName(String name);
+
     List<Role> findRoleByUserId(long userId);
 }

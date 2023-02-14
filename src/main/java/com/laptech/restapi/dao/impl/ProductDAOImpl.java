@@ -37,7 +37,7 @@ public class ProductDAOImpl implements ProductDAO {
             "specifications=?, description_detail=?, modified_date=now() " +
             "where id=?", TABLE_NAME);
     private final String UPDATE_PRICE = String.format("update %s set listed_price=?, modified_date=now() where id=?", TABLE_NAME);
-//    private final String UPDATE_PROPERTIES = String.format("update %s " +
+    //    private final String UPDATE_PROPERTIES = String.format("update %s " +
 //            "set name=?, brand_id=?, released_date=?, specifications=?, description_detail=?, " +
 //            "modified_date=now() where id=?", TABLE_NAME);
     private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
@@ -144,19 +144,19 @@ public class ProductDAOImpl implements ProductDAO {
     public boolean isExists(Product product) {
         try {
 
-        Product existsProduct = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXITS,
-                new ProductMapper(),
-                product.getBrandId(),
-                product.getCategoryId(),
-                product.getName(),
-                Date.valueOf(product.getReleasedDate()),
-                product.getQuantityInStock(),
-                product.getListedPrice(),
-                product.getSpecifications(),
-                product.getDescriptionDetail()
-        );
-        return existsProduct != null;
+            Product existsProduct = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXITS,
+                    new ProductMapper(),
+                    product.getBrandId(),
+                    product.getCategoryId(),
+                    product.getName(),
+                    Date.valueOf(product.getReleasedDate()),
+                    product.getQuantityInStock(),
+                    product.getListedPrice(),
+                    product.getSpecifications(),
+                    product.getDescriptionDetail()
+            );
+            return existsProduct != null;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

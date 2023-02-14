@@ -134,15 +134,15 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     public boolean isExists(Feedback feedback) {
         try {
 
-        Feedback existsFeedback = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXITS,
-                new FeedbackMapper(),
-                feedback.getContent(),
-                feedback.getRatingPoint(),
-                feedback.getProductId(),
-                feedback.getUserId()
-        );
-        return existsFeedback != null;
+            Feedback existsFeedback = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXITS,
+                    new FeedbackMapper(),
+                    feedback.getContent(),
+                    feedback.getRatingPoint(),
+                    feedback.getProductId(),
+                    feedback.getUserId()
+            );
+            return existsFeedback != null;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

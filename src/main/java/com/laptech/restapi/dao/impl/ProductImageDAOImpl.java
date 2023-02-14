@@ -119,15 +119,15 @@ public class ProductImageDAOImpl implements ProductImageDAO {
     public boolean isExists(ProductImage image) {
         try {
 
-        ProductImage existsImage = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXITS,
-                new ProductImageMapper(),
-                image.getProductId(),
-                image.getFeedbackId(),
-                image.getUrl(),
-                image.getType().toString()
-        );
-        return existsImage != null;
+            ProductImage existsImage = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXITS,
+                    new ProductImageMapper(),
+                    image.getProductId(),
+                    image.getFeedbackId(),
+                    image.getUrl(),
+                    image.getType().toString()
+            );
+            return existsImage != null;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

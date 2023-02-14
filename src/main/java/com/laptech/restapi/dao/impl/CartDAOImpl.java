@@ -96,8 +96,7 @@ public class CartDAOImpl implements CartDAO {
                     cart.getUserId()
             );
             return existsCart != null;
-        }
-        catch (DataAccessException err) {
+        } catch (DataAccessException err) {
             log.error(err);
             return false;
         }

@@ -26,7 +26,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
     private JdbcTemplate jdbcTemplate;
 
     private final String TABLE_NAME = "tbl_refresh_token"; // tbl_refresh_token
-    
+
     private final String TIME_USE = "2 day";
     private final String INSERT = String.format("insert into %s value(?, ?, now(), addDate(now(), interval %s))", TABLE_NAME, TIME_USE);
     private final String DELETE = String.format("delete from %s where code=?", TABLE_NAME);
@@ -44,10 +44,9 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
                     token.getCode(),
                     token.getUserId()
             );
-        }
-        catch (DataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[INSERT]: {}", err.getLocalizedMessage());
-        return 0;
+            return 0;
         }
     }
 
@@ -55,8 +54,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
     public int delete(String code) {
         try {
             return jdbcTemplate.update(DELETE, code);
-        }
-        catch (DataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[DELETE]: {}", err.getLocalizedMessage());
             return 0;
         }
@@ -74,8 +72,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
                     QUERY_ALL,
                     new RefreshTokenMapper()
             );
-        }
-        catch (EmptyResultDataAccessException err) {
+        } catch (EmptyResultDataAccessException err) {
             log.error("[FIND ALL]: {}", err.getLocalizedMessage());
             return null;
         }
@@ -90,8 +87,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
                     limit,
                     skip
             );
-        }
-        catch (EmptyResultDataAccessException err) {
+        } catch (EmptyResultDataAccessException err) {
             log.error("[FIND LIMIT]: {}", err.getLocalizedMessage());
             return null;
         }
@@ -105,8 +101,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
                     new RefreshTokenMapper(),
                     code
             );
-        }
-        catch (EmptyResultDataAccessException err) {
+        } catch (EmptyResultDataAccessException err) {
             log.error("[FIND BY CODE]: {}", err.getLocalizedMessage());
             return null;
         }
@@ -120,8 +115,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
                     new RefreshTokenMapper(),
                     userId
             );
-        }
-        catch (EmptyResultDataAccessException err) {
+        } catch (EmptyResultDataAccessException err) {
             log.error("[FIND TOKEN BY USER ID]: {}", err.getLocalizedMessage());
             return null;
         }

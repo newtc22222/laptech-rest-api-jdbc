@@ -14,8 +14,8 @@ public class RefreshTokenMapper implements RowMapper<RefreshToken> {
         RefreshToken token = new RefreshToken();
         token.setCode(rs.getString("code"));
         token.setUserId(rs.getLong("user_id"));
-        token.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs,"created_date"));
-        token.setExpiredDate(ConvertDateTime.getDateTimeFromResultSet(rs,"expired_date"));
+        token.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
+        token.setExpiredDate(ConvertDateTime.getDateTimeFromResultSet(rs, "expired_date"));
         return token;
     }
 }

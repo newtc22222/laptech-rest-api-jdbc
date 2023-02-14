@@ -131,17 +131,17 @@ public class DiscountDAOImpl implements DiscountDAO {
     public boolean isExists(Discount discount) {
         try {
 
-        Discount existsDiscount = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXITS,
-                new DiscountMapper(),
-                discount.getCode(),
-                discount.getRate(),
-                discount.getAppliedType().toString(),
-                discount.getMaxAmount().doubleValue(),
-                Timestamp.valueOf(discount.getAppliedDate()),
-                Timestamp.valueOf(discount.getEndedDate())
-        );
-        return existsDiscount != null;
+            Discount existsDiscount = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXITS,
+                    new DiscountMapper(),
+                    discount.getCode(),
+                    discount.getRate(),
+                    discount.getAppliedType().toString(),
+                    discount.getMaxAmount().doubleValue(),
+                    Timestamp.valueOf(discount.getAppliedDate()),
+                    Timestamp.valueOf(discount.getEndedDate())
+            );
+            return existsDiscount != null;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

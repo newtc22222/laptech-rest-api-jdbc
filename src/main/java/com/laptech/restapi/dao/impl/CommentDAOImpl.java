@@ -102,16 +102,16 @@ public class CommentDAOImpl implements CommentDAO {
     public boolean isExists(Comment comment) {
         try {
 
-        Comment existsComment = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXITS,
-                new CommentMapper(),
-                comment.getRootCommentId(),
-                comment.getProductId(),
-                comment.getUsername(),
-                comment.getPhone(),
-                comment.getContent()
-        );
-        return existsComment != null;
+            Comment existsComment = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXITS,
+                    new CommentMapper(),
+                    comment.getRootCommentId(),
+                    comment.getProductId(),
+                    comment.getUsername(),
+                    comment.getPhone(),
+                    comment.getContent()
+            );
+            return existsComment != null;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

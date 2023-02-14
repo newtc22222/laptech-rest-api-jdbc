@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 /**
  * @since 2023-02-08
  */
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class RefreshToken {

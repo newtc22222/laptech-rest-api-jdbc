@@ -63,7 +63,7 @@ public class JwtService implements UserDetailsService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setCode(UUID.randomUUID().toString());
         refreshToken.setUserId(user.getId());
-        if(refreshTokenDAO.insert(refreshToken) == 0) {
+        if (refreshTokenDAO.insert(refreshToken) == 0) {
             throw new InternalServerErrorException("[Error] Cannot insert refresh token to database!");
         }
         return new JwtResponse(user, roleList, generateNewToken, refreshToken.getCode());
@@ -71,10 +71,9 @@ public class JwtService implements UserDetailsService {
 
     public TokenRefreshResponse refreshJwtToken(String refreshToken) {
         RefreshToken token = refreshTokenDAO.findRefreshTokenByCode(refreshToken);
-        if(token == null) {
+        if (token == null) {
             throw new TokenInvalidException("Refresh token isn't exited in system!");
-        }
-        else if(token.getExpiredDate().compareTo(LocalDateTime.now()) < 0) { // rf expired
+        } else if (token.getExpiredDate().compareTo(LocalDateTime.now()) < 0) { // rf expired
             throw new TokenInvalidException("Refresh token was expired! Please login again!");
         }
 

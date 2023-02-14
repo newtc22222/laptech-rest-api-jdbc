@@ -167,23 +167,23 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     public boolean isExists(Invoice invoice) {
         try {
 
-        Invoice existsInvoice = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXITS,
-                new InvoiceMapper(),
-                invoice.getUserId(),
-                invoice.getAddress(),
-                invoice.getPhone(),
-                invoice.getPaymentAmount().doubleValue(),
-                invoice.getShipCost(),
-                invoice.getDiscountAmount().doubleValue(),
-                invoice.getTax().doubleValue(),
-                invoice.getPaymentTotal().doubleValue(),
-                invoice.getPaymentType(),
-                invoice.isPaid(),
-                invoice.getOrderStatus().toString(),
-                invoice.getNote()
-        );
-        return existsInvoice != null;
+            Invoice existsInvoice = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXITS,
+                    new InvoiceMapper(),
+                    invoice.getUserId(),
+                    invoice.getAddress(),
+                    invoice.getPhone(),
+                    invoice.getPaymentAmount().doubleValue(),
+                    invoice.getShipCost(),
+                    invoice.getDiscountAmount().doubleValue(),
+                    invoice.getTax().doubleValue(),
+                    invoice.getPaymentTotal().doubleValue(),
+                    invoice.getPaymentType(),
+                    invoice.isPaid(),
+                    invoice.getOrderStatus().toString(),
+                    invoice.getNote()
+            );
+            return existsInvoice != null;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

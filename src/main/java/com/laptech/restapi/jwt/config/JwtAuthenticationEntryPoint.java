@@ -28,8 +28,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         final String expiredMsg = (String) request.getAttribute("expired");
         final String signatureMsg = (String) request.getAttribute("signature");
         List<String> errorList = new ArrayList<>();
-        if(expiredMsg != null) errorList.add(expiredMsg);
-        if(signatureMsg != null) errorList.add(signatureMsg);
+        if (expiredMsg != null) errorList.add(expiredMsg);
+        if (signatureMsg != null) errorList.add(signatureMsg);
 
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, "Unauthorized. System need a valid token!", errorList);
         response.setContentType("application/json");

@@ -107,15 +107,15 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     public boolean isExists(ImportProduct ticket) {
         try {
 
-        ImportProduct existsImport = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXITS,
-                new ImportProductMapper(),
-                ticket.getProductId(),
-                ticket.getQuantity(),
-                ticket.getImportedPrice().doubleValue(),
-                Timestamp.valueOf(ticket.getImportedDate())
-        );
-        return existsImport != null;
+            ImportProduct existsImport = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXITS,
+                    new ImportProductMapper(),
+                    ticket.getProductId(),
+                    ticket.getQuantity(),
+                    ticket.getImportedPrice().doubleValue(),
+                    Timestamp.valueOf(ticket.getImportedDate())
+            );
+            return existsImport != null;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

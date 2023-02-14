@@ -5,7 +5,6 @@ import com.laptech.restapi.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
 import java.util.Map;

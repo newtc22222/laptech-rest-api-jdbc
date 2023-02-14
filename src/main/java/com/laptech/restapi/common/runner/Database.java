@@ -5,12 +5,12 @@ import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 /**
  * Create sample data for User table
+ *
  * @since 2023-02-12
  */
 //@Component
@@ -19,7 +19,7 @@ public class Database implements CommandLineRunner {
     private UserService userService;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         User user = new User();
 
         user.setId(0L);

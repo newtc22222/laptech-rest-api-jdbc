@@ -1,7 +1,6 @@
 package com.laptech.restapi.dto.response;
 
 import com.laptech.restapi.model.Label;
-import com.laptech.restapi.model.Product;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

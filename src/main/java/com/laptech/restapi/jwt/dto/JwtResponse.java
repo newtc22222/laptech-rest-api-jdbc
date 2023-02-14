@@ -1,6 +1,5 @@
 package com.laptech.restapi.jwt.dto;
 
-import com.laptech.restapi.model.RefreshToken;
 import com.laptech.restapi.model.Role;
 import com.laptech.restapi.model.User;
 import lombok.Getter;
@@ -12,7 +11,8 @@ import java.util.List;
  * @author Nhat Phi
  * @since 2023-01-04
  */
-@Getter @Setter
+@Getter
+@Setter
 public class JwtResponse {
     private User user;
     private List<Role> roleList;

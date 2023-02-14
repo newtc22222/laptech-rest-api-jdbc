@@ -9,11 +9,16 @@ import java.util.List;
  */
 public interface RefreshTokenDAO {
     int insert(RefreshToken token);
+
     int delete(String code);
 
     int count();
+
     List<RefreshToken> findAll();
+
     List<RefreshToken> findAll(long limit, long skip);
+
     RefreshToken findRefreshTokenByCode(String code);
+
     List<RefreshToken> findRefreshTokenByUserId(long userId);
 }

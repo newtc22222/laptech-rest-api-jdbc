@@ -99,16 +99,15 @@ public class CategoryDAOImpl implements CategoryDAO {
     public boolean isExists(Category category) {
         try {
 
-        Category existsCategory = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXISTS,
-                new CategoryMapper(),
-                category.getName(),
-                category.getImage(),
-                category.getDescription()
-        );
-        return existsCategory != null;
-        }
-        catch (DataAccessException err) {
+            Category existsCategory = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXISTS,
+                    new CategoryMapper(),
+                    category.getName(),
+                    category.getImage(),
+                    category.getDescription()
+            );
+            return existsCategory != null;
+        } catch (DataAccessException err) {
             log.error(err);
             return false;
         }

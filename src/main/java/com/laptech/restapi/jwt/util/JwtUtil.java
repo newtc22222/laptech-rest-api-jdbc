@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 /**
  * <a href="https://www.youtube.com/watch?v=rBNOc4ymd1E">JWT</a>
+ *
  * @since 2023-01-04
  */
 @Component

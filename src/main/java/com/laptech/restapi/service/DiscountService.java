@@ -1,8 +1,6 @@
 package com.laptech.restapi.service;
 
-import com.laptech.restapi.dto.response.BaseResponse;
 import com.laptech.restapi.model.Discount;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;

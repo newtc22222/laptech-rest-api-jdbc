@@ -31,7 +31,7 @@ public class AuthController {
     private JwtService jwtService;
 
     @ApiOperation(value = "Create new user (register)", response = DataResponse.class)
-    @PostMapping(value = { "/register", "/signIn", "/sign-in" })
+    @PostMapping(value = {"/register", "/signIn", "/sign-in"})
     public ResponseEntity<DataResponse> register(@RequestBody Map<String, String> userRequest) {
         return DataResponse.success(
                 "Register new user",
@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     @ApiOperation(value = "Use refresh token to get new accessToken", response = TokenRefreshResponse.class)
-    @PostMapping(value = { "/refreshToken", "/refresh-token"})
+    @PostMapping(value = {"/refreshToken", "/refresh-token"})
     public ResponseEntity<TokenRefreshResponse> refreshToken(@RequestBody Map<String, String> body) {
         return ResponseEntity.ok(jwtService.refreshJwtToken(body.get("refreshToken")));
     }

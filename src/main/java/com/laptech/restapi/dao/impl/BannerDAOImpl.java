@@ -113,19 +113,18 @@ public class BannerDAOImpl implements BannerDAO {
     public boolean isExists(Banner banner) {
         try {
 
-        Banner existBanner = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXISTS,
-                new BannerMapper(),
-                banner.getPath(),
-                banner.getType(),
-                banner.getTitle(),
-                banner.getLinkProduct(),
-                banner.getUsedDate(),
-                banner.getEndedDate()
-        );
-        return existBanner != null;
-        }
-        catch (DataAccessException err) {
+            Banner existBanner = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXISTS,
+                    new BannerMapper(),
+                    banner.getPath(),
+                    banner.getType(),
+                    banner.getTitle(),
+                    banner.getLinkProduct(),
+                    banner.getUsedDate(),
+                    banner.getEndedDate()
+            );
+            return existBanner != null;
+        } catch (DataAccessException err) {
             log.error(err);
             return false;
         }

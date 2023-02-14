@@ -100,12 +100,12 @@ public class RoleDAOImpl implements RoleDAO {
     public boolean isExists(Role role) {
         try {
 
-        Role existsRole = jdbcTemplate.queryForObject(
-                QUERY_CHECK_EXITS,
-                new RoleMapper(),
-                role.getName()
-        );
-        return existsRole != null;
+            Role existsRole = jdbcTemplate.queryForObject(
+                    QUERY_CHECK_EXITS,
+                    new RoleMapper(),
+                    role.getName()
+            );
+            return existsRole != null;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

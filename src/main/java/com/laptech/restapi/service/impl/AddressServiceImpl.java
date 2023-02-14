@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.audit.AddressAudit;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.InvalidArgumentException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
@@ -8,7 +9,6 @@ import com.laptech.restapi.dao.AddressDAO;
 import com.laptech.restapi.dao.UserDAO;
 import com.laptech.restapi.model.Address;
 import com.laptech.restapi.service.AddressService;
-import com.laptech.restapi.audit.AddressAudit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

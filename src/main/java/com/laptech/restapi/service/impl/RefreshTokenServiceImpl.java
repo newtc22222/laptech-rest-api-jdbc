@@ -24,14 +24,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public void insert(RefreshToken token) {
-        if(refreshTokenDAO.insert(token) == 0) {
+        if (refreshTokenDAO.insert(token) == 0) {
             throw new InternalServerErrorException("[Error] Cannot insert refresh token to database!");
         }
     }
 
     @Override
     public void delete(String code) {
-        if(refreshTokenDAO.delete(code) == 0) {
+        if (refreshTokenDAO.delete(code) == 0) {
             throw new InternalServerErrorException("[Error] Cannot delete refresh token from database!");
         }
     }
@@ -43,7 +43,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public List<RefreshToken> findAll(Long page, Long size) {
-        if(size == null)
+        if (size == null)
             return refreshTokenDAO.findAll();
         long limit = size;
         long skip = size * (page - 1);
@@ -57,7 +57,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public List<RefreshToken> findRefreshTokenByUserId(long userId) {
-        if(userDAO.findById(userId) == null) {
+        if (userDAO.findById(userId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         }
         return refreshTokenDAO.findRefreshTokenByUserId(userId);
