@@ -16,10 +16,12 @@ import java.util.function.Function;
  * @since 2023-01-04
  */
 @Component
-@PropertySource("classpath:key.properties")
+@PropertySource("classpath:token.properties")
 public class JwtUtil {
     @Value("${secret_key}")
     private String SECRET_KEY;
+    @Value("${access_token_time}")
+    private Long access_token_time;
 
     public String getUserPhoneFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -60,7 +62,7 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setIssuedAt(new Date(timestamp))
-                .setExpiration(new Date(timestamp + (1000 * 60 * 60))) // 1 hour
+                .setExpiration(new Date(timestamp + access_token_time)) // 1 hour
                 .setSubject(userDetails.getUsername()) // Actually, it's a phone
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
