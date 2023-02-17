@@ -9,7 +9,7 @@ public class ConvertDateTime {
     private static final DateTimeFormatter DATE_TIME_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static LocalDateTime getDateTimeFromString(String text) {
-        return LocalDateTime.parse(text, DATE_TIME_PATTERN);
+        return LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
     public static LocalDateTime getDateTimeFromResultSet(ResultSet rs, String column) throws SQLException {
