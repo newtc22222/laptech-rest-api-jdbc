@@ -32,12 +32,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * @since 2023-01-04
+ */
 @Log4j2
 @Service
 public class JwtService implements UserDetailsService {
     @Autowired
     private UserDAO userDAO;
-
     @Autowired
     private RoleDAO roleDAO;
     @Autowired
@@ -45,7 +47,6 @@ public class JwtService implements UserDetailsService {
 
     @Autowired
     private JwtUtil jwtUtil;
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
