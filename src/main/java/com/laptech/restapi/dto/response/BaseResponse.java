@@ -8,20 +8,20 @@ import org.springframework.http.HttpStatus;
  */
 
 public class BaseResponse {
-    private HttpStatus status;
+    private int status;
     private String message;
 
     public BaseResponse(HttpStatus status, String message) {
-        this.status = status;
+        this.status = status.value();
         this.message = message;
     }
 
-    public HttpStatus getStatus() {
+    public int getStatus() {
         return status;
     }
 
     public void setStatus(HttpStatus status) {
-        this.status = status;
+        this.status = status.value();
     }
 
     public String getMessage() {
