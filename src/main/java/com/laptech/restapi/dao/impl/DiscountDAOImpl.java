@@ -6,23 +6,19 @@ import com.laptech.restapi.mapper.DiscountMapper;
 import com.laptech.restapi.model.Discount;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -36,56 +32,49 @@ public class DiscountDAOImpl implements DiscountDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Query String
-    private final String TABLE_NAME = "tbl_discount";
-    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set code=?, rate=?, applied_type=?, max_amount=?, applied_date=?, ended_date=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewDiscount}")
+    private String INSERT;
+    @Value("${sp_UpdateDiscount}")
+    private String UPDATE;
+    @Value("${sp_DeleteDiscount}")
+    private String DELETE;
 
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
+    @Value("${sp_FindAllDiscounts}")
+    private String QUERY_ALL;
+    @Value("${sp_FindAllDiscountsLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindDiscountById}")
+    private String QUERY_ONE_BY_ID;
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "code=? and rate=? and applied_type=? and max_amount=? and applied_date=? and ended_date=?", TABLE_NAME);
-    private final String QUERY_DISCOUNT_OF_PRODUCT_IN_DATE =
-            String.format("select d.* " +
-                    "from %s d, joshua_tbl_product_discount pd " +
-                    "where d.id = pd.discount_id " +
-                    "and pd.product_id = ?" +
-                    "and ? between d.applied_date and d.ended_date " +
-                    "limit 1;", TABLE_NAME);
-    private final String QUERY_DISCOUNTS_BY_CODE =
-            String.format("select * from %s where code like ?", TABLE_NAME);
+            "code=? and rate=? and applied_type=? and max_amount=? and applied_date=? and ended_date=?", "tbl_discount");
+    @Value("${sp_FindDiscountOfProductUseInDate}")
+    private String QUERY_DISCOUNT_OF_PRODUCT_IN_DATE;
+    @Value("${sp_FindDiscountByCode}")
+    private String QUERY_DISCOUNTS_BY_CODE;
 
     // Query in another table (tbl_product_discount)
-    private final String QUERY_DISCOUNTS_BY_PRODUCT_ID =
-            String.format("select d.* " +
-                    "from %s d, joshua_tbl_product_discount pd " +
-                    "where d.id = pd.discount_id " +
-                    "and pd.product_id = ?", TABLE_NAME);
-    private final String QUERY_DISCOUNTS_BY_DATE_RANGE =
-            String.format("select * from %s where ended_date >= ? or applied_date <= ?", TABLE_NAME);
-    private final String QUERY_DISCOUNTS_BY_TYPE =
-            String.format("select * from %s where applied_type=?", TABLE_NAME);
+    @Value("${sp_FindDiscountByProductId}")
+    private String QUERY_DISCOUNTS_BY_PRODUCT_ID;
+    @Value("${sp_FindDiscountByDateRange}")
+    private String QUERY_DISCOUNTS_BY_DATE_RANGE;
+    @Value("${sp_FindDiscountByType}")
+    private String QUERY_DISCOUNTS_BY_TYPE;
 
     @Override
     public Long insert(Discount discount) {
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update((connection) -> {
-                PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, discount.getCode());
-                ps.setFloat(2, discount.getRate());
-                ps.setString(3, discount.getAppliedType().toString());
-                ps.setBigDecimal(4, discount.getMaxAmount());
-                ps.setTimestamp(5, Timestamp.valueOf(discount.getAppliedDate()));
-                ps.setTimestamp(6, Timestamp.valueOf(discount.getEndedDate()));
-                return ps;
-            }, keyHolder);
-            return Objects.requireNonNull(keyHolder.getKey()).longValue();
-        } catch (DataAccessException | NullPointerException err) {
-            log.error(err);
+            return jdbcTemplate.queryForObject(
+                    INSERT,
+                    Long.class,
+                    discount.getCode(),
+                    discount.getRate(),
+                    discount.getAppliedType().toString(),
+                    discount.getMaxAmount().doubleValue(),
+                    Timestamp.valueOf(discount.getAppliedDate()),
+                    Timestamp.valueOf(discount.getEndedDate())
+            );
+        } catch (DataAccessException err) {
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -95,16 +84,16 @@ public class DiscountDAOImpl implements DiscountDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    discount.getId(),
                     discount.getCode(),
                     discount.getRate(),
                     discount.getAppliedType().toString(),
                     discount.getMaxAmount().doubleValue(),
                     Timestamp.valueOf(discount.getAppliedDate()),
-                    Timestamp.valueOf(discount.getEndedDate()),
-                    discount.getId()
+                    Timestamp.valueOf(discount.getEndedDate())
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DISCOUNT] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -117,7 +106,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     discountId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -143,7 +132,7 @@ public class DiscountDAOImpl implements DiscountDAO {
             );
             return existsDiscount != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -156,7 +145,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     new DiscountMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -171,7 +160,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -185,7 +174,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     discountId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -200,7 +189,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     Date.valueOf(LocalDate.now())
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY PRODUCT USE IN DATE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -214,7 +203,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     "%" + code + "%"
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY CODE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -228,7 +217,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     productId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY PRODUCT ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -243,7 +232,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     Timestamp.valueOf(endDate)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY DATE RANGE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -257,7 +246,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     type.toString()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY TYPE] {}", err.getLocalizedMessage());
             return null;
         }
     }
