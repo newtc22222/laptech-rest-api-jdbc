@@ -28,7 +28,7 @@ public class BrandServiceImpl implements BrandService {
             throw new ResourceAlreadyExistsException("Your input brand had already exists in system!");
         }
         Long newBrandId = brandDAO.insert(brand);
-        if (newBrandId != null) {
+        if (newBrandId == null) {
             throw new InternalServerErrorException("Cannot insert new brand to database!");
         }
         return brandDAO.findById(newBrandId);
