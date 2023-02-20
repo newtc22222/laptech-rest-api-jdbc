@@ -5,20 +5,15 @@ import com.laptech.restapi.mapper.BrandMapper;
 import com.laptech.restapi.model.Brand;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -32,30 +27,36 @@ public class BrandDAOImpl implements BrandDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_brand";
-    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s set name=?, country=?, establish_date=?, logo=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("delete from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewBrand}")
+    private String INSERT;
+    @Value("${sp_UpdateBrand}")
+    private String UPDATE;
+    @Value("${sp_DeleteBrand}")
+    private String DELETE;
     private final String QUERY_CHECK_EXISTS = String.format("select * from %s " +
-            "where name=? and country=? and establish_date=? and logo=?", TABLE_NAME);
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
+            "where name=? and country=? and establish_date=? and logo=?", "tbl_brand");
+    @Value("${sp_FindAllBrands}")
+    private String QUERY_ALL;
+    @Value("${sp_FindAllBrandsLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindBrandById}")
+    private String QUERY_ONE_BY_ID;
 
     @Override
     public Long insert(Brand brand) {
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update((connection) -> {
-                PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, brand.getName());
-                ps.setNString(2, brand.getCountry());
-                ps.setDate(3, Date.valueOf(brand.getEstablishDate()));
-                ps.setString(4, brand.getLogo());
-                return ps;
-            }, keyHolder);
-            return Objects.requireNonNull(keyHolder.getKey()).longValue();
-        } catch (DataAccessException | NullPointerException err) {
-            log.error(err);
+            Long newBrandId = jdbcTemplate.queryForObject(
+                    INSERT,
+                    Long.class,
+                    brand.getName(),
+                    brand.getCountry(),
+                    brand.getEstablishDate(),
+                    brand.getLogo()
+            );
+            System.out.println(newBrandId);
+            return newBrandId;
+        } catch (DataAccessException err) {
+            log.warn("[CREATE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -65,14 +66,14 @@ public class BrandDAOImpl implements BrandDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    brand.getId(),
                     brand.getName(),
                     brand.getCountry(),
                     brand.getEstablishDate(),
-                    brand.getLogo(),
-                    brand.getId()
+                    brand.getLogo()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -85,7 +86,7 @@ public class BrandDAOImpl implements BrandDAO {
                     brandId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -108,7 +109,7 @@ public class BrandDAOImpl implements BrandDAO {
             );
             return existBrand != null;
         } catch (DataAccessException err) {
-            log.warn(err);
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -121,7 +122,7 @@ public class BrandDAOImpl implements BrandDAO {
                     new BrandMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -130,13 +131,13 @@ public class BrandDAOImpl implements BrandDAO {
     public List<Brand> findAll(long limit, long skip) {
         try {
             return jdbcTemplate.query(
-                    QUERY_ALL,
+                    QUERY_LIMIT,
                     new BrandMapper(),
                     limit,
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -150,7 +151,7 @@ public class BrandDAOImpl implements BrandDAO {
                     brandId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
