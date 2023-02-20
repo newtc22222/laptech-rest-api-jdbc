@@ -36,10 +36,10 @@ public class FileUploadController {
         return DataResponse.success("Upload image", generateFileName);
     }
 
-    @ApiOperation(value = "Upload and save multiple images to server", response = ResponseEntity.class)
+    @ApiOperation(value = "Upload and save multiple images to server", response = DataResponse.class)
     @PostMapping("/uploads-multiple")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<?> uploadMultipleImageFiles(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<DataResponse> uploadMultipleImageFiles(@RequestParam("files") MultipartFile[] files) {
         List<String> generateFileNameList = new ArrayList<>();
         Arrays.stream(files).forEach(file -> {
             String generateFileName = storageService.storeFile(file);
@@ -61,21 +61,12 @@ public class FileUploadController {
         }
     }
 
-    @ApiOperation(value = "Show path of file in system", response = ResponseEntity.class)
+    @ApiOperation(value = "Show path of file in system", response = String.class)
     @GetMapping("/files/{filename:.+}/path")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<?> getPathOfFile(@PathVariable String filename) {
-        try {
-            return ResponseEntity
-                    .ok()
-                    .body(storageService.getPath(filename));
-        } catch (Exception err) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new BaseResponse(
-                            HttpStatus.NOT_FOUND,
-                            "Cannot find this file in system"
-                    ));
-        }
+    public ResponseEntity<String> getPathOfFile(@PathVariable String filename) {
+        return ResponseEntity
+                .ok()
+                .body(storageService.getPath(filename));
     }
 }
