@@ -33,14 +33,10 @@ public class JwtUtil {
     }
 
     private Claims getAllClaimFromToken(String token) {
-        try {
-            return Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (SignatureException | ExpiredJwtException err) {
-            throw new TokenInvalidException("[Token info] " + err.getLocalizedMessage());
-        }
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
