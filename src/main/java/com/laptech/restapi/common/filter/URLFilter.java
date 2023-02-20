@@ -18,8 +18,10 @@ public class URLFilter implements Filter {
             throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        log.info("{} - {}", request.getMethod(), request.getRequestURI() + request.getParameterMap());
+        if (request.getParameterMap().size() > 0)
+            log.info("{} - {} {}", request.getMethod(), request.getRequestURI(), request.getParameterMap());
+        else
+            log.info("{} - {}", request.getMethod(), request.getRequestURI());
         request.getInputStream();
         filterChain.doFilter(request, response);
     }
