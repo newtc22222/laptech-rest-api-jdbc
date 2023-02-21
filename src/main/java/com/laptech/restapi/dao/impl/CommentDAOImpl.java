@@ -5,6 +5,7 @@ import com.laptech.restapi.mapper.CommentMapper;
 import com.laptech.restapi.model.Comment;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,21 +28,26 @@ public class CommentDAOImpl implements CommentDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Query String
-    private final String TABLE_NAME = "tbl_comment";
-    private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set root_comment_id=?, product_id=?, username=?, phone=?, content=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewComment}")
+    private String INSERT;
+    @Value("${sp_UpdateComment}")
+    private String UPDATE;
+    @Value("${sp_DeleteComment}")
+    private String DELETE;
 
-    //    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_ALL_COMMENTS_OF_PRODUCT = String.format("select * from %s where product_id=?", TABLE_NAME);
-    private final String QUERY_ALL_COMMENTS_OF_USER = String.format("select * from %s where phone=?", TABLE_NAME);
-    private final String QUERY_ALL = String.format("select * from %s order by created_date desc", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s order by created_date desc limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=?", TABLE_NAME);
+    @Value("${sp_FindAllComments}") // add order by created_date desc
+    private String QUERY_ALL;
+    @Value("${sp_FindAllCommentsLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindCommentById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindCommentByProductId}")
+    private String QUERY_ALL_COMMENTS_OF_PRODUCT;
+    @Value("${sp_FindCommentByUserPhone}")
+    private String QUERY_ALL_COMMENTS_OF_USER;
+
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "root_comment_id=? and product_id=? and username=? and phone=? and content=?", TABLE_NAME);
+            "root_comment_id=? and product_id=? and username=? and phone=? and content=?", "tbl_comment");
 
     @Override
     public String insert(Comment comment) {
@@ -57,7 +63,7 @@ public class CommentDAOImpl implements CommentDAO {
             );
             return comment.getId();
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -67,15 +73,15 @@ public class CommentDAOImpl implements CommentDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    comment.getId(),
                     comment.getRootCommentId(),
                     comment.getProductId(),
                     comment.getUsername(),
                     comment.getPhone(),
-                    comment.getContent(),
-                    comment.getId()
+                    comment.getContent()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -88,7 +94,7 @@ public class CommentDAOImpl implements CommentDAO {
                     commentId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -101,7 +107,6 @@ public class CommentDAOImpl implements CommentDAO {
     @Override
     public boolean isExists(Comment comment) {
         try {
-
             Comment existsComment = jdbcTemplate.queryForObject(
                     QUERY_CHECK_EXITS,
                     new CommentMapper(),
@@ -113,7 +118,7 @@ public class CommentDAOImpl implements CommentDAO {
             );
             return existsComment != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -127,7 +132,7 @@ public class CommentDAOImpl implements CommentDAO {
                     productId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY PRODUCT ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -141,7 +146,7 @@ public class CommentDAOImpl implements CommentDAO {
                     phone
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY USER PHONE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -154,7 +159,7 @@ public class CommentDAOImpl implements CommentDAO {
                     new CommentMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -169,7 +174,7 @@ public class CommentDAOImpl implements CommentDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -183,7 +188,7 @@ public class CommentDAOImpl implements CommentDAO {
                     commentId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }

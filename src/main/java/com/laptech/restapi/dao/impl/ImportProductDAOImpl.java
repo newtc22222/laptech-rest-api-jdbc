@@ -5,6 +5,7 @@ import com.laptech.restapi.mapper.ImportProductMapper;
 import com.laptech.restapi.model.ImportProduct;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,24 +32,27 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_import_product";
-    private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set product_id=?, quantity=?, imported_price=?, imported_date=?, modified_date=now() where ticket_id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where ticket_id=?", TABLE_NAME);
+    @Value("${sp_InsertNewImport}")
+    private String INSERT;
+    @Value("${sp_UpdateImport}")
+    private String UPDATE;
+    @Value("${sp_DeleteImport}")
+    private String DELETE;
+    @Value("${sp_FindAllImports}")
+    private String QUERY_ALL;
+    @Value("${sp_FindAllImportsLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindImportById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindImportByProductId}")
+    private String QUERY_IMPORT_PRODUCT_TICKETS_BY_PRODUCT_ID;
+    @Value("${sp_FindImportProductByDate}")
+    private String QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE;
+    @Value("${sp_FindImportProductByDateRange}")
+    private String QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE_RANGE;
 
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where ticket_id=? limit 1", TABLE_NAME);
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "product_id=? and quantity=? and imported_price=? and imported_date=?", TABLE_NAME);
-
-    private final String QUERY_IMPORT_PRODUCT_TICKETS_BY_PRODUCT_ID =
-            String.format("select * from %s where product_id=?", TABLE_NAME);
-    private final String QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE =
-            String.format("select * from %s where cast(imported_date as date) = ?", TABLE_NAME);
-    private final String QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE_RANGE =
-            String.format("select * from %s where imported_date between ? and ?", TABLE_NAME);
+            "product_id=? and quantity=? and imported_price=? and imported_date=?", "tbl_import");
 
     @Override
     public String insert(ImportProduct ticket) {
@@ -63,7 +67,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
             );
             return ticket.getId();
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -73,14 +77,14 @@ public class ImportProductDAOImpl implements ImportProductDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    ticket.getId(),
                     ticket.getProductId(),
                     ticket.getQuantity(),
                     ticket.getImportedPrice().doubleValue(),
-                    Timestamp.valueOf(ticket.getImportedDate()),
-                    ticket.getId()
+                    Timestamp.valueOf(ticket.getImportedDate())
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -93,7 +97,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     ticketId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -117,7 +121,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
             );
             return existsImport != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -130,7 +134,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     new ImportProductMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -145,7 +149,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -158,7 +162,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     new ImportProductMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -172,7 +176,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     productId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY PRODUCT ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -186,7 +190,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     Date.valueOf(date)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY DATE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -201,7 +205,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     endDate
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY DATE RANGE] {}", err.getLocalizedMessage());
             return null;
         }
     }

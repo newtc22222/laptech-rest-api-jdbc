@@ -5,20 +5,16 @@ import com.laptech.restapi.mapper.BannerMapper;
 import com.laptech.restapi.model.Banner;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -33,41 +29,45 @@ public class BannerDAOImpl implements BannerDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_banner";
-    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set path=?, type=?, title=?, link_product=?, used_date=?, ended_date=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewBanner}")
+    private String INSERT;
+    @Value("${sp_UpdateBanner}")
+    private String UPDATE;
+    @Value("${sp_DeleteBanner}")
+    private String DELETE;
 
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
+    @Value("${sp_FindAllBanners}")
+    private String QUERY_ALL;
+    @Value("${sp_FindAllBannersLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindBannerById}")
+    private String QUERY_ONE_BY_ID;
+
     private final String QUERY_CHECK_EXISTS = String.format("select * from %s where " +
-            "path=? and type=? and title=? and link_product=? and used_date=? and ended_date=?", TABLE_NAME);
-    // started_date - using_date(use-end) - ended_date
-    private final String QUERY_BANNERS_BY_DATE_RANGE = String.format("select * from %s " +
-            "where ended_date > ? or used_date < ?", TABLE_NAME);
-    private final String QUERY_BANNERS_BY_DATE = String.format("select * from %s " +
-            "where ? between used_date and ended_date", TABLE_NAME);
-    private final String QUERY_BANNERS_BY_TYPE = String.format("select * from %s where type = ?", TABLE_NAME);
+            "path=? and type=? and title=? and link_product=? and used_date=? and ended_date=?", "tbl_banner");
+
+    @Value("${sp_FindBannerByDateRange}")
+    private String QUERY_BANNERS_BY_DATE_RANGE;
+    @Value("${sp_FindBannerByDate}")
+    private String QUERY_BANNERS_BY_DATE;
+    @Value("${sp_FindBannerByType}")
+    private String QUERY_BANNERS_BY_TYPE;
 
     @Override
     public Long insert(Banner banner) {
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update((connection) -> {
-                PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, banner.getPath());
-                ps.setNString(2, banner.getType());
-                ps.setNString(3, banner.getTitle());
-                ps.setString(4, banner.getLinkProduct());
-                ps.setDate(5, Date.valueOf(banner.getUsedDate()));
-                ps.setDate(6, Date.valueOf(banner.getEndedDate()));
-                return ps;
-            }, keyHolder);
-            return Objects.requireNonNull(keyHolder.getKey()).longValue();
-        } catch (DataAccessException | NullPointerException err) {
-            log.error(err);
+            return jdbcTemplate.queryForObject(
+                    INSERT,
+                    Long.class,
+                    banner.getPath(),
+                    banner.getType(),
+                    banner.getTitle(),
+                    banner.getLinkProduct(),
+                    banner.getUsedDate(),
+                    banner.getEndedDate()
+            );
+        } catch (DataAccessException err) {
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -77,16 +77,16 @@ public class BannerDAOImpl implements BannerDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    banner.getId(),
                     banner.getPath(),
                     banner.getType(),
                     banner.getTitle(),
                     banner.getLinkProduct(),
                     banner.getUsedDate(),
-                    banner.getEndedDate(),
-                    banner.getId()
+                    banner.getEndedDate()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -99,7 +99,7 @@ public class BannerDAOImpl implements BannerDAO {
                     bannerId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -112,7 +112,6 @@ public class BannerDAOImpl implements BannerDAO {
     @Override
     public boolean isExists(Banner banner) {
         try {
-
             Banner existBanner = jdbcTemplate.queryForObject(
                     QUERY_CHECK_EXISTS,
                     new BannerMapper(),
@@ -125,7 +124,7 @@ public class BannerDAOImpl implements BannerDAO {
             );
             return existBanner != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -138,7 +137,7 @@ public class BannerDAOImpl implements BannerDAO {
                     new BannerMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -153,7 +152,7 @@ public class BannerDAOImpl implements BannerDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -167,7 +166,7 @@ public class BannerDAOImpl implements BannerDAO {
                     bannerId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -182,7 +181,7 @@ public class BannerDAOImpl implements BannerDAO {
                     ended_date
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY DATE RANGE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -196,7 +195,7 @@ public class BannerDAOImpl implements BannerDAO {
                     date
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY DATE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -210,7 +209,7 @@ public class BannerDAOImpl implements BannerDAO {
                     type
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY TYPE] {}", err.getLocalizedMessage());
             return null;
         }
     }

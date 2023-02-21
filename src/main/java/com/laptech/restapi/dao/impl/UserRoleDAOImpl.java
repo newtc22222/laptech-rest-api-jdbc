@@ -3,6 +3,7 @@ package com.laptech.restapi.dao.impl;
 import com.laptech.restapi.dao.UserRoleDAO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,9 +22,10 @@ public class UserRoleDAOImpl implements UserRoleDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_user_role";
-    private final String INSERT = String.format("insert into %s values (?, ?)", TABLE_NAME);
-    private final String REMOVE = String.format("delete from %s where user_id=? and role_id=?", TABLE_NAME);
+    @Value("${sp_InsertUserRole}")
+    private String INSERT;
+    @Value("${sp_DeleteUserRole}")
+    private String REMOVE;
 
     @Override
     public int insert(Long userId, Integer roleId) {
@@ -34,7 +36,7 @@ public class UserRoleDAOImpl implements UserRoleDAO {
                     roleId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -48,7 +50,7 @@ public class UserRoleDAOImpl implements UserRoleDAO {
                     roleId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[REMOVE] {}", err.getLocalizedMessage());
             return 0;
         }
     }

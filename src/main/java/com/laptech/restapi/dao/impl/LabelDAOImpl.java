@@ -5,6 +5,7 @@ import com.laptech.restapi.mapper.LabelMapper;
 import com.laptech.restapi.model.Label;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -30,39 +31,41 @@ import java.util.Objects;
 public class LabelDAOImpl implements LabelDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private final String TABLE_NAME = "tbl_label"; // tbl_label
-    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set name=?, icon=?, title=?, description=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
-
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
+    @Value("${sp_InsertNewLabel}")
+    private String INSERT;
+    @Value("${sp_UpdateLabel}")
+    private String UPDATE;
+    @Value("${sp_DeleteLabel}")
+    private String DELETE;
+    @Value("${sp_FindAllLabels}")
+    private String QUERY_ALL;
+    @Value("${sp_FindAllLabelsLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindLabelById}")
+    private String QUERY_ONE_BY_ID;
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "name=? and icon=? and title=? and description=?", TABLE_NAME);
+            "name=? and icon=? and title=? and description=?", "tbl_label");
 
-    private final String QUERY_LABEL_BY_PRODUCT_ID = String.format("select * from %s " +
-            "where id in (select label_id from %s where product_id=?)", TABLE_NAME, "tbl_label");
-    private final String QUERY_LABEL_BY_NAME = String.format("select * from %s where name like ?", TABLE_NAME);
-    private final String QUERY_LABEL_BY_TITLE = String.format("select * from %s where title like ?", TABLE_NAME);
+    @Value("${sp_FindLabelByProductId}")
+    private String QUERY_LABEL_BY_PRODUCT_ID;
+    @Value("${sp_FindLabelByName}")
+    private String QUERY_LABEL_BY_NAME;
+    @Value("${sp_FindLabelByTitle}")
+    private String QUERY_LABEL_BY_TITLE;
 
     @Override
     public Long insert(Label label) {
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update((connection) -> {
-                PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, label.getName());
-                ps.setString(2, label.getIcon());
-                ps.setString(3, label.getTitle());
-                ps.setString(4, label.getDescription());
-                return ps;
-            }, keyHolder);
-            return Objects.requireNonNull(keyHolder.getKey()).longValue();
-        } catch (DataAccessException | NullPointerException err) {
-            log.error(err);
+            return jdbcTemplate.queryForObject(
+                    INSERT,
+                    Long.class,
+                    label.getName(),
+                    label.getIcon(),
+                    label.getTitle(),
+                    label.getDescription()
+            );
+        } catch (DataAccessException err) {
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -72,14 +75,14 @@ public class LabelDAOImpl implements LabelDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    label.getId(),
                     label.getName(),
                     label.getIcon(),
                     label.getTitle(),
-                    label.getDescription(),
-                    label.getId()
+                    label.getDescription()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -92,7 +95,7 @@ public class LabelDAOImpl implements LabelDAO {
                     labelId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -115,7 +118,7 @@ public class LabelDAOImpl implements LabelDAO {
             );
             return existsLabel != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -128,7 +131,7 @@ public class LabelDAOImpl implements LabelDAO {
                     new LabelMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -143,7 +146,7 @@ public class LabelDAOImpl implements LabelDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -157,7 +160,7 @@ public class LabelDAOImpl implements LabelDAO {
                     labelId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -171,7 +174,7 @@ public class LabelDAOImpl implements LabelDAO {
                     productId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY PRODUCT ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -185,7 +188,7 @@ public class LabelDAOImpl implements LabelDAO {
                     "%" + name + "%"
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY NAME] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -199,7 +202,7 @@ public class LabelDAOImpl implements LabelDAO {
                     "%" + title + "%"
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY TITLE] {}", err.getLocalizedMessage());
             return null;
         }
     }

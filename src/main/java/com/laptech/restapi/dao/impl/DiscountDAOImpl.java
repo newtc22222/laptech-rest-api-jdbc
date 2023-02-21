@@ -38,7 +38,6 @@ public class DiscountDAOImpl implements DiscountDAO {
     private String UPDATE;
     @Value("${sp_DeleteDiscount}")
     private String DELETE;
-
     @Value("${sp_FindAllDiscounts}")
     private String QUERY_ALL;
     @Value("${sp_FindAllDiscountsLimit}")
@@ -47,12 +46,11 @@ public class DiscountDAOImpl implements DiscountDAO {
     private String QUERY_ONE_BY_ID;
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
             "code=? and rate=? and applied_type=? and max_amount=? and applied_date=? and ended_date=?", "tbl_discount");
+
     @Value("${sp_FindDiscountOfProductUseInDate}")
     private String QUERY_DISCOUNT_OF_PRODUCT_IN_DATE;
     @Value("${sp_FindDiscountByCode}")
     private String QUERY_DISCOUNTS_BY_CODE;
-
-    // Query in another table (tbl_product_discount)
     @Value("${sp_FindDiscountByProductId}")
     private String QUERY_DISCOUNTS_BY_PRODUCT_ID;
     @Value("${sp_FindDiscountByDateRange}")
@@ -119,7 +117,6 @@ public class DiscountDAOImpl implements DiscountDAO {
     @Override
     public boolean isExists(Discount discount) {
         try {
-
             Discount existsDiscount = jdbcTemplate.queryForObject(
                     QUERY_CHECK_EXITS,
                     new DiscountMapper(),

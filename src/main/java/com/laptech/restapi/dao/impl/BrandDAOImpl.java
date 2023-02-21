@@ -56,7 +56,7 @@ public class BrandDAOImpl implements BrandDAO {
             System.out.println(newBrandId);
             return newBrandId;
         } catch (DataAccessException err) {
-            log.warn("[CREATE] {}", err.getLocalizedMessage());
+            log.error("[CREATE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -73,7 +73,7 @@ public class BrandDAOImpl implements BrandDAO {
                     brand.getLogo()
             );
         } catch (DataAccessException err) {
-            log.warn("[UPDATE] {}", err.getLocalizedMessage());
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -86,7 +86,7 @@ public class BrandDAOImpl implements BrandDAO {
                     brandId
             );
         } catch (DataAccessException err) {
-            log.warn("[DELETE] {}", err.getLocalizedMessage());
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }

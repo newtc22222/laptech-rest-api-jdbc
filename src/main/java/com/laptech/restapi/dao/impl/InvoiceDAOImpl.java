@@ -6,6 +6,7 @@ import com.laptech.restapi.mapper.InvoiceMapper;
 import com.laptech.restapi.model.Invoice;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,40 +32,40 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Query String
-    private final String TABLE_NAME = "tbl_invoice";
-    private final String INSERT =
-            String.format("insert into %s values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set user_id=?, address=?, phone=?, payment_amount=?, ship_cost=?, discount_amount=?, " +
-            "tax=?, payment_total=?, payment_type=?, is_paid=?, order_status=?, " +
-            "note=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String UPDATE_ORDER_STATUS = String.format("update %s set status=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String UPDATE_PAYMENT_TYPE_AND_PAID_STATUS =
-            String.format("update %s set payment_type=?, is_paid=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewInvoice}")
+    private String INSERT;
+    @Value("${sp_UpdateInvoice}")
+    private String UPDATE;
+    @Value("${sp_UpdateInvoiceStatus}")
+    private String UPDATE_ORDER_STATUS;
+    @Value("${sp_UpdateInvoicePaymentMethodAndPaidStatus}")
+    private String UPDATE_PAYMENT_TYPE_AND_PAID_STATUS;
+    @Value("${sp_DeleteInvoice}")
+    private String DELETE;
+    @Value("${sp_FindAllInvoices}")
+    private String QUERY_ALL;
+    @Value("${sp_FindAllInvoicesLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindInvoiceById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindInvoiceByUserId}")
+    private String QUERY_INVOICES_BY_USER_ID;
+    @Value("${sp_FindInvoiceByAddress}")
+    private String QUERY_INVOICES_BY_ADDRESS;
+    @Value("${sp_FindInvoiceByDate}")
+    private String QUERY_INVOICES_BY_DATE;
+    @Value("${sp_FindInvoiceByDateRange}")
+    private String QUERY_INVOICES_BY_DATE_RANGE;
+    @Value("${sp_FindInvoiceByPaymentType}")
+    private String QUERY_INVOICES_BY_PAYMENT_TYPE;
+    @Value("${sp_FindInvoiceByOrderStatus}")
+    private String QUERY_INVOICES_BY_ORDER_STATUS;
+    @Value("${sp_FindInvoiceByPaidStatus}")
+    private String QUERY_INVOICES_BY_PAID_STATUS;
 
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
             "user_id=? and address=? and phone=? and payment_amount=? and ship_cost=? and discount_amount=? and " +
-            "tax=? and payment_total=? and payment_type=? and is_paid=? and order_status=? and note=?", TABLE_NAME);
-
-    private final String QUERY_INVOICES_BY_USER_ID =
-            String.format("select * from %s where user_id=?", TABLE_NAME);
-    private final String QUERY_INVOICES_BY_ADDRESS =
-            String.format("select * from %s where address like ?", TABLE_NAME);
-    private final String QUERY_INVOICES_BY_DATE =
-            String.format("select * from %s where cast(created_date as date) = ?", TABLE_NAME);
-    private final String QUERY_INVOICES_BY_DATE_RANGE =
-            String.format("select * from %s where created_date between ? and ?", TABLE_NAME);
-    private final String QUERY_INVOICES_BY_PAYMENT_TYPE =
-            String.format("select * from %s where payment_type=?", TABLE_NAME);
-    private final String QUERY_INVOICES_BY_ORDER_STATUS =
-            String.format("select * from %s where status=?", TABLE_NAME);
-    private final String QUERY_INVOICES_BY_PAID_STATUS =
-            String.format("select * from %s where is_paid=?", TABLE_NAME);
+            "tax=? and payment_total=? and payment_type=? and is_paid=? and order_status=? and note=?", "tbl_invoice");
 
     @Override
     public String insert(Invoice invoice) {
@@ -86,7 +87,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
             );
             return invoice.getId();
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -96,6 +97,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    invoice.getId(),
                     invoice.getUserId(),
                     invoice.getAddress(),
                     invoice.getPhone(),
@@ -107,11 +109,10 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     invoice.getPaymentType(),
                     invoice.isPaid(),
                     invoice.getOrderStatus().toString(),
-                    invoice.getNote(),
-                    invoice.getId()
+                    invoice.getNote()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -121,11 +122,11 @@ public class InvoiceDAOImpl implements InvoiceDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE_ORDER_STATUS,
-                    status.toString(),
-                    invoiceId
+                    invoiceId,
+                    status.toString()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE STATUS] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -135,12 +136,12 @@ public class InvoiceDAOImpl implements InvoiceDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE_PAYMENT_TYPE_AND_PAID_STATUS,
+                    invoiceId,
                     paymentType,
-                    isPaid,
-                    invoiceId
+                    isPaid
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE PAYMENT] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -153,7 +154,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     invoiceId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -185,7 +186,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
             );
             return existsInvoice != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -198,7 +199,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     new InvoiceMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -213,7 +214,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -227,7 +228,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     invoiceId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -241,7 +242,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     userId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY USER ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -255,7 +256,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     "%" + address + "%"
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ADDRESS] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -269,7 +270,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     Date.valueOf(date)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY DATE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -284,7 +285,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     endDate
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY DATE RANGE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -298,7 +299,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     paymentType
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY PAYMENT TYPE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -312,7 +313,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     status.toString()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ORDER STATUS] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -326,7 +327,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     isPaid
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY PAID STATUS] {}", err.getLocalizedMessage());
             return null;
         }
     }

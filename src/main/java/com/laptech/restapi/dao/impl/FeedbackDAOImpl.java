@@ -5,6 +5,7 @@ import com.laptech.restapi.mapper.FeedbackMapper;
 import com.laptech.restapi.model.Feedback;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,27 +28,30 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Query String
-    private final String TABLE_NAME = "tbl_feedback";
-    private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, , now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set content=?, rating_point=?, modified_date=now() where id=? and product_id=? and user_id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewFeedback}")
+    private String INSERT;
+    @Value("${sp_UpdateFeedback}")
+    private String UPDATE;
+    @Value("${sp_DeleteFeedback}")
+    private String DELETE;
 
-    private final String QUERY_ALL = String.format("select * from %s order by created_date desc", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s order by created_date desc limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=?", TABLE_NAME);
+    @Value("${sp_FindAllFeedbacks}")
+    private String QUERY_ALL;
+    @Value("${sp_FindAllFeedbacksLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindFeedbackById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindFeedbackByProductId}")
+    private String QUERY_ALL_FEEDBACKS_OF_PRODUCT;
+    @Value("${sp_FindFeedbackByUserId}")
+    private String QUERY_ALL_FEEDBACKS_OF_USER;
+    @Value("${sp_FindFeedbackByRatingPoint}")
+    private String QUERY_ALL_FEEDBACKS_BY_RATING_POINT;
+    @Value("${sp_FindFeedbackByProductIdAndRatingPoint}")
+    private String QUERY_ALL_FEEDBACKS_OF_PRODUCT_BY_RATING_POINT;
+
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "content=? and rating_point=? and product_id=? and user_id=?", TABLE_NAME);
-
-    private final String QUERY_ALL_FEEDBACKS_OF_PRODUCT =
-            String.format("select * from %s where product_id=?", TABLE_NAME);
-    private final String QUERY_ALL_FEEDBACKS_OF_USER =
-            String.format("select * from %s where user_id=?", TABLE_NAME);
-    private final String QUERY_ALL_FEEDBACKS_BY_RATING_POINT =
-            String.format("select * from %s where rating_point=?", TABLE_NAME);
-    private final String QUERY_ALL_FEEDBACKS_OF_PRODUCT_BY_RATING_POINT =
-            String.format("select * from %s where product_id=? and rating_point=?", TABLE_NAME);
+            "content=? and rating_point=? and product_id=? and user_id=?", "tbl_feedback");
 
     @Override
     public String insert(Feedback feedback) {
@@ -62,7 +66,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
             );
             return feedback.getId();
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -72,14 +76,14 @@ public class FeedbackDAOImpl implements FeedbackDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
-                    feedback.getContent(),
-                    feedback.getRatingPoint(),
                     feedback.getId(),
                     feedback.getProductId(),
-                    feedback.getUserId()
+                    feedback.getUserId(),
+                    feedback.getContent(),
+                    feedback.getRatingPoint()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -92,7 +96,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     feedbackId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -133,7 +137,6 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     @Override
     public boolean isExists(Feedback feedback) {
         try {
-
             Feedback existsFeedback = jdbcTemplate.queryForObject(
                     QUERY_CHECK_EXITS,
                     new FeedbackMapper(),
@@ -144,7 +147,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
             );
             return existsFeedback != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -157,7 +160,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     new FeedbackMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -172,7 +175,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -186,7 +189,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     ratingPoint
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY RATING POINT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -201,7 +204,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     ratingPoint
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY PRODUCT ID AND RATING POINT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -215,7 +218,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     feedbackId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }

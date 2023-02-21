@@ -5,19 +5,15 @@ import com.laptech.restapi.mapper.RoleMapper;
 import com.laptech.restapi.model.Role;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -31,34 +27,37 @@ public class RoleDAOImpl implements RoleDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_role";
-    private final String INSERT = String.format("insert into %s values (0, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set name=?, description=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewRole}")
+    private String INSERT;
+    @Value("${sp_UpdateRole}")
+    private String UPDATE;
+    @Value("${sp_DeleteRole}")
+    private String DELETE;
 
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=?", TABLE_NAME);
-    private final String QUERY_ONE_BY_NAME = String.format("select * from %s where name=?", TABLE_NAME);
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where name=?", TABLE_NAME); // maybe upgrade
+    @Value("${sp_FindAllRoles}")
+    private String QUERY_ALL;
+    @Value("${sp_FindAllRolesLimit}")
+    private String QUERY_LIMIT;
+    @Value("${sp_FindRoleById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindRoleByName}")
+    private String QUERY_ONE_BY_NAME;
+    @Value("${sp_FindRoleByUserId}")
+    private String QUERY_ROLE_BY_USER_ID;
 
-    private final String QUERY_ROLE_BY_USER_ID = String.format("select r.* from %s ur, %s r where ur.user_id=? and ur.role_id=r.id",
-            "tbl_user_role", TABLE_NAME);
+    private final String QUERY_CHECK_EXITS = String.format("select * from %s where name=?", "tbl_role"); // maybe upgrade
 
     @Override
     public Integer insert(Role role) {
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update((connection) -> {
-                PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, role.getName());
-                ps.setString(2, role.getDescription());
-                return ps;
-            }, keyHolder);
-            return Objects.requireNonNull(keyHolder.getKey()).intValue();
-        } catch (DataAccessException | NullPointerException err) {
-            log.error(err);
+            return jdbcTemplate.queryForObject(
+                    INSERT,
+                    Integer.class,
+                    role.getName(),
+                    role.getDescription()
+            );
+        } catch (DataAccessException err) {
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -68,12 +67,12 @@ public class RoleDAOImpl implements RoleDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    role.getId(),
                     role.getName(),
-                    role.getDescription(),
-                    role.getId()
+                    role.getDescription()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -86,7 +85,7 @@ public class RoleDAOImpl implements RoleDAO {
                     roleId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -99,7 +98,6 @@ public class RoleDAOImpl implements RoleDAO {
     @Override
     public boolean isExists(Role role) {
         try {
-
             Role existsRole = jdbcTemplate.queryForObject(
                     QUERY_CHECK_EXITS,
                     new RoleMapper(),
@@ -107,7 +105,7 @@ public class RoleDAOImpl implements RoleDAO {
             );
             return existsRole != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -120,7 +118,7 @@ public class RoleDAOImpl implements RoleDAO {
                     new RoleMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -135,7 +133,7 @@ public class RoleDAOImpl implements RoleDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -149,7 +147,7 @@ public class RoleDAOImpl implements RoleDAO {
                     roleId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -163,7 +161,7 @@ public class RoleDAOImpl implements RoleDAO {
                     name
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY NAME]: {}", err.getLocalizedMessage());
+            log.warn("[FIND BY NAME] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -177,7 +175,7 @@ public class RoleDAOImpl implements RoleDAO {
                     userId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY USER ID] {}", err.getLocalizedMessage());
             return null;
         }
     }

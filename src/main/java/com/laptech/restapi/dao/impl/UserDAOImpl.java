@@ -7,6 +7,7 @@ import com.laptech.restapi.mapper.UserMapper;
 import com.laptech.restapi.model.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -35,52 +36,54 @@ public class UserDAOImpl implements UserDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_user";
-    private final String INSERT = String.format("insert into %s values (0, ?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set name=?, gender=?, date_of_birth=?, phone=?, email=?, password=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String UPDATE_INFORMATION = String.format("update %s " +
-            "set name=?, gender=?, date_of_birth=?, email=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String ENABLE_USER = String.format("update %s set is_active=true, modified_date=now() where id=?", TABLE_NAME);
-    private final String DISABLE_USER = String.format("update %s set is_active=false, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE_USER = String.format("remove from %s where id=? and is_active=false", TABLE_NAME);
+    @Value("${sp_InsertNewUser}")
+    private String INSERT;
+    @Value("${sp_UpdateUser}")
+    private String UPDATE;
+    @Value("${sp_UpdateUserInformation}")
+    private String UPDATE_INFORMATION;
+    @Value("${sp_UpdateUserAccountStatus}")
+    private String ENABLE_USER;
+    @Value("${sp_UpdateUserAccountStatus}")
+    private String DISABLE_USER;
+    @Value("${sp_DeleteUser}")
+    private String DELETE_USER;
+    @Value("${sp_FindAllUsers}")
+    private String QUERY_ALL;
+    @Value("${}") // missing
+    private String QUERY_LIMIT;
+    @Value("${sp_FindUserById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindUserByPhone}")
+    private String QUERY_ONE_BY_PHONE;
+    @Value("${sp_FindUserByName}")
+    private String QUERY_USERS_BY_NAME;
+    @Value("${sp_FindUserByGender}")
+    private String QUERY_USERS_BY_GENDER;
+    @Value("${sp_FindUserByRoleName}")
+    private String QUERY_USERS_BY_ROLE;
 
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "name=? and gender=? and date_of_birth=? and phone=? and email=?", TABLE_NAME);
-
-    private final String QUERY_ONE_BY_PHONE = String.format("select * from %s where phone=? limit 1", TABLE_NAME);
+            "name=? and gender=? and date_of_birth=? and phone=? and email=?", "tbl_user");
     private final String QUERY_ONE_BY_REFRESH_TOKEN =
             String.format("select u.* from %s u, %s rf " +
                             "where rf.refresh_token=? and rf.expired_date < now() and u.id = rf.user_id",
-                    TABLE_NAME, "tbl_refresh_token");
-
-    private final String QUERY_USERS_BY_NAME = String.format("select * from %s where name like ?", TABLE_NAME);
-    private final String QUERY_USERS_BY_GENDER = String.format("select * from %s where gender=?", TABLE_NAME);
-    private final String QUERY_USERS_BY_ROLE = String.format("select * from %s where id in " +
-            "(select ur.user_id from tbl_user_role ur, tbl_role r" +
-            " where r.name=? and ur.role_id=r.id)", TABLE_NAME); // is fixing
+                            "tbl_user", "tbl_refresh_token");
 
     @Override
     public Long insert(User user) {
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update((connection) -> {
-                PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, user.getName());
-                ps.setString(2, user.getGender().toString());
-                ps.setDate(3, Date.valueOf(user.getDateOfBirth()));
-                ps.setString(4, user.getPhone());
-                ps.setString(5, user.getEmail());
-                ps.setString(6, user.getPassword());
-                ps.setBoolean(7, user.isActive());
-                return ps;
-            }, keyHolder);
-            return Objects.requireNonNull(keyHolder.getKey()).longValue();
-        } catch (DataAccessException | NullPointerException err) {
-            log.error("[INSERT]: {}", err.getMessage());
+            return jdbcTemplate.queryForObject(
+                    INSERT,
+                    Long.class,
+                    user.getName(),
+                    user.getGender().toString(),
+                    user.getDateOfBirth(),
+                    user.getPhone(),
+                    user.getEmail()
+            );
+        } catch (DataAccessException err) {
+            log.error("[INSERT] {}", err.getMessage());
             return null;
         }
     }
@@ -90,16 +93,16 @@ public class UserDAOImpl implements UserDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    user.getId(),
                     user.getName(),
                     user.getGender().toString(),
                     user.getDateOfBirth(),
                     user.getPhone(),
                     user.getEmail(),
-                    user.getPassword(),
-                    user.getId()
+                    user.getPassword()
             );
         } catch (DataAccessException err) {
-            log.error("[UPDATE]: {}", err.getMessage());
+            log.error("[UPDATE] {}", err.getMessage());
             return 0;
         }
     }
@@ -109,14 +112,14 @@ public class UserDAOImpl implements UserDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE_INFORMATION,
+                    userDTO.getId(),
                     userDTO.getName(),
                     userDTO.getGender().toString(),
                     userDTO.getDateOfBirth(),
-                    userDTO.getEmail(),
-                    userDTO.getId()
+                    userDTO.getEmail()
             );
         } catch (DataAccessException err) {
-            log.error("[UPDATE INFO]: {}", err.getMessage());
+            log.error("[UPDATE INFO] {}", err.getMessage());
             return 0;
         }
     }
@@ -126,10 +129,11 @@ public class UserDAOImpl implements UserDAO {
         try {
             return jdbcTemplate.update(
                     ENABLE_USER,
-                    userId
+                    userId,
+                    true
             );
         } catch (DataAccessException err) {
-            log.error("[UPDATE ENABLE]: {}", err.getMessage());
+            log.error("[ENABLE] {}", err.getMessage());
             return 0;
         }
     }
@@ -139,10 +143,11 @@ public class UserDAOImpl implements UserDAO {
         try {
             return jdbcTemplate.update(
                     DISABLE_USER,
-                    userId
+                    userId,
+                    false
             );
         } catch (DataAccessException err) {
-            log.error("[UPDATE DISABLE]: {}", err.getMessage());
+            log.error("[DISABLE] {}", err.getMessage());
             return 0;
         }
     }
@@ -157,7 +162,7 @@ public class UserDAOImpl implements UserDAO {
                         userId
                 );
             } catch (DataAccessException err) {
-                log.error("[DELETE]: {}", err.getMessage());
+                log.error("[DELETE] {}", err.getMessage());
                 return 0;
             }
         }
@@ -183,7 +188,7 @@ public class UserDAOImpl implements UserDAO {
             );
             return existsUser != null;
         } catch (DataAccessException err) {
-            log.info("[CHECK EXIST]: {}", err.getMessage());
+            log.info("[CHECK EXIST] {}", err.getMessage());
             return false;
         }
     }
@@ -196,7 +201,7 @@ public class UserDAOImpl implements UserDAO {
                     new UserMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND ALL]: {}", err.getMessage());
+            log.warn("[FIND ALL] {}", err.getMessage());
             return null;
         }
     }
@@ -211,7 +216,7 @@ public class UserDAOImpl implements UserDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT]: {}", err.getMessage());
+            log.warn("[FIND LIMIT] {}", err.getMessage());
             return null;
         }
     }
@@ -225,7 +230,7 @@ public class UserDAOImpl implements UserDAO {
                     userId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND ONE]: {}", err.getMessage());
+            log.warn("[FIND ONE] {}", err.getMessage());
             return null;
         }
     }
@@ -239,7 +244,7 @@ public class UserDAOImpl implements UserDAO {
                     phone
             );
         } catch (EmptyResultDataAccessException err) {
-            log.info("[FIND BY PHONE]: {}", err.getMessage());
+            log.info("[FIND BY PHONE] {}", err.getMessage());
             return null;
         }
     }
@@ -253,7 +258,7 @@ public class UserDAOImpl implements UserDAO {
                     refreshToken
             );
         } catch (EmptyResultDataAccessException err) {
-            log.info("[FIND BY PHONE]: {}", err.getMessage());
+            log.info("[FIND BY REFRESH TOKEN] {}", err.getMessage());
             return null;
         }
     }

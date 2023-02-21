@@ -5,6 +5,7 @@ import com.laptech.restapi.mapper.ProductUnitMapper;
 import com.laptech.restapi.model.ProductUnit;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,24 +28,26 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_product_unit";
-    private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    // Use with transform (cart -> invoice)
-    private final String UPDATE = String.format("update %s " +
-            "set cart_id=?, invoice_id=?, product_id=?, item_quantity=?, item_price=?, item_discount_price=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String UPDATE_PRODUCT_ITEM_PROPERTIES = String.format("update %s " +
-            "set item_quantity=?, item_price=?, item_discount_price=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewProductUnit}")
+    private String INSERT;
+    @Value("${sp_UpdateProductUnit}")
+    private String UPDATE;
+    @Value("${sp_UpdateProductUnitProperties}")
+    private String UPDATE_PRODUCT_ITEM_PROPERTIES;
+    @Value("${sp_DeleteProductUnit}")
+    private String DELETE;
 
-    //    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
+    @Value("${sp_FindAllProductUnits}")
+    private String QUERY_ALL;
+    @Value("${sp_FindProductUnitById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindProductUnitByCartId}")
+    private String QUERY_PRODUCT_ITEMS_BY_CART_ID;
+    @Value("${sp_FindProductUnitByInvoiceId}")
+    private String QUERY_PRODUCT_ITEMS_BY_INVOICE_ID;
+
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "cart_id=? and invoice_id=? and product_id=? and item_quantity=? and item_price=? and item_discount_price=?", TABLE_NAME);
-
-    private final String QUERY_PRODUCT_ITEMS_BY_CART_ID =
-            String.format("select * from %s where cart_id=?", TABLE_NAME);
-    private final String QUERY_PRODUCT_ITEMS_BY_INVOICE_ID =
-            String.format("select * from %s where invoice_id=?", TABLE_NAME);
+            "cart_id=? and invoice_id=? and product_id=? and item_quantity=? and item_price=? and item_discount_price=?", "");
 
     @Override
     public String insert(ProductUnit unit) {
@@ -71,13 +74,13 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    unit.getId(),
                     unit.getProductId(),
                     unit.getCartId(),
                     unit.getInvoiceId(),
                     unit.getQuantity(),
                     unit.getPrice().doubleValue(),
-                    unit.getDiscountPrice().doubleValue(),
-                    unit.getId()
+                    unit.getDiscountPrice().doubleValue()
             );
         } catch (DataAccessException err) {
             log.error(err);
@@ -90,10 +93,10 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE_PRODUCT_ITEM_PROPERTIES,
+                    itemId,
                     quantity,
                     price.doubleValue(),
-                    discountPrice.doubleValue(),
-                    itemId
+                    discountPrice.doubleValue()
             );
         } catch (DataAccessException err) {
             log.error(err);

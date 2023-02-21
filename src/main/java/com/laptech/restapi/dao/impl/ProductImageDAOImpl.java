@@ -6,6 +6,7 @@ import com.laptech.restapi.mapper.ProductImageMapper;
 import com.laptech.restapi.model.ProductImage;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,25 +28,29 @@ public class ProductImageDAOImpl implements ProductImageDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_product_image";
-    private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set feedback_id=?, url=?, type=?, modified_date=now() where id=? and product_id=?", TABLE_NAME);
-    private final String UPDATE_PATH_AND_TYPE = String.format("update %s set url=?, type=?, modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewProductImage}")
+    private String INSERT;
+    @Value("${sp_UpdateProductImage}")
+    private String UPDATE;
+    @Value("${sp_UpdateProductImagePathAndType}")
+    private String UPDATE_PATH_AND_TYPE;
+    @Value("${sp_DeleteProductImage}")
+    private String DELETE;
+    @Value("${sp_FindAllProductImages}")
+    private String QUERY_ALL;
+    @Value("${}") // missing
+    private String QUERY_LIMIT;
+    @Value("${sp_FindProductImageById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindProductImageByProductId}")
+    private String QUERY_PRODUCT_IMAGES_BY_PRODUCT_ID;
+    @Value("${sp_FindProductImageByImageType}")
+    private String QUERY_PRODUCT_IMAGES_BY_IMAGE_TYPE;
+    @Value("${sp_FindProductImageByProductIdAndImageType}")
+    private String QUERY_PRODUCT_IMAGES_BY_PRODUCT_ID_AND_IMAGE_TYPE;
 
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "product_id=? and feedback_id=? and url=? and type=?", TABLE_NAME);
-
-    private final String QUERY_PRODUCT_IMAGES_BY_PRODUCT_ID =
-            String.format("select * from %s where product_id=?", TABLE_NAME);
-    private final String QUERY_PRODUCT_IMAGES_BY_IMAGE_TYPE =
-            String.format("select * from %s where type=?", TABLE_NAME);
-    private final String QUERY_PRODUCT_IMAGES_BY_PRODUCT_ID_AND_IMAGE_TYPE =
-            String.format("select * from %s where product_id=? and type=?", TABLE_NAME);
+            "product_id=? and feedback_id=? and url=? and type=?", "tbl_product_image");
 
     @Override
     public String insert(ProductImage image) {
@@ -60,7 +65,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
             );
             return image.getId();
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -70,14 +75,14 @@ public class ProductImageDAOImpl implements ProductImageDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
+                    image.getId(),
+                    image.getProductId(),
                     image.getFeedbackId(),
                     image.getUrl(),
-                    image.getType().toString(),
-                    image.getId(),
-                    image.getProductId()
+                    image.getType().toString()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -87,12 +92,12 @@ public class ProductImageDAOImpl implements ProductImageDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE_PATH_AND_TYPE,
+                    imageId,
                     path,
-                    type.toString(),
-                    imageId
+                    type.toString()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE PATH AND TYPE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -105,7 +110,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     imageId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -129,7 +134,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
             );
             return existsImage != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -142,7 +147,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     new ProductImageMapper()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -157,7 +162,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     skip
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -171,7 +176,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     imageId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -185,7 +190,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     productId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY PRODUCT ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -199,7 +204,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     type.toString()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY IMAGE TYPE] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -214,7 +219,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     type.toString()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.error("[FIND BY PRODUCT ID AND IMAGE TYPE] {}", err.getLocalizedMessage());
             return null;
         }
     }

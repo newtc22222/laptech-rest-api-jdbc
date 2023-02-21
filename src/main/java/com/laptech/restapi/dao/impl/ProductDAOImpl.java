@@ -6,6 +6,7 @@ import com.laptech.restapi.mapper.ProductMapper;
 import com.laptech.restapi.model.Product;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -29,41 +30,40 @@ public class ProductDAOImpl implements ProductDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Query String
-    private final String TABLE_NAME = "tbl_product";
-    private final String INSERT = String.format("insert into %s values (?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())", TABLE_NAME);
-    private final String UPDATE_ALL = String.format("update %s " +
-            "set brand_id=?, category_id=?, name=?, released_date=?, quantity_in_stock=?, listed_price=?, " +
-            "specifications=?, description_detail=?, modified_date=now() " +
-            "where id=?", TABLE_NAME);
-    private final String UPDATE_PRICE = String.format("update %s set listed_price=?, modified_date=now() where id=?", TABLE_NAME);
-    //    private final String UPDATE_PROPERTIES = String.format("update %s " +
-//            "set name=?, brand_id=?, released_date=?, specifications=?, description_detail=?, " +
-//            "modified_date=now() where id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewProduct}")
+    private String INSERT;
+    @Value("${sp_UpdateProduct}")
+    private String UPDATE_ALL;
+    @Value("${}") // missing
+    private String UPDATE_PRICE;
 
-    private final String QUERY_ALL = String.format("select * from %s", TABLE_NAME);
-    private final String QUERY_LIMIT = String.format("select * from %s limit ? offset ?", TABLE_NAME);
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=?", TABLE_NAME);
+    @Value("${sp_DeleteProduct}")
+    private String DELETE;
+    @Value("${sp_FindAllProducts}")
+    private String QUERY_ALL;
+    @Value("${}") // missing
+    private String QUERY_LIMIT;
+    @Value("${sp_FindProductById}")
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindAccessoryByProductId}")
+    private String QUERY_ACCESSORIES;
+
+    @Value("${sp_FindProductByName}")
+    private String QUERY_PRODUCTS_BY_NAME;
+    @Value("${sp_FindProductByBrandId}")
+    private String QUERY_PRODUCTS_BY_BRAND_ID;
+    @Value("${sp_FindProductByCategoryId}")
+    private String QUERY_PRODUCTS_BY_CATEGORY_ID;
+    @Value("${sp_FindProductByReleasedYear}")
+    private String QUERY_PRODUCTS_BY_RELEASED_YEAR;
+    @Value("${sp_FindProductByPriceRange}")
+    private String QUERY_PRODUCTS_BY_PRICE_RANGE;
+    @Value("${sp_FindProductByLabelId}")
+    private String QUERY_PRODUCTS_BY_LABEL;
+
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
             "brand_id=? and category_id=? and name=? and released_date=? and quantity_in_stock=? and listed_price=? and " +
-            "specifications=? and description_detail=?", TABLE_NAME);
-    private final String QUERY_ACCESSORIES = String.format("select * from %s " +
-            "where id in (select accessory_id from %s where product_id=?)", TABLE_NAME, "tbl_product_accessory");
-
-    private final String QUERY_PRODUCTS_BY_NAME =
-            String.format("select * from %s where name like ?", TABLE_NAME);
-    private final String QUERY_PRODUCTS_BY_BRAND_ID =
-            String.format("select * from %s where brand_id=?", TABLE_NAME);
-    private final String QUERY_PRODUCTS_BY_CATEGORY_ID =
-            String.format("select * from %s where category_id=?", TABLE_NAME);
-    private final String QUERY_PRODUCTS_BY_RELEASED_YEAR =
-            String.format("select * from %s where year(released_date)=?", TABLE_NAME);
-    private final String QUERY_PRODUCTS_BY_PRICE_RANGE =
-            String.format("select * from %s where price between ? and ?", TABLE_NAME);
-    private final String QUERY_PRODUCTS_BY_LABEL =
-            String.format("select * from %s where id in (select product_id from %s where label_id=?)",
-                    TABLE_NAME, "joshua_tbl_product_graphic_card"); // joshua_tbl_product_label
+            "specifications=? and description_detail=?", "tbl_product");
 
     @Override
     public String insert(Product product) {
@@ -92,6 +92,7 @@ public class ProductDAOImpl implements ProductDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE_ALL,
+                    product.getId(),
                     product.getBrandId(),
                     product.getCategoryId(),
                     product.getName(),
@@ -99,8 +100,7 @@ public class ProductDAOImpl implements ProductDAO {
                     product.getQuantityInStock(),
                     product.getListedPrice(),
                     product.getSpecifications(),
-                    product.getDescriptionDetail(),
-                    product.getId()
+                    product.getDescriptionDetail()
             );
         } catch (DataAccessException err) {
             log.error(err);

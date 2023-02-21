@@ -3,6 +3,7 @@ package com.laptech.restapi.dao.impl;
 import com.laptech.restapi.dao.ProductLabelDAO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,9 +21,10 @@ public class ProductLabelDAOImpl implements ProductLabelDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_product_label"; // tbl_product_label
-    private final String INSERT = String.format("insert into %s values (?, ?)", TABLE_NAME);
-    private final String REMOVE = String.format("delete from %s where product_id=? and label_id=?", TABLE_NAME);
+    @Value("${sp_InsertProductLabel}")
+    private String INSERT;
+    @Value("${sp_DeleteProductLabel}")
+    private String REMOVE;
 
     @Override
     public int insert(String productId, Long labelId) {

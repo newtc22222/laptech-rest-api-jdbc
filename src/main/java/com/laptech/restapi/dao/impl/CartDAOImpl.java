@@ -5,6 +5,7 @@ import com.laptech.restapi.mapper.CartMapper;
 import com.laptech.restapi.model.Cart;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -26,16 +27,18 @@ public class CartDAOImpl implements CartDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // Query String
-    private final String TABLE_NAME = "tbl_cart";
-    private final String INSERT = String.format("insert into %s values (?, ?, ?)", TABLE_NAME);
-    private final String UPDATE = String.format("update %s " +
-            "set discount_id=? where id=? and user_id=?", TABLE_NAME);
-    private final String DELETE = String.format("remove from %s where id=?", TABLE_NAME);
+    @Value("${sp_InsertNewCart}")
+    private String INSERT;
+    @Value("${sp_UpdateCart}")
+    private String UPDATE;
+    @Value("${sp_DeleteCart}")
+    private String DELETE;
+    @Value("${sp_FindCartById}") // missing
+    private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindCartByUserId}")
+    private String QUERY_ONE_BY_USER_ID;
 
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=?", TABLE_NAME);
-    private final String QUERY_CHECK_EXISTS = String.format("select * from %s where id=? and user_id=?", TABLE_NAME);
-    private final String QUERY_ONE_BY_USER_ID = String.format("select * from %s where user_id=?", TABLE_NAME);
+    private final String QUERY_CHECK_EXISTS = String.format("select * from %s where id=? and user_id=?", "tbl_cart");
 
     @Override
     public String insert(Cart cart) {
@@ -48,7 +51,7 @@ public class CartDAOImpl implements CartDAO {
             );
             return cart.getId();
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -63,7 +66,7 @@ public class CartDAOImpl implements CartDAO {
                     cart.getUserId()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -76,7 +79,7 @@ public class CartDAOImpl implements CartDAO {
                     id
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -97,7 +100,7 @@ public class CartDAOImpl implements CartDAO {
             );
             return existsCart != null;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -121,7 +124,7 @@ public class CartDAOImpl implements CartDAO {
                     cartId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -135,7 +138,7 @@ public class CartDAOImpl implements CartDAO {
                     userId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY USER ID] {}", err.getLocalizedMessage());
             return null;
         }
     }

@@ -27,7 +27,6 @@ public class CategoryDAOImpl implements CategoryDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final String TABLE_NAME = "tbl_category";
     @Value("${sp_InsertNewCategory}")
     private String INSERT;
     @Value("${sp_UpdateCategory}")
@@ -39,9 +38,9 @@ public class CategoryDAOImpl implements CategoryDAO {
     @Value("${sp_FindAllCategoriesLimit}")
     private String QUERY_LIMIT;
     @Value("${sp_FindCategoryById}")
-    private final String QUERY_ONE_BY_ID = String.format("select * from %s where id=? limit 1", TABLE_NAME);
+    private String QUERY_ONE_BY_ID;
     private final String QUERY_CHECK_EXISTS = String.format("select * from %s where " +
-            "name=? and image=? and description=?", TABLE_NAME);
+            "name=? and image=? and description=?", "tbl_category");
 
     @Override
     public Long insert(Category category) {
@@ -106,7 +105,7 @@ public class CategoryDAOImpl implements CategoryDAO {
             );
             return existsCategory != null;
         } catch (DataAccessException err) {
-            log.error("[CHECK EXIST] {}", err.getLocalizedMessage());
+            log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
         }
     }
