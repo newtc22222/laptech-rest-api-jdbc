@@ -1,6 +1,5 @@
-package com.laptech.restapi.common.advice;
+package com.laptech.restapi.common.exception;
 
-import com.laptech.restapi.common.exception.*;
 import com.laptech.restapi.dto.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,7 @@ import java.util.List;
  * @since 2023-01-06
  */
 @RestControllerAdvice
-public class ExceptionAdvice {
+public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handlerBadRequestException(BadRequestException ex, WebRequest req) {
         List<String> detail = new ArrayList<>();
