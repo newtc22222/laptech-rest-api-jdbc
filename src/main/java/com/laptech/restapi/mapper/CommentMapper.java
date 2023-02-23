@@ -1,6 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Comment;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -21,8 +22,7 @@ public class CommentMapper implements RowMapper<Comment> {
         comment.setUsername(rs.getNString("username"));
         comment.setPhone(rs.getString("phone"));
         comment.setContent(rs.getNString("content"));
-        comment.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        comment.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        comment.setData(ConvertBaseModel.getBaseModel(rs));
         return comment;
     }
 }

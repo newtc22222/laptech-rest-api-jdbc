@@ -2,6 +2,7 @@ package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.common.enums.OrderStatus;
 import com.laptech.restapi.model.Invoice;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -29,8 +30,7 @@ public class InvoiceMapper implements RowMapper<Invoice> {
         invoice.setPaid(rs.getBoolean("is_paid"));
         invoice.setOrderStatus(OrderStatus.valueOf(rs.getString("order_status")));
         invoice.setNote(rs.getNString("note"));
-        invoice.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        invoice.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        invoice.setData(ConvertBaseModel.getBaseModel(rs));
         return invoice;
     }
 }

@@ -1,6 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Brand;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -20,8 +21,7 @@ public class BrandMapper implements RowMapper<Brand> {
         brand.setCountry(rs.getString("country"));
         brand.setEstablishDate(rs.getDate("establish_date").toLocalDate());
         brand.setLogo(rs.getString("logo"));
-        brand.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        brand.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        brand.setData(ConvertBaseModel.getBaseModel(rs));
         return brand;
     }
 }

@@ -1,6 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Product;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -24,8 +25,7 @@ public class ProductMapper implements RowMapper<Product> {
         product.setListedPrice(rs.getBigDecimal("listed_price"));
         product.setSpecifications(rs.getNString("specifications"));
         product.setDescriptionDetail(rs.getNString("description_detail"));
-        product.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        product.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        product.setData(ConvertBaseModel.getBaseModel(rs));
         return product;
     }
 }

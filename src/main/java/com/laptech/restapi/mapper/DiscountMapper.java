@@ -2,6 +2,7 @@ package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.common.enums.DiscountType;
 import com.laptech.restapi.model.Discount;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -23,8 +24,7 @@ public class DiscountMapper implements RowMapper<Discount> {
         discount.setMaxAmount(rs.getBigDecimal("max_amount"));
         discount.setAppliedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "applied_date"));
         discount.setEndedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "ended_date"));
-        discount.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        discount.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        discount.setData(ConvertBaseModel.getBaseModel(rs));
         return discount;
     }
 }

@@ -2,6 +2,7 @@ package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.common.enums.ImageType;
 import com.laptech.restapi.model.ProductImage;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -21,8 +22,7 @@ public class ProductImageMapper implements RowMapper<ProductImage> {
         image.setFeedbackId(rs.getString("feedback_id"));
         image.setUrl(rs.getString("url"));
         image.setType(ImageType.valueOf(rs.getString("type")));
-        image.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        image.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        image.setData(ConvertBaseModel.getBaseModel(rs));
         return image;
     }
 }

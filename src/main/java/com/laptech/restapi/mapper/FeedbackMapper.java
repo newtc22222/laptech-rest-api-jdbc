@@ -1,6 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Feedback;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -20,8 +21,7 @@ public class FeedbackMapper implements RowMapper<Feedback> {
         feedback.setUserId(rs.getLong("user_id"));
         feedback.setContent(rs.getNString("content"));
         feedback.setRatingPoint(rs.getByte("rating_point"));
-        feedback.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        feedback.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        feedback.setData(ConvertBaseModel.getBaseModel(rs));
         return feedback;
     }
 }

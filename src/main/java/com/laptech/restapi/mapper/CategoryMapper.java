@@ -1,6 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Category;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -19,8 +20,7 @@ public class CategoryMapper implements RowMapper<Category> {
         category.setName(rs.getNString("name"));
         category.setImage(rs.getString("image"));
         category.setDescription(rs.getNString("description"));
-        category.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        category.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        category.setData(ConvertBaseModel.getBaseModel(rs));
         return category;
     }
 }

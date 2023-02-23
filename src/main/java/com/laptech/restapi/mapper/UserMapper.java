@@ -2,6 +2,7 @@ package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.common.enums.Gender;
 import com.laptech.restapi.model.User;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -24,8 +25,7 @@ public class UserMapper implements RowMapper<User> {
         user.setEmail(rs.getString("email"));
         user.setPassword(rs.getString("password"));
         user.setActive(rs.getBoolean("is_active"));
-        user.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        user.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        user.setData(ConvertBaseModel.getBaseModel(rs));
         return user;
     }
 }

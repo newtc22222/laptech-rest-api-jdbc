@@ -1,6 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Role;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -18,8 +19,7 @@ public class RoleMapper implements RowMapper<Role> {
         role.setId(rs.getInt("id"));
         role.setName(rs.getNString("name"));
         role.setDescription(rs.getNString("description"));
-        role.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        role.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        role.setData(ConvertBaseModel.getBaseModel(rs));
         return role;
     }
 }

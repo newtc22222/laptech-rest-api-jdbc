@@ -1,7 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Banner;
-import com.laptech.restapi.util.ConvertDateTime;
+import com.laptech.restapi.util.ConvertBaseModel;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -22,8 +22,7 @@ public class BannerMapper implements RowMapper<Banner> {
         banner.setLinkProduct(rs.getString("link_product"));
         banner.setUsedDate(rs.getDate("used_date").toLocalDate());
         banner.setEndedDate(rs.getDate("ended_date").toLocalDate());
-        banner.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        banner.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        banner.setData(ConvertBaseModel.getBaseModel(rs));
         return banner;
     }
 }

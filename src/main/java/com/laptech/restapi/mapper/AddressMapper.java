@@ -1,6 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Address;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -23,8 +24,7 @@ public class AddressMapper implements RowMapper<Address> {
         address.setLine3(rs.getNString("line3"));
         address.setStreet(rs.getNString("street"));
         address.setDefault(rs.getBoolean("is_default"));
-        address.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        address.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        address.setData(ConvertBaseModel.getBaseModel(rs));
         return address;
     }
 }

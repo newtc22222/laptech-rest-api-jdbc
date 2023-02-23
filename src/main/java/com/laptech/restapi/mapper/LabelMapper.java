@@ -1,6 +1,7 @@
 package com.laptech.restapi.mapper;
 
 import com.laptech.restapi.model.Label;
+import com.laptech.restapi.util.ConvertBaseModel;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -20,8 +21,7 @@ public class LabelMapper implements RowMapper<Label> {
         label.setIcon(rs.getString("icon"));
         label.setTitle(rs.getNString("title"));
         label.setDescription(rs.getNString("description"));
-        label.setCreatedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "created_date"));
-        label.setModifiedDate(ConvertDateTime.getDateTimeFromResultSet(rs, "modified_date"));
+        label.setData(ConvertBaseModel.getBaseModel(rs));
         return label;
     }
 }
