@@ -19,7 +19,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends SetupDate {
+public class User extends BaseModel {
     private long id;
     private String name;
     private Gender gender;

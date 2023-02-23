@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductImage extends SetupDate {
+public class ProductImage extends BaseModel {
     private String id;
     private String productId;
     private String feedbackId;

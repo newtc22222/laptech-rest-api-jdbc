@@ -16,7 +16,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Banner extends SetupDate {
+public class Banner extends BaseModel {
     private long id;
     private String path;
     private String type;

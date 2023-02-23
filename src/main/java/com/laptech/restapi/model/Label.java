@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Label extends SetupDate {
+public class Label extends BaseModel {
     private long id;
     private String name;
     private String icon;

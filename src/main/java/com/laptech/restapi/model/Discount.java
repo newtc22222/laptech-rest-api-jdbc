@@ -18,7 +18,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Discount extends SetupDate {
+public class Discount extends BaseModel {
     private long id;
     private String code;
     private float rate;

@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cart extends SetupDate {
+public class Cart extends BaseModel {
     private String id;
     private long userId;
     private Long discountId;

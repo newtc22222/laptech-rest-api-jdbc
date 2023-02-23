@@ -17,7 +17,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ImportProduct extends SetupDate {
+public class ImportProduct extends BaseModel {
     private String id;
     private String productId;
     private long quantity;

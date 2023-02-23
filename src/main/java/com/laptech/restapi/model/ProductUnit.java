@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductUnit extends SetupDate {
+public class ProductUnit extends BaseModel {
     private String id;
     private String productId;
     private String cartId;

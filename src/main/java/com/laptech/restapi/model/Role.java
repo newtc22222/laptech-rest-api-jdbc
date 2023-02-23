@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role extends SetupDate {
+public class Role extends BaseModel {
     private int id;
     private String name;
     private String description;

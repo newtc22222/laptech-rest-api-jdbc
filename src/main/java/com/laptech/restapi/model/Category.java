@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category extends SetupDate {
+public class Category extends BaseModel {
     private long id;
     private String name;
     private String image;

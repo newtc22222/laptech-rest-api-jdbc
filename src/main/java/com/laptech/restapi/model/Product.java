@@ -18,7 +18,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product extends SetupDate {
+public class Product extends BaseModel {
     private String id;
     private Long brandId;
     private long categoryId;

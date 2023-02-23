@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment extends SetupDate {
+public class Comment extends BaseModel {
     private String id;
     private String rootCommentId;
     private String productId;

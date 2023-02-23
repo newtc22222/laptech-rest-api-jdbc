@@ -17,7 +17,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Invoice extends SetupDate {
+public class Invoice extends BaseModel {
     private String id;
     private long userId;
     private String address;

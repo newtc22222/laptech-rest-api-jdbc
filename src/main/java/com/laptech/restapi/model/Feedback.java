@@ -15,7 +15,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Feedback extends SetupDate {
+public class Feedback extends BaseModel {
     private String id;
     private String productId;
     private long userId;

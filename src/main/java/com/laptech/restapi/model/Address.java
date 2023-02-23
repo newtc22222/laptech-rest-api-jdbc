@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address extends SetupDate {
+public class Address extends BaseModel {
     private String id;
     private long userId;
     private String country;
