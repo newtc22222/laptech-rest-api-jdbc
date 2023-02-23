@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.BannerDAO;
+import com.laptech.restapi.dto.filter.BannerFilter;
 import com.laptech.restapi.mapper.BannerMapper;
 import com.laptech.restapi.model.Banner;
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -27,7 +30,7 @@ import java.util.List;
 @PropertySource("classpath:query.properties")
 public class BannerDAOImpl implements BannerDAO {
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public JdbcTemplate jdbcTemplate;
 
     @Value("${sp_InsertNewBanner}")
     private String INSERT;
@@ -38,20 +41,22 @@ public class BannerDAOImpl implements BannerDAO {
 
     @Value("${sp_FindAllBanners}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllBannersLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindBannerByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindBannerById}")
     private String QUERY_ONE_BY_ID;
-
-    private final String QUERY_CHECK_EXISTS = String.format("select * from %s where " +
-            "path=? and type=? and title=? and link_product=? and used_date=? and ended_date=?", "tbl_banner");
-
     @Value("${sp_FindBannerByDateRange}")
     private String QUERY_BANNERS_BY_DATE_RANGE;
     @Value("${sp_FindBannerByDate}")
     private String QUERY_BANNERS_BY_DATE;
-    @Value("${sp_FindBannerByType}")
-    private String QUERY_BANNERS_BY_TYPE;
+
+    @Value("${sp_CountAllBanner}")
+    private String QUERY_COUNT;
+    @Value("${sp_CountBannerWithCondition}")
+    private String QUERY_COUNT_WITH_FILTER;
+
+    private final String QUERY_CHECK_EXISTS = String.format("select * from %s where " +
+            "path=? and type=? and title=? and link_product=? and used_date=? and ended_date=?", "tbl_banner");
 
     @Override
     public Long insert(Banner banner) {
@@ -105,8 +110,31 @@ public class BannerDAOImpl implements BannerDAO {
     }
 
     @Override
-    public int count() {
-        return this.findAll().size();
+    public long count() {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    QUERY_COUNT, Long.class
+            );
+            return (count != null) ? count : 0;
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public long countWithFilter(BannerFilter filter) {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    QUERY_COUNT_WITH_FILTER,
+                    Long.class,
+                    filter
+            );
+            return (count != null) ? count : 0;
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -130,11 +158,15 @@ public class BannerDAOImpl implements BannerDAO {
     }
 
     @Override
-    public List<Banner> findAll() {
+    public Collection<Banner> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new BannerMapper()
+                    new BannerMapper(),
+                    pagingOption.getSortBy(),
+                    pagingOption.getSortDir().toString(),
+                    pagingOption.getOffset(),
+                    pagingOption.getCount()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
@@ -143,16 +175,17 @@ public class BannerDAOImpl implements BannerDAO {
     }
 
     @Override
-    public List<Banner> findAll(long limit, long skip) {
+    public Collection<Banner> findWithFilter(BannerFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new BannerMapper(),
-                    limit,
-                    skip
+                    filter,
+                    filter.getSortBy(),
+                    filter.getSortDir().toString()
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
+            log.warn("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -196,20 +229,6 @@ public class BannerDAOImpl implements BannerDAO {
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND BY DATE] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Banner> findBannerByType(String type) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_BANNERS_BY_TYPE,
-                    new BannerMapper(),
-                    type
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY TYPE] {}", err.getLocalizedMessage());
             return null;
         }
     }
