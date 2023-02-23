@@ -81,8 +81,8 @@ public class JwtService implements UserDetailsService {
         User user = userDAO.findById(token.getUserId());
 
         final UserDetails userDetails = loadUserByUsername(user.getPhone());
-        String generateNewToken = jwtUtil.generateJwtAccessToken(userDetails);
-        return new TokenRefreshResponse(generateNewToken, refreshToken);
+        String generateNewAccessToken = jwtUtil.generateJwtAccessToken(userDetails);
+        return new TokenRefreshResponse(generateNewAccessToken, refreshToken);
     }
 
     @Override
