@@ -1,27 +1,32 @@
 package com.laptech.restapi.dao;
 
-import java.util.List;
+import com.laptech.restapi.common.dto.PagingOptionDTO;
+import com.laptech.restapi.common.dto.SortOptionDTO;
+
+import java.util.Collection;
 
 /**
- * C-U-D, count, find all, find all with limit and offset, find one
+ * C-U-D, restore, count, count_with_filter, find all, find_with_filter, find_by_id
  *
  * @author Nhat Phi
  * @since 2023-01-30
  */
-public interface BaseDAO<T, ID> {
+public interface BaseDAO<T, F extends SortOptionDTO, ID> {
     ID insert(T t); // create -> return id
 
     int update(T t);
 
     int delete(ID id);
 
-    int count();
+    long count();
+
+    long countWithFilter(F filter);
 
     boolean isExists(T t);
 
-    List<T> findAll();
+    Collection<T> findAll(PagingOptionDTO pagingOption);
 
-    List<T> findAll(long limit, long skip);
+    Collection<T> findWithFilter(F filter);
 
     T findById(ID id);
 }
