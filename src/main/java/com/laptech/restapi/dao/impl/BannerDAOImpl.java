@@ -53,7 +53,7 @@ public class BannerDAOImpl implements BannerDAO {
     @Value("${sp_CountAllBanner}")
     private String QUERY_COUNT;
     @Value("${sp_CountBannerWithCondition}")
-    private String QUERY_COUNT_WITH_FILTER;
+    private String QUERY_COUNT_WITH_CONDITION;
 
     private final String QUERY_CHECK_EXISTS = String.format("select * from %s where " +
             "path=? and type=? and title=? and link_product=? and used_date=? and ended_date=?", "tbl_banner");
@@ -97,7 +97,7 @@ public class BannerDAOImpl implements BannerDAO {
     }
 
     @Override
-    public int delete(Long bannerId) {
+    public int delete(Long bannerId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -126,7 +126,7 @@ public class BannerDAOImpl implements BannerDAO {
     public long countWithFilter(BannerFilter filter) {
         try {
             Long count = jdbcTemplate.queryForObject(
-                    QUERY_COUNT_WITH_FILTER,
+                    QUERY_COUNT_WITH_CONDITION,
                     Long.class,
                     filter
             );

@@ -79,7 +79,7 @@ public class BrandDAOImpl implements BrandDAO {
     }
 
     @Override
-    public int delete(Long brandId) {
+    public int delete(Long brandId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -92,7 +92,7 @@ public class BrandDAOImpl implements BrandDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

@@ -89,7 +89,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     @Override
-    public int delete(String feedbackId) {
+    public int delete(String feedbackId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -130,7 +130,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

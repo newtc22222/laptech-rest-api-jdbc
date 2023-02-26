@@ -1,5 +1,9 @@
 package com.laptech.restapi.common.dto;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Nhat Phi
  * @since 2023-02-23
@@ -30,5 +34,14 @@ public class PagingOptionDTO extends SortOptionDTO {
 
     public void setCount(Long count) {
         this.count = count;
+    }
+
+    public Object[] getObject() {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.offset);
+        objects.add(this.count);
+        objects.add(super.getSortBy());
+        objects.add(super.getSortDir());
+        return objects.toArray();
     }
 }

@@ -103,7 +103,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
     }
 
     @Override
-    public int delete(String imageId) {
+    public int delete(String imageId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -116,7 +116,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

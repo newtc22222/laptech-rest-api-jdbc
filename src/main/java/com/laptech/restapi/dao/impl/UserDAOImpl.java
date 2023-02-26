@@ -147,7 +147,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public int delete(Long userId) {
+    public int delete(Long userId, String updateBy) {
         User user = this.findById(userId);
         if (!user.isActive()) {
             try {
@@ -164,7 +164,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

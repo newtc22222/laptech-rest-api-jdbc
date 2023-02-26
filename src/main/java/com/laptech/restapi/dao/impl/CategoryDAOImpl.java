@@ -75,7 +75,7 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public int delete(Long categoryId) {
+    public int delete(Long categoryId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -88,7 +88,7 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

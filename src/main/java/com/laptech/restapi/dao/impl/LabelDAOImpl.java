@@ -83,7 +83,7 @@ public class LabelDAOImpl implements LabelDAO {
     }
 
     @Override
-    public int delete(Long labelId) {
+    public int delete(Long labelId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -96,7 +96,7 @@ public class LabelDAOImpl implements LabelDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

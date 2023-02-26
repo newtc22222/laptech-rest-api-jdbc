@@ -78,7 +78,7 @@ public class RoleDAOImpl implements RoleDAO {
     }
 
     @Override
-    public int delete(Integer roleId) {
+    public int delete(Integer roleId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -91,7 +91,7 @@ public class RoleDAOImpl implements RoleDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

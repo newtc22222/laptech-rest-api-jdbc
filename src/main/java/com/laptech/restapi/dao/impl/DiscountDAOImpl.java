@@ -97,7 +97,7 @@ public class DiscountDAOImpl implements DiscountDAO {
     }
 
     @Override
-    public int delete(Long discountId) {
+    public int delete(Long discountId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -110,7 +110,7 @@ public class DiscountDAOImpl implements DiscountDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

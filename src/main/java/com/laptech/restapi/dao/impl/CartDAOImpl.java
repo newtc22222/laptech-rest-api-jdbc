@@ -72,7 +72,7 @@ public class CartDAOImpl implements CartDAO {
     }
 
     @Override
-    public int delete(String id) {
+    public int delete(String id, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -85,7 +85,7 @@ public class CartDAOImpl implements CartDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return 0;
     }
 

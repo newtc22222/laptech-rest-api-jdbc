@@ -1,13 +1,47 @@
 package com.laptech.restapi.dto.filter;
 
-import com.laptech.restapi.common.dto.SortOptionDTO;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
  * @since 2023-02-23
  */
-public class BannerFilter extends SortOptionDTO {
-    public BannerFilter(String sortBy, String sortDir) {
-        super(sortBy, sortDir);
+@Getter @Setter
+public class BannerFilter extends BaseFilter {
+    private String path;
+    private String type;
+    private String title;
+    private String linkProduct;
+    private LocalDate usedDate;
+    private LocalDate endedDate;
+
+    public BannerFilter(String sortBy, String sortDir, LocalDate createdDate, LocalDate modifiedDate,
+                        LocalDate deletedDate, Boolean isDel, String updateBy, String path, String type,
+                        String title, String linkProduct, LocalDate usedDate, LocalDate endedDate) {
+        super(sortBy, sortDir, createdDate, modifiedDate, deletedDate, isDel, updateBy);
+        this.path = path;
+        this.type = type;
+        this.title = title;
+        this.linkProduct = linkProduct;
+        this.usedDate = usedDate;
+        this.endedDate = endedDate;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.path);
+        objects.add(this.type);
+        objects.add(this.title);
+        objects.add(this.linkProduct);
+        objects.add(this.usedDate);
+        objects.add(this.endedDate);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

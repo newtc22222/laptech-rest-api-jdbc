@@ -105,7 +105,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     }
 
     @Override
-    public int delete(String itemId) {
+    public int delete(String itemId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -118,7 +118,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

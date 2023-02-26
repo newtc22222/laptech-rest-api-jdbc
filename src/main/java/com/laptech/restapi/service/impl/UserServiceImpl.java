@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
             if (oldUser.isActive()) {
                 throw new BadRequestException("[Info] You can't delete an active user!");
             }
-            if (userDAO.delete(userId) == 0) {
+            if (userDAO.delete(userId, ) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to delete user!");
             }
         }

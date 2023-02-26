@@ -16,7 +16,7 @@ public interface BaseDAO<T, F extends SortOptionDTO, ID> {
 
     int update(T t);
 
-    int delete(ID id);
+    int delete(ID id, String updateBy);
 
     long count();
 

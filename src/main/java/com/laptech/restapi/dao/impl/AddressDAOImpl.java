@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.AddressDAO;
+import com.laptech.restapi.dto.filter.AddressFilter;
 import com.laptech.restapi.mapper.AddressMapper;
 import com.laptech.restapi.model.Address;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +15,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -36,13 +40,17 @@ public class AddressDAOImpl implements AddressDAO {
 
     @Value("${sp_FindAllAddress}")
     private String QUERY_ALL;
-    private String QUERY_LIMIT; // useless
     @Value("${sp_FindAddressById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindAddressByUserId}")
     private String QUERY_ALL_BY_USER_ID;
-    private final String QUERY_CHECK_EXISTS = String.format("select * from %s " +
-            "where user_id=? and country=? and line1=? and line2=? and line3=? and street=?", "tbl_address");
+    @Value("${sp_CheckExistAddress}")
+    private String QUERY_CHECK_EXISTS;
+
+    @Value("${sp_CountAllAddress}")
+    private String COUNT_ALL;
+    @Value("${sp_CountAddressWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public Long insert(Address address) {
@@ -50,13 +58,15 @@ public class AddressDAOImpl implements AddressDAO {
             return jdbcTemplate.queryForObject(
                             INSERT,
                             Long.class,
+                            address.getId(),
                             address.getUserId(),
                             address.getCountry(),
                             address.getLine1(),
                             address.getLine2(),
                             address.getLine3(),
                             address.getStreet(),
-                            address.isDefault()
+                            address.isDefault(),
+                            address.getUpdateBy()
                     );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
@@ -76,7 +86,9 @@ public class AddressDAOImpl implements AddressDAO {
                     address.getLine2(),
                     address.getLine3(),
                     address.getStreet(),
-                    address.isDefault()
+                    address.isDefault(),
+                    address.isDel(),
+                    address.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -85,9 +97,13 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    public int delete(Long addressId) {
+    public int delete(Long addressId, String updateBy) {
         try {
-            return jdbcTemplate.update(DELETE, addressId);
+            return jdbcTemplate.update(
+                    DELETE,
+                    addressId,
+                    updateBy
+            );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
             return 0;
@@ -95,8 +111,34 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    public int count() {
-        return this.findAll().size();
+    public long count() {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        }
+        catch (NullPointerException err) {
+            log.warn("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public long countWithFilter(AddressFilter filter) {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        }
+        catch (NullPointerException err) {
+            log.warn("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -122,11 +164,12 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    public List<Address> findAll() {
+    public Collection<Address> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new AddressMapper()
+                    new AddressMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
@@ -135,17 +178,15 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    public List<Address> findAll(long limit, long skip) {
+    public Collection<Address> findWithFilter(AddressFilter filter) {
         try {
-
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_ALL,
                     new AddressMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
     }

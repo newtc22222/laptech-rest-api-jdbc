@@ -89,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
         if (productDAO.findById(productId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
         } else {
-            if (productDAO.delete(productId) == 0) {
+            if (productDAO.delete(productId, ) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this product!");
             }
         }

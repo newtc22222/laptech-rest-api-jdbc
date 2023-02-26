@@ -3,12 +3,30 @@ package com.laptech.restapi.dto.response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collection;
+
 public class DataResponse extends BaseResponse {
+    private Long count;
     private Object data;
 
     public DataResponse(HttpStatus status, String message, Object data) {
         super(status, message);
+        this.count = 0L;
         this.data = data;
+    }
+
+    public DataResponse(HttpStatus status, String message, long count, Object data) {
+        super(status, message);
+        this.count = count;
+        this.data = data;
+    }
+
+    public Long getCount() {
+        return count;
+    }
+
+    public void setCount(Long count) {
+        this.count = count;
     }
 
     public Object getData() {
@@ -37,7 +55,19 @@ public class DataResponse extends BaseResponse {
                 .body(new DataResponse(
                         HttpStatus.CREATED,
                         actionName + " successfully!",
+                        1,
                         newData
+                ));
+    }
+
+    public static ResponseEntity<DataResponse> getListSuccess(String actionName, long recordCount, Object data) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse(
+                        HttpStatus.OK,
+                        actionName + " successfully!",
+                        recordCount,
+                        data
                 ));
     }
 }

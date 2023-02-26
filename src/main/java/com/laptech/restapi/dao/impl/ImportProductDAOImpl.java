@@ -90,7 +90,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public int delete(String ticketId) {
+    public int delete(String ticketId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -103,7 +103,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

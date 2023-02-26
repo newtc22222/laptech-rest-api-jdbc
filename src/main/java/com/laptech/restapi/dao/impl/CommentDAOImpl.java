@@ -87,7 +87,7 @@ public class CommentDAOImpl implements CommentDAO {
     }
 
     @Override
-    public int delete(String commentId) {
+    public int delete(String commentId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -100,7 +100,7 @@ public class CommentDAOImpl implements CommentDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

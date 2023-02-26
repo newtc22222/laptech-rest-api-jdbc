@@ -1,6 +1,7 @@
 package com.laptech.restapi.dao;
 
 import com.laptech.restapi.common.enums.Gender;
+import com.laptech.restapi.dto.filter.UserFilter;
 import com.laptech.restapi.dto.request.UserDTO;
 import com.laptech.restapi.model.User;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * @author Nhat Phi
  * @since 2022-11-21
  */
-public interface UserDAO extends BaseDAO<User, Long> {
+public interface UserDAO extends BaseDAO<User, UserFilter, Long> {
     int updateInformation(UserDTO userDTO);
 
     int enable(long userId);

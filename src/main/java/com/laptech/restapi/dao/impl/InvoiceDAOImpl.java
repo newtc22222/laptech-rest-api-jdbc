@@ -147,7 +147,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public int delete(String invoiceId) {
+    public int delete(String invoiceId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -160,7 +160,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

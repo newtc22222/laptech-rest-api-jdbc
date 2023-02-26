@@ -123,7 +123,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public int delete(String productId) {
+    public int delete(String productId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -136,7 +136,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public int count() {
+    public long count() {
         return this.findAll().size();
     }
 

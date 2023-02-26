@@ -1,6 +1,7 @@
 package com.laptech.restapi.dao;
 
 import com.laptech.restapi.common.enums.OrderStatus;
+import com.laptech.restapi.dto.filter.InvoiceFilter;
 import com.laptech.restapi.model.Invoice;
 
 import java.time.LocalDate;
@@ -11,7 +12,7 @@ import java.util.List;
  * @author Nhat Phi
  * @since 2022-11-21
  */
-public interface InvoiceDAO extends BaseDAO<Invoice, String> {
+public interface InvoiceDAO extends BaseDAO<Invoice, InvoiceFilter, String> {
     int updateStatus(String invoiceId, OrderStatus status);
 
     int updatePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid);
