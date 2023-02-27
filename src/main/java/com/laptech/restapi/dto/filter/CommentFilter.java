@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -26,5 +29,16 @@ public class CommentFilter extends BaseFilter {
         this.username = username;
         this.phone = phone;
         this.content = content;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.rootCommentId);
+        objects.add(this.productId);
+        objects.add(this.username);
+        objects.add(this.phone);
+        objects.add(this.content);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

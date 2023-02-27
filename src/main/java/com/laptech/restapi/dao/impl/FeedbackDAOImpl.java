@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.FeedbackDAO;
+import com.laptech.restapi.dto.filter.FeedbackFilter;
 import com.laptech.restapi.mapper.FeedbackMapper;
 import com.laptech.restapi.model.Feedback;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +15,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -37,21 +40,21 @@ public class FeedbackDAOImpl implements FeedbackDAO {
 
     @Value("${sp_FindAllFeedbacks}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllFeedbacksLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindFeedbackByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindFeedbackById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindFeedbackByProductId}")
     private String QUERY_ALL_FEEDBACKS_OF_PRODUCT;
     @Value("${sp_FindFeedbackByUserId}")
     private String QUERY_ALL_FEEDBACKS_OF_USER;
-    @Value("${sp_FindFeedbackByRatingPoint}")
-    private String QUERY_ALL_FEEDBACKS_BY_RATING_POINT;
-    @Value("${sp_FindFeedbackByProductIdAndRatingPoint}")
-    private String QUERY_ALL_FEEDBACKS_OF_PRODUCT_BY_RATING_POINT;
+    @Value("${sp_CheckExistFeedback}")
+    private String QUERY_CHECK_EXITS;
 
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "content=? and rating_point=? and product_id=? and user_id=?", "tbl_feedback");
+    @Value("${sp_CountAllFeedback}")
+    private String COUNT_ALL;
+    @Value("${sp_CountFeedbackWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public String insert(Feedback feedback) {
@@ -62,7 +65,8 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     feedback.getProductId(),
                     feedback.getUserId(),
                     feedback.getContent(),
-                    feedback.getRatingPoint()
+                    feedback.getRatingPoint(),
+                    feedback.getUpdateBy()
             );
             return feedback.getId();
         } catch (DataAccessException err) {
@@ -80,7 +84,8 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     feedback.getProductId(),
                     feedback.getUserId(),
                     feedback.getContent(),
-                    feedback.getRatingPoint()
+                    feedback.getRatingPoint(),
+                    feedback.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -93,7 +98,8 @@ public class FeedbackDAOImpl implements FeedbackDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    feedbackId
+                    feedbackId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -102,7 +108,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     @Override
-    public List<Feedback> findFeedbackByProductId(String productId) {
+    public Collection<Feedback> findFeedbackByProductId(String productId) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL_FEEDBACKS_OF_PRODUCT,
@@ -116,7 +122,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     @Override
-    public List<Feedback> findFeedbackByUserId(long userId) {
+    public Collection<Feedback> findFeedbackByUserId(long userId) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL_FEEDBACKS_OF_USER,
@@ -131,7 +137,31 @@ public class FeedbackDAOImpl implements FeedbackDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public long countWithFilter(FeedbackFilter filter) {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -153,7 +183,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     @Override
-    public List<Feedback> findAll() {
+    public Collection<Feedback> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
@@ -166,45 +196,15 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     }
 
     @Override
-    public List<Feedback> findAll(long limit, long skip) {
+    public Collection<Feedback> findWithFilter(FeedbackFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new FeedbackMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Feedback> findFeedbackByRatingPoint(byte ratingPoint) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_ALL_FEEDBACKS_BY_RATING_POINT,
-                    new FeedbackMapper(),
-                    ratingPoint
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY RATING POINT] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Feedback> findFeedbackByProductIdAndRatingPoint(String productId, byte ratingPoint) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_ALL_FEEDBACKS_OF_PRODUCT_BY_RATING_POINT,
-                    new FeedbackMapper(),
-                    productId,
-                    ratingPoint
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY PRODUCT ID AND RATING POINT] {}", err.getLocalizedMessage());
+            log.warn("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
     }

@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -26,5 +29,15 @@ public class ProductImageFilter extends BaseFilter{
         this.feedbackId = feedbackId;
         this.url = url;
         this.type = type;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.productId);
+        objects.add(this.feedbackId);
+        objects.add(this.url);
+        objects.add(this.type);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

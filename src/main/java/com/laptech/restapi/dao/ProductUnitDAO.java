@@ -4,7 +4,7 @@ import com.laptech.restapi.dto.filter.ProductUnitFilter;
 import com.laptech.restapi.model.ProductUnit;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -13,7 +13,7 @@ import java.util.List;
 public interface ProductUnitDAO extends BaseDAO<ProductUnit, ProductUnitFilter, String> {
     int updateProductUnitProperties(String itemId, int quantity, BigDecimal price, BigDecimal discountPrice);
 
-    List<ProductUnit> findProductUnitByCartId(String cartId);
+    Collection<ProductUnit> findProductUnitByCartId(String cartId);
 
-    List<ProductUnit> findProductUnitByInvoiceId(String invoiceId);
+    Collection<ProductUnit> findProductUnitByInvoiceId(String invoiceId);
 }

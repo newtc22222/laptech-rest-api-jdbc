@@ -1,7 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
-import com.laptech.restapi.common.enums.DiscountType;
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.DiscountDAO;
+import com.laptech.restapi.dto.filter.DiscountFilter;
 import com.laptech.restapi.mapper.DiscountMapper;
 import com.laptech.restapi.model.Discount;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +19,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -40,23 +42,23 @@ public class DiscountDAOImpl implements DiscountDAO {
     private String DELETE;
     @Value("${sp_FindAllDiscounts}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllDiscountsLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindDiscountByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindDiscountById}")
     private String QUERY_ONE_BY_ID;
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "code=? and rate=? and applied_type=? and max_amount=? and applied_date=? and ended_date=?", "tbl_discount");
-
     @Value("${sp_FindDiscountOfProductUseInDate}")
     private String QUERY_DISCOUNT_OF_PRODUCT_IN_DATE;
-    @Value("${sp_FindDiscountByCode}")
-    private String QUERY_DISCOUNTS_BY_CODE;
     @Value("${sp_FindDiscountByProductId}")
     private String QUERY_DISCOUNTS_BY_PRODUCT_ID;
     @Value("${sp_FindDiscountByDateRange}")
     private String QUERY_DISCOUNTS_BY_DATE_RANGE;
-    @Value("${sp_FindDiscountByType}")
-    private String QUERY_DISCOUNTS_BY_TYPE;
+    @Value("${sp_CheckExistDiscount}")
+    private String QUERY_CHECK_EXITS;
+
+    @Value("${sp_CountAllDiscount}")
+    private String COUNT_ALL;
+    @Value("${sp_CountDiscountWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public Long insert(Discount discount) {
@@ -111,7 +113,31 @@ public class DiscountDAOImpl implements DiscountDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public long countWithFilter(DiscountFilter filter) {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -135,11 +161,12 @@ public class DiscountDAOImpl implements DiscountDAO {
     }
 
     @Override
-    public List<Discount> findAll() {
+    public Collection<Discount> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new DiscountMapper()
+                    new DiscountMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.error("[FIND ALL] {}", err.getLocalizedMessage());
@@ -148,16 +175,15 @@ public class DiscountDAOImpl implements DiscountDAO {
     }
 
     @Override
-    public List<Discount> findAll(long limit, long skip) {
+    public Collection<Discount> findWithFilter(DiscountFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new DiscountMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.error("[FIND LIMIT] {}", err.getLocalizedMessage());
+            log.error("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -192,21 +218,7 @@ public class DiscountDAOImpl implements DiscountDAO {
     }
 
     @Override
-    public List<Discount> findDiscountByCode(String code) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_DISCOUNTS_BY_CODE,
-                    new DiscountMapper(),
-                    "%" + code + "%"
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.error("[FIND BY CODE] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Discount> findDiscountByProductId(String productId) {
+    public Collection<Discount> findDiscountByProductId(String productId) {
         try {
             return jdbcTemplate.query(
                     QUERY_DISCOUNTS_BY_PRODUCT_ID,
@@ -220,7 +232,7 @@ public class DiscountDAOImpl implements DiscountDAO {
     }
 
     @Override
-    public List<Discount> findDiscountByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    public Collection<Discount> findDiscountByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         try {
             return jdbcTemplate.query(
                     QUERY_DISCOUNTS_BY_DATE_RANGE,
@@ -230,20 +242,6 @@ public class DiscountDAOImpl implements DiscountDAO {
             );
         } catch (EmptyResultDataAccessException err) {
             log.error("[FIND BY DATE RANGE] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Discount> findDiscountByType(DiscountType type) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_DISCOUNTS_BY_TYPE,
-                    new DiscountMapper(),
-                    type.toString()
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.error("[FIND BY TYPE] {}", err.getLocalizedMessage());
             return null;
         }
     }

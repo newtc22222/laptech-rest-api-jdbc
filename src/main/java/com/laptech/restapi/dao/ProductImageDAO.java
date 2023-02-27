@@ -4,18 +4,16 @@ import com.laptech.restapi.common.enums.ImageType;
 import com.laptech.restapi.dto.filter.ProductImageFilter;
 import com.laptech.restapi.model.ProductImage;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
  * @since 2022-11-21
  */
 public interface ProductImageDAO extends BaseDAO<ProductImage, ProductImageFilter, String> {
-    int updatePathAndType(String imageId, String path, ImageType type);
+    int updateUrlAndType(String imageId, String url, ImageType type);
 
-    List<ProductImage> findProductImageByProductId(String productId);
+    Collection<ProductImage> findProductImageByProductId(String productId);
 
-    List<ProductImage> findProductImageByImageType(ImageType type);
-
-    List<ProductImage> findProductImageByProductIdAndImageType(String productId, ImageType type);
+    Collection<ProductImage> findProductImageByImageType(ImageType type);
 }

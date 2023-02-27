@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.ImportProductDAO;
+import com.laptech.restapi.dto.filter.ImportProductFilter;
 import com.laptech.restapi.mapper.ImportProductMapper;
 import com.laptech.restapi.model.ImportProduct;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +19,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -40,19 +43,24 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     private String DELETE;
     @Value("${sp_FindAllImports}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllImportsLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindImportByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindImportById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindImportByProductId}")
     private String QUERY_IMPORT_PRODUCT_TICKETS_BY_PRODUCT_ID;
-    @Value("${sp_FindImportProductByDate}")
+    @Value("${sp_FindImportByDate}")
     private String QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE;
-    @Value("${sp_FindImportProductByDateRange}")
+    @Value("${sp_FindImportByDateRange}")
     private String QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE_RANGE;
+    @Value("${sp_CheckExistImport}")
+    private String QUERY_CHECK_EXITS;
 
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "product_id=? and quantity=? and imported_price=? and imported_date=?", "tbl_import");
+    @Value("${sp_CountAllImport}")
+    private String COUNT_ALL;
+    @Value("${sp_CountImportWithCondition}")
+    private String COUNT_WITH_CONDITION;
+
 
     @Override
     public String insert(ImportProduct ticket) {
@@ -63,7 +71,8 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     ticket.getProductId(),
                     ticket.getQuantity(),
                     ticket.getImportedPrice().doubleValue(),
-                    Timestamp.valueOf(ticket.getImportedDate())
+                    Timestamp.valueOf(ticket.getImportedDate()),
+                    ticket.getUpdateBy()
             );
             return ticket.getId();
         } catch (DataAccessException err) {
@@ -81,7 +90,8 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     ticket.getProductId(),
                     ticket.getQuantity(),
                     ticket.getImportedPrice().doubleValue(),
-                    Timestamp.valueOf(ticket.getImportedDate())
+                    Timestamp.valueOf(ticket.getImportedDate()),
+                    ticket.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -94,7 +104,8 @@ public class ImportProductDAOImpl implements ImportProductDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    ticketId
+                    ticketId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -104,7 +115,31 @@ public class ImportProductDAOImpl implements ImportProductDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public long countWithFilter(ImportProductFilter filter) {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -127,11 +162,12 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public List<ImportProduct> findAll() {
+    public Collection<ImportProduct> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new ImportProductMapper()
+                    new ImportProductMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
@@ -140,13 +176,12 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public List<ImportProduct> findAll(long limit, long skip) {
+    public Collection<ImportProduct> findWithFilter(ImportProductFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new ImportProductMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
@@ -168,7 +203,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public List<ImportProduct> findImportProductByProductId(String productId) {
+    public Collection<ImportProduct> findImportProductByProductId(String productId) {
         try {
             return jdbcTemplate.query(
                     QUERY_IMPORT_PRODUCT_TICKETS_BY_PRODUCT_ID,
@@ -182,7 +217,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public List<ImportProduct> findImportProductByDate(LocalDate date) {
+    public Collection<ImportProduct> findImportProductByDate(LocalDate date) {
         try {
             return jdbcTemplate.query(
                     QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE,
@@ -196,7 +231,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     }
 
     @Override
-    public List<ImportProduct> findImportProductByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    public Collection<ImportProduct> findImportProductByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         try {
             return jdbcTemplate.query(
                     QUERY_IMPORT_PRODUCT_TICKETS_BY_DATE_RANGE,

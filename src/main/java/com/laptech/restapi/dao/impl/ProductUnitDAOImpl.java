@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.ProductUnitDAO;
+import com.laptech.restapi.dto.filter.ProductUnitFilter;
 import com.laptech.restapi.mapper.ProductUnitMapper;
 import com.laptech.restapi.model.ProductUnit;
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,6 +42,8 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
 
     @Value("${sp_FindAllProductUnits}")
     private String QUERY_ALL;
+    @Value("${sp_FindProductUnitByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindProductUnitById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindProductUnitByCartId}")
@@ -46,8 +51,14 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     @Value("${sp_FindProductUnitByInvoiceId}")
     private String QUERY_PRODUCT_ITEMS_BY_INVOICE_ID;
 
+    @Value("${}")
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
             "cart_id=? and invoice_id=? and product_id=? and item_quantity=? and item_price=? and item_discount_price=?", "");
+
+    @Value("${sp_CountAllProductUnit}")
+    private String COUNT_ALL;
+    @Value("${sp_CountProductUnitWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public String insert(ProductUnit unit) {
@@ -119,7 +130,12 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        return 0;
+    }
+
+    @Override
+    public long countWithFilter(ProductUnitFilter filter) {
+        return 0;
     }
 
     @Override
@@ -143,12 +159,12 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     }
 
     @Override
-    public List<ProductUnit> findAll() { // don't have any idea
+    public Collection<ProductUnit> findAll(PagingOptionDTO pagingOption) {
         return null;
     }
 
     @Override
-    public List<ProductUnit> findAll(long limit, long skip) { // same above
+    public Collection<ProductUnit> findWithFilter(ProductUnitFilter filter) {
         return null;
     }
 
@@ -166,7 +182,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     }
 
     @Override
-    public List<ProductUnit> findProductUnitByCartId(String cartId) {
+    public Collection<ProductUnit> findProductUnitByCartId(String cartId) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCT_ITEMS_BY_CART_ID,
@@ -180,7 +196,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     }
 
     @Override
-    public List<ProductUnit> findProductUnitByInvoiceId(String invoiceId) {
+    public Collection<ProductUnit> findProductUnitByInvoiceId(String invoiceId) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCT_ITEMS_BY_INVOICE_ID,

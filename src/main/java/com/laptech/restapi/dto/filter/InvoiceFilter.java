@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -39,7 +42,7 @@ public class InvoiceFilter extends BaseFilter {
                          LocalDate deletedDate, Boolean isDel, String updateBy, Long userId, String address,
                          String phone, BigDecimal paymentAmount, Double shipCost, BigDecimal discountAmount,
                          BigDecimal tax, BigDecimal paymentTotal, String paymentType, Boolean isPaid,
-                         OrderStatus orderStatus, String note) {
+                         String orderStatus, String note) {
         super(sortBy, sortDir, createdDate, modifiedDate, deletedDate, isDel, updateBy);
         this.userId = userId;
         this.address = address;
@@ -51,7 +54,25 @@ public class InvoiceFilter extends BaseFilter {
         this.paymentTotal = paymentTotal;
         this.paymentType = paymentType;
         this.isPaid = isPaid;
-        this.orderStatus = orderStatus;
+        this.setOrderStatus(orderStatus);
         this.note = note;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.userId);
+        objects.add(this.address);
+        objects.add(this.phone);
+        objects.add(this.paymentAmount);
+        objects.add(this.shipCost);
+        objects.add(this.discountAmount);
+        objects.add(this.tax);
+        objects.add(this.paymentTotal);
+        objects.add(this.paymentType);
+        objects.add(this.isPaid);
+        objects.add(this.orderStatus.toString());
+        objects.add(this.note);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

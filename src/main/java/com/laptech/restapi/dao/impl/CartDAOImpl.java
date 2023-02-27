@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.CartDAO;
+import com.laptech.restapi.dto.filter.BaseFilter;
 import com.laptech.restapi.mapper.CartMapper;
 import com.laptech.restapi.model.Cart;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -33,12 +35,14 @@ public class CartDAOImpl implements CartDAO {
     private String UPDATE;
     @Value("${sp_DeleteCart}")
     private String DELETE;
+
     @Value("${sp_FindCartById}") // missing
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindCartByUserId}")
     private String QUERY_ONE_BY_USER_ID;
 
-    private final String QUERY_CHECK_EXISTS = String.format("select * from %s where id=? and user_id=?", "tbl_cart");
+    @Value("${sp_CheckExistCart}")
+    private String QUERY_CHECK_EXISTS;
 
     @Override
     public String insert(Cart cart) {
@@ -47,7 +51,8 @@ public class CartDAOImpl implements CartDAO {
                     INSERT,
                     cart.getId(),
                     cart.getUserId(),
-                    cart.getDiscountId()
+                    cart.getDiscountId(),
+                    cart.getUpdateBy()
             );
             return cart.getId();
         } catch (DataAccessException err) {
@@ -61,9 +66,10 @@ public class CartDAOImpl implements CartDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE,
-                    cart.getDiscountId(),
                     cart.getId(),
-                    cart.getUserId()
+                    cart.getUserId(),
+                    cart.getDiscountId(),
+                    cart.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -90,6 +96,11 @@ public class CartDAOImpl implements CartDAO {
     }
 
     @Override
+    public long countWithFilter(BaseFilter filter) {
+        return 0;
+    }
+
+    @Override
     public boolean isExists(Cart cart) {
         try {
             Cart existsCart = jdbcTemplate.queryForObject(
@@ -106,12 +117,12 @@ public class CartDAOImpl implements CartDAO {
     }
 
     @Override
-    public List<Cart> findAll() {
+    public Collection<Cart> findAll(PagingOptionDTO pagingOption) {
         return null;
     }
 
     @Override
-    public List<Cart> findAll(long limit, long skip) {
+    public Collection<Cart> findWithFilter(BaseFilter filter) {
         return null;
     }
 

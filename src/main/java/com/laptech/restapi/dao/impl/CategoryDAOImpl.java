@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.CategoryDAO;
+import com.laptech.restapi.dto.filter.CategoryFilter;
 import com.laptech.restapi.mapper.CategoryMapper;
 import com.laptech.restapi.model.Category;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +15,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -35,12 +38,17 @@ public class CategoryDAOImpl implements CategoryDAO {
     private String DELETE;
     @Value("${sp_FindAllCategories}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllCategoriesLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindCategoryByFilter}")
+    private String QUERY_WITH_CONDITION;
     @Value("${sp_FindCategoryById}")
     private String QUERY_ONE_BY_ID;
-    private final String QUERY_CHECK_EXISTS = String.format("select * from %s where " +
-            "name=? and image=? and description=?", "tbl_category");
+    @Value("${sp_CheckExistCategory}")
+    private String QUERY_CHECK_EXISTS;
+
+    @Value("${sp_CountAllCategory}")
+    private String COUNT_ALL;
+    @Value("${sp_CountCategoryWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public Long insert(Category category) {
@@ -50,7 +58,8 @@ public class CategoryDAOImpl implements CategoryDAO {
                     Long.class,
                     category.getName(),
                     category.getImage(),
-                    category.getDescription()
+                    category.getDescription(),
+                    category.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
@@ -66,7 +75,8 @@ public class CategoryDAOImpl implements CategoryDAO {
                     category.getId(),
                     category.getName(),
                     category.getImage(),
-                    category.getDescription()
+                    category.getDescription(),
+                    category.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -79,7 +89,8 @@ public class CategoryDAOImpl implements CategoryDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    categoryId
+                    categoryId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -89,7 +100,31 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public long countWithFilter(CategoryFilter filter) {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -111,11 +146,12 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public List<Category> findAll() {
+    public Collection<Category> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new CategoryMapper()
+                    new CategoryMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.error("[FIND ALL] {}", err.getLocalizedMessage());
@@ -124,16 +160,15 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public List<Category> findAll(long limit, long skip) {
+    public Collection<Category> findWithFilter(CategoryFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_WITH_CONDITION,
                     new CategoryMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.error("[FIND LIMIT] {}", err.getLocalizedMessage());
+            log.error("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
     }

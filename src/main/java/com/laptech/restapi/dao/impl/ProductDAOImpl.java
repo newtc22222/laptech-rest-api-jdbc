@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.ProductDAO;
+import com.laptech.restapi.dto.filter.ProductFilter;
 import com.laptech.restapi.dto.request.ProductPriceDTO;
 import com.laptech.restapi.mapper.ProductMapper;
 import com.laptech.restapi.model.Product;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,22 +37,19 @@ public class ProductDAOImpl implements ProductDAO {
     private String INSERT;
     @Value("${sp_UpdateProduct}")
     private String UPDATE_ALL;
-    @Value("${}") // missing
+    @Value("${sp_UpdateProductPrice}")
     private String UPDATE_PRICE;
-
     @Value("${sp_DeleteProduct}")
     private String DELETE;
+
     @Value("${sp_FindAllProducts}")
     private String QUERY_ALL;
-    @Value("${}") // missing
-    private String QUERY_LIMIT;
+    @Value("${sp_FindProductByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindProductById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindAccessoryByProductId}")
     private String QUERY_ACCESSORIES;
-
-    @Value("${sp_FindProductByName}")
-    private String QUERY_PRODUCTS_BY_NAME;
     @Value("${sp_FindProductByBrandId}")
     private String QUERY_PRODUCTS_BY_BRAND_ID;
     @Value("${sp_FindProductByCategoryId}")
@@ -61,9 +61,15 @@ public class ProductDAOImpl implements ProductDAO {
     @Value("${sp_FindProductByLabelId}")
     private String QUERY_PRODUCTS_BY_LABEL;
 
+    @Value("${sp_CheckExistProduct}")
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
             "brand_id=? and category_id=? and name=? and released_date=? and quantity_in_stock=? and listed_price=? and " +
             "specifications=? and description_detail=?", "tbl_product");
+
+    @Value("${sp_CountAllProduct}")
+    private String COUNT_ALL;
+    @Value("${sp_CountProductWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public String insert(Product product) {
@@ -137,7 +143,12 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        return 0;
+    }
+
+    @Override
+    public long countWithFilter(ProductFilter filter) {
+        return 0;
     }
 
     @Override
@@ -164,7 +175,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findAll() {
+    public Collection<Product> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
@@ -177,13 +188,12 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findAll(long limit, long skip) {
+    public Collection<Product> findWithFilter(ProductFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new ProductMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn(err);
@@ -207,7 +217,7 @@ public class ProductDAOImpl implements ProductDAO {
 
 
     @Override
-    public List<Product> findAccessoryByProductId(String productId) {
+    public Collection<Product> findAccessoryByProductId(String productId) {
         try {
             return jdbcTemplate.query(
                     QUERY_ACCESSORIES,
@@ -221,21 +231,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findProductByName(String name) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_PRODUCTS_BY_NAME,
-                    new ProductMapper(),
-                    "%" + name + "%"
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
-            return null;
-        }
-    }
-
-    @Override
-    public List<Product> findProductByBrandId(long brandId) {
+    public Collection<Product> findProductByBrandId(long brandId) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCTS_BY_BRAND_ID,
@@ -249,7 +245,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findProductByCategoryId(long categoryId) {
+    public Collection<Product> findProductByCategoryId(long categoryId) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCTS_BY_CATEGORY_ID,
@@ -263,7 +259,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findProductByReleasedYear(int year) {
+    public Collection<Product> findProductByReleasedYear(int year) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCTS_BY_RELEASED_YEAR,
@@ -277,7 +273,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findProductByPriceRange(BigDecimal startPrice, BigDecimal endPrice) {
+    public Collection<Product> findProductByPriceRange(BigDecimal startPrice, BigDecimal endPrice) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCTS_BY_PRICE_RANGE,
@@ -292,7 +288,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> findProductByLabel(long labelId) {
+    public Collection<Product> findProductByLabelId(long labelId) {
         try {
             return jdbcTemplate.query(
                     QUERY_PRODUCTS_BY_LABEL,

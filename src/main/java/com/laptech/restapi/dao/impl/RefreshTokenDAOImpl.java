@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @since 2023-02-08
@@ -30,7 +30,13 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
     private String INSERT;
     @Value("${sp_FindRefreshTokenByCode}")
     private String QUERY_ONE_BY_CODE;
+    @Value("${}")
     private final String QUERY_REFRESH_TOKEN_BY_USER_ID = String.format("select * from %s where user_id=?", "");
+
+    @Value("${sp_CountAllRefreshToken}")
+    private String COUNT_ALL;
+    @Value("${sp_CountRefreshTokenInDate}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public int insert(RefreshToken token) {
@@ -62,7 +68,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
     }
 
     @Override
-    public List<RefreshToken> findAll() {
+    public Collection<RefreshToken> findAll() {
         try {
             return jdbcTemplate.query(
                     "SELECT * FROM tbl_refresh_token",
@@ -75,13 +81,13 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
     }
 
     @Override
-    public List<RefreshToken> findAll(long limit, long skip) {
+    public Collection<RefreshToken> findAll(long limit, long skip) {
         try {
             return jdbcTemplate.query(
                     "SELECT * FROM tbl_refresh_token limit ?, ?",
                     new RefreshTokenMapper(),
-                    limit,
-                    skip
+                    skip,
+                    limit
             );
         } catch (EmptyResultDataAccessException err) {
             log.error("[FIND LIMIT] {}", err.getLocalizedMessage());
@@ -104,7 +110,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
     }
 
     @Override
-    public List<RefreshToken> findRefreshTokenByUserId(long userId) {
+    public Collection<RefreshToken> findRefreshTokenByUserId(long userId) {
         try {
             return jdbcTemplate.query(
                     QUERY_REFRESH_TOKEN_BY_USER_ID,

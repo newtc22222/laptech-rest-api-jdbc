@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.RoleDAO;
+import com.laptech.restapi.dto.filter.RoleFilter;
 import com.laptech.restapi.mapper.RoleMapper;
 import com.laptech.restapi.model.Role;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -36,16 +39,21 @@ public class RoleDAOImpl implements RoleDAO {
 
     @Value("${sp_FindAllRoles}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllRolesLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindRoleByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindRoleById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindRoleByName}")
     private String QUERY_ONE_BY_NAME;
     @Value("${sp_FindRoleByUserId}")
     private String QUERY_ROLE_BY_USER_ID;
-
+    @Value("${sp_CheckExistRole}")
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where name=?", "tbl_role"); // maybe upgrade
+
+    @Value("${sp_CountAllRole}")
+    private String COUNT_ALL;
+    @Value("${sp_CountRoleWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public Integer insert(Role role) {
@@ -92,7 +100,12 @@ public class RoleDAOImpl implements RoleDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        return 0;
+    }
+
+    @Override
+    public long countWithFilter(RoleFilter filter) {
+        return 0;
     }
 
     @Override
@@ -111,7 +124,7 @@ public class RoleDAOImpl implements RoleDAO {
     }
 
     @Override
-    public List<Role> findAll() {
+    public Collection<Role> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
@@ -124,16 +137,15 @@ public class RoleDAOImpl implements RoleDAO {
     }
 
     @Override
-    public List<Role> findAll(long limit, long skip) {
+    public Collection<Role> findWithFilter(RoleFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new RoleMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.error("[FIND LIMIT] {}", err.getLocalizedMessage());
+            log.error("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
     }

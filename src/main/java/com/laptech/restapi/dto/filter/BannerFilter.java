@@ -3,6 +3,7 @@ package com.laptech.restapi.dto.filter;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,8 +40,8 @@ public class BannerFilter extends BaseFilter {
         objects.add(this.type);
         objects.add(this.title);
         objects.add(this.linkProduct);
-        objects.add(this.usedDate);
-        objects.add(this.endedDate);
+        objects.add(Date.valueOf(this.usedDate));
+        objects.add(Date.valueOf(this.endedDate));
         objects.addAll(Arrays.asList(super.getObject(hasSort)));
         return objects.toArray();
     }

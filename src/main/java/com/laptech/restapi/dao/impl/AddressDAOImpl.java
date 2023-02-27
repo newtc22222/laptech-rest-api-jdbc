@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -87,7 +86,6 @@ public class AddressDAOImpl implements AddressDAO {
                     address.getLine3(),
                     address.getStreet(),
                     address.isDefault(),
-                    address.isDel(),
                     address.getUpdateBy()
             );
         } catch (DataAccessException err) {
@@ -119,7 +117,7 @@ public class AddressDAOImpl implements AddressDAO {
             );
             return Objects.requireNonNull(count);
         }
-        catch (NullPointerException err) {
+        catch (DataAccessException | NullPointerException err) {
             log.warn("[COUNT ALL] {}", err.getLocalizedMessage());
             return 0;
         }
@@ -135,7 +133,7 @@ public class AddressDAOImpl implements AddressDAO {
             );
             return Objects.requireNonNull(count);
         }
-        catch (NullPointerException err) {
+        catch (DataAccessException | NullPointerException err) {
             log.warn("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
             return 0;
         }
@@ -195,7 +193,7 @@ public class AddressDAOImpl implements AddressDAO {
      * Get all address of 1 user (show detail)
      */
     @Override
-    public List<Address> findAddressByUserId(long userId) {
+    public Collection<Address> findAddressByUserId(long userId) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL_BY_USER_ID,

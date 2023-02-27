@@ -4,7 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -30,5 +34,17 @@ public class ProductFilter extends BaseFilter{
         this.releasedDate = releasedDate;
         this.quantityInStock = quantityInStock;
         this.listedPrice = listedPrice;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.brandId);
+        objects.add(this.categoryId);
+        objects.add(this.name);
+        objects.add(Date.valueOf(this.releasedDate));
+        objects.add(this.quantityInStock);
+        objects.add(this.listedPrice);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

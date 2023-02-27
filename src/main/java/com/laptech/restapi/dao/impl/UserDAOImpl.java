@@ -1,7 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
-import com.laptech.restapi.common.enums.Gender;
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.UserDAO;
+import com.laptech.restapi.dto.filter.UserFilter;
 import com.laptech.restapi.dto.request.UserDTO;
 import com.laptech.restapi.mapper.UserMapper;
 import com.laptech.restapi.model.User;
@@ -15,7 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -36,6 +37,8 @@ public class UserDAOImpl implements UserDAO {
     private String UPDATE;
     @Value("${sp_UpdateUserInformation}")
     private String UPDATE_INFORMATION;
+    @Value("${sp_UpdateUserPassword}")
+    private String UPDATE_PASSWORD;
     @Value("${sp_UpdateUserAccountStatus}")
     private String ENABLE_USER;
     @Value("${sp_UpdateUserAccountStatus}")
@@ -44,25 +47,27 @@ public class UserDAOImpl implements UserDAO {
     private String DELETE_USER;
     @Value("${sp_FindAllUsers}")
     private String QUERY_ALL;
-    @Value("${}") // missing
-    private String QUERY_LIMIT;
+    @Value("${sp_FindUserByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindUserById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindUserByPhone}")
     private String QUERY_ONE_BY_PHONE;
-    @Value("${sp_FindUserByName}")
-    private String QUERY_USERS_BY_NAME;
-    @Value("${sp_FindUserByGender}")
-    private String QUERY_USERS_BY_GENDER;
     @Value("${sp_FindUserByRoleName}")
-    private String QUERY_USERS_BY_ROLE;
+    private String QUERY_USER_BY_ROLE;
 
+    @Value("${sp_CheckExistUser}")
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
             "name=? and gender=? and date_of_birth=? and phone=? and email=?", "tbl_user");
     private final String QUERY_ONE_BY_REFRESH_TOKEN =
             String.format("select u.* from %s u, %s rf " +
                             "where rf.refresh_token=? and rf.expired_date < now() and u.id = rf.user_id",
                             "tbl_user", "tbl_refresh_token");
+
+    @Value("${sp_CountAllUser}")
+    private String COUNT_ALL;
+    @Value("${sp_CountUserWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public Long insert(User user) {
@@ -119,6 +124,11 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public int updatePassword(User user) {
+        return 0;
+    }
+
+    @Override
     public int enable(long userId) {
         try {
             return jdbcTemplate.update(
@@ -165,7 +175,12 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        return 0;
+    }
+
+    @Override
+    public long countWithFilter(UserFilter filter) {
+        return 0;
     }
 
     @Override
@@ -188,7 +203,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<User> findAll() {
+    public Collection<User> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
@@ -201,16 +216,15 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<User> findAll(long limit, long skip) {
+    public Collection<User> findWithFilter(UserFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new UserMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT] {}", err.getMessage());
+            log.warn("[FIND FILTER] {}", err.getMessage());
             return null;
         }
     }
@@ -258,38 +272,10 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<User> findUserByName(String name) {
+    public Collection<User> findUserByRole(String role) {
         try {
             return jdbcTemplate.query(
-                    QUERY_USERS_BY_NAME,
-                    new UserMapper(),
-                    "%" + name + "%"
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY NAME]: {}", err.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<User> findUserByGender(Gender gender) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_USERS_BY_GENDER,
-                    new UserMapper(),
-                    gender.toString()
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY GENDER]: {}", err.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<User> findUserByRole(String role) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_USERS_BY_ROLE,
+                    QUERY_USER_BY_ROLE,
                     new UserMapper(),
                     role
             );

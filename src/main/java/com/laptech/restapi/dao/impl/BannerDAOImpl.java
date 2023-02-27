@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -54,9 +53,8 @@ public class BannerDAOImpl implements BannerDAO {
     private String QUERY_COUNT;
     @Value("${sp_CountBannerWithCondition}")
     private String QUERY_COUNT_WITH_CONDITION;
-
-    private final String QUERY_CHECK_EXISTS = String.format("select * from %s where " +
-            "path=? and type=? and title=? and link_product=? and used_date=? and ended_date=?", "tbl_banner");
+    @Value("${sp_CheckExistBanner}")
+    private String QUERY_CHECK_EXISTS;
 
     @Override
     public Long insert(Banner banner) {
@@ -128,11 +126,11 @@ public class BannerDAOImpl implements BannerDAO {
             Long count = jdbcTemplate.queryForObject(
                     QUERY_COUNT_WITH_CONDITION,
                     Long.class,
-                    filter
+                    filter.getObject(false)
             );
             return (count != null) ? count : 0;
         } catch (DataAccessException | NullPointerException err) {
-            log.error("[COUNT] {}", err.getLocalizedMessage());
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -163,10 +161,7 @@ public class BannerDAOImpl implements BannerDAO {
             return jdbcTemplate.query(
                     QUERY_ALL,
                     new BannerMapper(),
-                    pagingOption.getSortBy(),
-                    pagingOption.getSortDir().toString(),
-                    pagingOption.getOffset(),
-                    pagingOption.getCount()
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
@@ -180,9 +175,7 @@ public class BannerDAOImpl implements BannerDAO {
             return jdbcTemplate.query(
                     QUERY_FILTER,
                     new BannerMapper(),
-                    filter,
-                    filter.getSortBy(),
-                    filter.getSortDir().toString()
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND FILTER] {}", err.getLocalizedMessage());
@@ -205,7 +198,7 @@ public class BannerDAOImpl implements BannerDAO {
     }
 
     @Override
-    public List<Banner> findBannerByDateRange(Date startDate, Date ended_date) {
+    public Collection<Banner> findBannerByDateRange(Date startDate, Date ended_date) {
         try {
             return jdbcTemplate.query(
                     QUERY_BANNERS_BY_DATE_RANGE,
@@ -220,7 +213,7 @@ public class BannerDAOImpl implements BannerDAO {
     }
 
     @Override
-    public List<Banner> findBannerByDate(Date date) {
+    public Collection<Banner> findBannerByDate(Date date) {
         try {
             return jdbcTemplate.query(
                     QUERY_BANNERS_BY_DATE,

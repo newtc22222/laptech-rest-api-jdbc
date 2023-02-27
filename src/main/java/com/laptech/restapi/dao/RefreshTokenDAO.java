@@ -2,7 +2,7 @@ package com.laptech.restapi.dao;
 
 import com.laptech.restapi.model.RefreshToken;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @since 2023-02-08
@@ -14,11 +14,11 @@ public interface RefreshTokenDAO {
 
     int count();
 
-    List<RefreshToken> findAll();
+    Collection<RefreshToken> findAll();
 
-    List<RefreshToken> findAll(long limit, long skip);
+    Collection<RefreshToken> findAll(long limit, long skip);
 
     RefreshToken findRefreshTokenByCode(String code);
 
-    List<RefreshToken> findRefreshTokenByUserId(long userId);
+    Collection<RefreshToken> findRefreshTokenByUserId(long userId);
 }

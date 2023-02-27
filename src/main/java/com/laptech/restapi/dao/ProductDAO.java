@@ -5,7 +5,7 @@ import com.laptech.restapi.dto.request.ProductPriceDTO;
 import com.laptech.restapi.model.Product;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -14,18 +14,15 @@ import java.util.List;
 public interface ProductDAO extends BaseDAO<Product, ProductFilter, String> {
     int updatePrice(ProductPriceDTO productPriceDTO);
 
-    List<Product> findAccessoryByProductId(String productId);
+    Collection<Product> findAccessoryByProductId(String productId);
 
-    // For product searching...
-    List<Product> findProductByName(String name);
+    Collection<Product> findProductByBrandId(long brandId);
 
-    List<Product> findProductByBrandId(long brandId);
+    Collection<Product> findProductByCategoryId(long categoryId);
+    Collection<Product> findProductByLabelId(long labelId);
 
-    List<Product> findProductByCategoryId(long categoryId);
+    Collection<Product> findProductByReleasedYear(int year);
 
-    List<Product> findProductByReleasedYear(int year);
+    Collection<Product> findProductByPriceRange(BigDecimal startPrice, BigDecimal endPrice);
 
-    List<Product> findProductByPriceRange(BigDecimal startPrice, BigDecimal endPrice);
-
-    List<Product> findProductByLabel(long labelId);
 }

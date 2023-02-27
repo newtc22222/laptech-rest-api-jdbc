@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.CommentDAO;
+import com.laptech.restapi.dto.filter.CommentFilter;
 import com.laptech.restapi.mapper.CommentMapper;
 import com.laptech.restapi.model.Comment;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +15,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -37,17 +40,23 @@ public class CommentDAOImpl implements CommentDAO {
 
     @Value("${sp_FindAllComments}") // add order by created_date desc
     private String QUERY_ALL;
-    @Value("${sp_FindAllCommentsLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindCommentByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindCommentById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindCommentByProductId}")
     private String QUERY_ALL_COMMENTS_OF_PRODUCT;
     @Value("${sp_FindCommentByUserPhone}")
     private String QUERY_ALL_COMMENTS_OF_USER;
+    @Value("${sp_FindCommentByRootCommentId}")
+    private String QUERY_COMMENT_BY_ROOT_COMMENT_ID; // not use
+    @Value("${sp_CheckExistComment}")
+    private String QUERY_CHECK_EXITS;
 
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "root_comment_id=? and product_id=? and username=? and phone=? and content=?", "tbl_comment");
+    @Value("${sp_CountAllComment}")
+    private String COUNT_ALL;
+    @Value("${sp_CountCommentWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public String insert(Comment comment) {
@@ -59,7 +68,8 @@ public class CommentDAOImpl implements CommentDAO {
                     comment.getProductId(),
                     comment.getUsername(),
                     comment.getPhone(),
-                    comment.getContent()
+                    comment.getContent(),
+                    comment.getUpdateBy()
             );
             return comment.getId();
         } catch (DataAccessException err) {
@@ -78,7 +88,8 @@ public class CommentDAOImpl implements CommentDAO {
                     comment.getProductId(),
                     comment.getUsername(),
                     comment.getPhone(),
-                    comment.getContent()
+                    comment.getContent(),
+                    comment.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -91,7 +102,8 @@ public class CommentDAOImpl implements CommentDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    commentId
+                    commentId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -101,7 +113,31 @@ public class CommentDAOImpl implements CommentDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public long countWithFilter(CommentFilter filter) {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -124,7 +160,35 @@ public class CommentDAOImpl implements CommentDAO {
     }
 
     @Override
-    public List<Comment> findCommentByProductId(String productId) {
+    public Collection<Comment> findAll(PagingOptionDTO pagingOption) {
+        try {
+            return jdbcTemplate.query(
+                    QUERY_ALL,
+                    new CommentMapper(),
+                    pagingOption.getObject()
+            );
+        } catch (EmptyResultDataAccessException err) {
+            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public Collection<Comment> findWithFilter(CommentFilter filter) {
+        try {
+            return jdbcTemplate.query(
+                    QUERY_FILTER,
+                    new CommentMapper(),
+                    filter.getObject(true)
+            );
+        } catch (EmptyResultDataAccessException err) {
+            log.warn("[FIND FILTER] {}", err.getLocalizedMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public Collection<Comment> findCommentByProductId(String productId) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL_COMMENTS_OF_PRODUCT,
@@ -138,7 +202,7 @@ public class CommentDAOImpl implements CommentDAO {
     }
 
     @Override
-    public List<Comment> findCommentByUserPhone(String phone) {
+    public Collection<Comment> findCommentByUserPhone(String phone) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL_COMMENTS_OF_USER,
@@ -147,34 +211,6 @@ public class CommentDAOImpl implements CommentDAO {
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND BY USER PHONE] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Comment> findAll() {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_ALL,
-                    new CommentMapper()
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND ALL] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Comment> findAll(long limit, long skip) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_LIMIT,
-                    new CommentMapper(),
-                    limit,
-                    skip
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
     }

@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -20,5 +23,13 @@ public class RoleFilter extends BaseFilter {
         super(sortBy, sortDir, createdDate, modifiedDate, deletedDate, isDel, updateBy);
         this.name = name;
         this.description = description;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.name);
+        objects.add(this.description);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

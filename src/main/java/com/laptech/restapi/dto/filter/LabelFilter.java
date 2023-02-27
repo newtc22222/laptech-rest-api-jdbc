@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -22,5 +25,14 @@ public class LabelFilter extends BaseFilter{
         this.name = name;
         this.icon = icon;
         this.title = title;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.name);
+        objects.add(this.icon);
+        objects.add(this.title);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

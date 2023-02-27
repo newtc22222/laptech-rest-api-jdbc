@@ -1,7 +1,9 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.enums.OrderStatus;
 import com.laptech.restapi.dao.InvoiceDAO;
+import com.laptech.restapi.dto.filter.InvoiceFilter;
 import com.laptech.restapi.mapper.InvoiceMapper;
 import com.laptech.restapi.model.Invoice;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -36,36 +38,36 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     private String INSERT;
     @Value("${sp_UpdateInvoice}")
     private String UPDATE;
-    @Value("${sp_UpdateInvoiceStatus}")
+    @Value("${sp_UpdateInvoiceOrderStatus}")
     private String UPDATE_ORDER_STATUS;
-    @Value("${sp_UpdateInvoicePaymentMethodAndPaidStatus}")
+    @Value("${sp_UpdateInvoicePaymentTypeAndPaidStatus}")
     private String UPDATE_PAYMENT_TYPE_AND_PAID_STATUS;
     @Value("${sp_DeleteInvoice}")
     private String DELETE;
     @Value("${sp_FindAllInvoices}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllInvoicesLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindInvoiceByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindInvoiceById}")
     private String QUERY_ONE_BY_ID;
     @Value("${sp_FindInvoiceByUserId}")
     private String QUERY_INVOICES_BY_USER_ID;
-    @Value("${sp_FindInvoiceByAddress}")
-    private String QUERY_INVOICES_BY_ADDRESS;
     @Value("${sp_FindInvoiceByDate}")
     private String QUERY_INVOICES_BY_DATE;
     @Value("${sp_FindInvoiceByDateRange}")
     private String QUERY_INVOICES_BY_DATE_RANGE;
-    @Value("${sp_FindInvoiceByPaymentType}")
-    private String QUERY_INVOICES_BY_PAYMENT_TYPE;
     @Value("${sp_FindInvoiceByOrderStatus}")
     private String QUERY_INVOICES_BY_ORDER_STATUS;
-    @Value("${sp_FindInvoiceByPaidStatus}")
-    private String QUERY_INVOICES_BY_PAID_STATUS;
 
+    @Value("${sp_CheckExistInvoice}")
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
             "user_id=? and address=? and phone=? and payment_amount=? and ship_cost=? and discount_amount=? and " +
             "tax=? and payment_total=? and payment_type=? and is_paid=? and order_status=? and note=?", "tbl_invoice");
+
+    @Value("${sp_CountAllInvoice}")
+    private String COUNT_ALL;
+    @Value("${sp_CountInvoiceWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public String insert(Invoice invoice) {
@@ -118,7 +120,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public int updateStatus(String invoiceId, OrderStatus status) {
+    public int updateOrderStatus(String invoiceId, OrderStatus status) {
         try {
             return jdbcTemplate.update(
                     UPDATE_ORDER_STATUS,
@@ -161,7 +163,12 @@ public class InvoiceDAOImpl implements InvoiceDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        return 0;
+    }
+
+    @Override
+    public long countWithFilter(InvoiceFilter filter) {
+        return 0;
     }
 
     @Override
@@ -192,11 +199,12 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findAll() {
+    public Collection<Invoice> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new InvoiceMapper()
+                    new InvoiceMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
@@ -205,13 +213,12 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findAll(long limit, long skip) {
+    public Collection<Invoice> findWithFilter(InvoiceFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new InvoiceMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
@@ -234,7 +241,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoiceByUserId(long userId) {
+    public Collection<Invoice> findInvoiceByUserId(long userId) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_USER_ID,
@@ -248,21 +255,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoiceByAddress(String address) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_INVOICES_BY_ADDRESS,
-                    new InvoiceMapper(),
-                    "%" + address + "%"
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY ADDRESS] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Invoice> findInvoiceByDate(LocalDate date) {
+    public Collection<Invoice> findInvoiceByDate(LocalDate date) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_DATE,
@@ -276,7 +269,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoiceByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    public Collection<Invoice> findInvoiceByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_DATE_RANGE,
@@ -291,21 +284,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> findInvoiceByPaymentType(String paymentType) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_INVOICES_BY_PAYMENT_TYPE,
-                    new InvoiceMapper(),
-                    paymentType
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY PAYMENT TYPE] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Invoice> findInvoiceByOrderStatus(OrderStatus status) {
+    public Collection<Invoice> findInvoiceByOrderStatus(OrderStatus status) {
         try {
             return jdbcTemplate.query(
                     QUERY_INVOICES_BY_ORDER_STATUS,
@@ -314,20 +293,6 @@ public class InvoiceDAOImpl implements InvoiceDAO {
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND BY ORDER STATUS] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Invoice> findInvoiceByPaidStatus(boolean isPaid) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_INVOICES_BY_PAID_STATUS,
-                    new InvoiceMapper(),
-                    isPaid
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY PAID STATUS] {}", err.getLocalizedMessage());
             return null;
         }
     }

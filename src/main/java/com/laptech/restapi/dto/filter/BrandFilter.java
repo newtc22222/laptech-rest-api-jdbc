@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -24,5 +27,15 @@ public class BrandFilter extends BaseFilter{
         this.country = country;
         this.establishYear = establishYear;
         this.logo = logo;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.name);
+        objects.add(this.country);
+        objects.add(this.establishYear.toString());
+        objects.add(this.logo);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

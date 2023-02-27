@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -18,7 +21,7 @@ public class ProductUnitFilter extends BaseFilter {
     private String invoiceId;
     private Integer quantity;
     private BigDecimal price;
-    private BigDecimal discountPrice;
+    private BigDecimal discountPrice; // maybe remove
 
     public ProductUnitFilter(String sortBy, String sortDir, LocalDate createdDate, LocalDate modifiedDate,
                              LocalDate deletedDate, Boolean isDel, String updateBy, String productId, String cartId,
@@ -30,5 +33,17 @@ public class ProductUnitFilter extends BaseFilter {
         this.quantity = quantity;
         this.price = price;
         this.discountPrice = discountPrice;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.productId);
+        objects.add(this.cartId);
+        objects.add(this.invoiceId);
+        objects.add(this.quantity);
+        objects.add(this.price);
+        objects.add(this.discountPrice);
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

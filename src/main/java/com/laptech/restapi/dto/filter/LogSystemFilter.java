@@ -4,8 +4,12 @@ import com.laptech.restapi.common.dto.SortOptionDTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -29,5 +33,18 @@ public class LogSystemFilter extends SortOptionDTO {
 
     public void setActionDate(String actionDate) {
         this.actionDate = LocalDate.parse(actionDate, DateTimeFormatter.ISO_DATE);
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.actionTable);
+        objects.add(Date.valueOf(this.actionDate));
+        objects.add(this.actionBy);
+        objects.add(this.actionName);
+        if(hasSort) {
+            objects.add(super.getSortBy());
+            objects.add(super.getSortDir());
+        }
+        return objects.toArray();
     }
 }

@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.BrandDAO;
+import com.laptech.restapi.dto.filter.BrandFilter;
 import com.laptech.restapi.mapper.BrandMapper;
 import com.laptech.restapi.model.Brand;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +15,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -33,28 +37,33 @@ public class BrandDAOImpl implements BrandDAO {
     private String UPDATE;
     @Value("${sp_DeleteBrand}")
     private String DELETE;
-    private final String QUERY_CHECK_EXISTS = String.format("select * from %s " +
-            "where name=? and country=? and establish_date=? and logo=?", "tbl_brand");
+
+    @Value("${sp_CheckExistBrand}")
+    private String QUERY_CHECK_EXISTS;
     @Value("${sp_FindAllBrands}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllBrandsLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindBrandByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindBrandById}")
     private String QUERY_ONE_BY_ID;
+
+    @Value("${sp_CountAllBrand}")
+    private String COUNT_ALL;
+    @Value("${sp_CountBrandWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public Long insert(Brand brand) {
         try {
-            Long newBrandId = jdbcTemplate.queryForObject(
+            return jdbcTemplate.queryForObject(
                     INSERT,
                     Long.class,
                     brand.getName(),
                     brand.getCountry(),
                     brand.getEstablishDate(),
-                    brand.getLogo()
+                    brand.getLogo(),
+                    brand.getUpdateBy()
             );
-            System.out.println(newBrandId);
-            return newBrandId;
         } catch (DataAccessException err) {
             log.error("[CREATE] {}", err.getLocalizedMessage());
             return null;
@@ -70,7 +79,8 @@ public class BrandDAOImpl implements BrandDAO {
                     brand.getName(),
                     brand.getCountry(),
                     brand.getEstablishDate(),
-                    brand.getLogo()
+                    brand.getLogo(),
+                    brand.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -83,7 +93,8 @@ public class BrandDAOImpl implements BrandDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    brandId
+                    brandId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -93,7 +104,31 @@ public class BrandDAOImpl implements BrandDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.warn("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public long countWithFilter(BrandFilter filter) {
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.warn("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -115,11 +150,12 @@ public class BrandDAOImpl implements BrandDAO {
     }
 
     @Override
-    public List<Brand> findAll() {
+    public Collection<Brand> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new BrandMapper()
+                    new BrandMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
@@ -128,16 +164,15 @@ public class BrandDAOImpl implements BrandDAO {
     }
 
     @Override
-    public List<Brand> findAll(long limit, long skip) {
+    public Collection<Brand> findWithFilter(BrandFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new BrandMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
+            log.warn("[FIND WITH FILTER] {}", err.getLocalizedMessage());
             return null;
         }
     }

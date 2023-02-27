@@ -5,7 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nhat Phi
@@ -31,5 +35,17 @@ public class DiscountFilter extends BaseFilter {
         this.maxAmount = maxAmount;
         this.appliedDate = appliedDate;
         this.endedDate = endedDate;
+    }
+
+    public Object[] getObject(boolean hasSort) {
+        List<Object> objects = new ArrayList<>();
+        objects.add(this.code);
+        objects.add(this.rate);
+        objects.add(this.appliedType.toString());
+        objects.add(this.maxAmount);
+        objects.add(Date.valueOf(this.appliedDate));
+        objects.add(Date.valueOf(this.endedDate));
+        objects.addAll(Arrays.asList(super.getObject(hasSort)));
+        return objects.toArray();
     }
 }

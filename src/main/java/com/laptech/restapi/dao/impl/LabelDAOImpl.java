@@ -1,6 +1,8 @@
 package com.laptech.restapi.dao.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.LabelDAO;
+import com.laptech.restapi.dto.filter.LabelFilter;
 import com.laptech.restapi.mapper.LabelMapper;
 import com.laptech.restapi.model.Label;
 import lombok.extern.log4j.Log4j2;
@@ -13,7 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -34,19 +36,20 @@ public class LabelDAOImpl implements LabelDAO {
     private String DELETE;
     @Value("${sp_FindAllLabels}")
     private String QUERY_ALL;
-    @Value("${sp_FindAllLabelsLimit}")
-    private String QUERY_LIMIT;
+    @Value("${sp_FindLabelByFilter}")
+    private String QUERY_FILTER;
     @Value("${sp_FindLabelById}")
     private String QUERY_ONE_BY_ID;
+    @Value("${sp_FindLabelByProductId}")
+    private String QUERY_LABEL_BY_PRODUCT_ID;
+    @Value("${sp_CheckExistLabel}")
     private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
             "name=? and icon=? and title=? and description=?", "tbl_label");
 
-    @Value("${sp_FindLabelByProductId}")
-    private String QUERY_LABEL_BY_PRODUCT_ID;
-    @Value("${sp_FindLabelByName}")
-    private String QUERY_LABEL_BY_NAME;
-    @Value("${sp_FindLabelByTitle}")
-    private String QUERY_LABEL_BY_TITLE;
+    @Value("${sp_CountAllLabel}")
+    private String COUNT_ALL;
+    @Value("${sp_CountLabelWithCondition}")
+    private String COUNT_WITH_CONDITION;
 
     @Override
     public Long insert(Label label) {
@@ -97,7 +100,12 @@ public class LabelDAOImpl implements LabelDAO {
 
     @Override
     public long count() {
-        return this.findAll().size();
+        return 0;
+    }
+
+    @Override
+    public long countWithFilter(LabelFilter filter) {
+        return 0;
     }
 
     @Override
@@ -119,11 +127,12 @@ public class LabelDAOImpl implements LabelDAO {
     }
 
     @Override
-    public List<Label> findAll() {
+    public Collection<Label> findAll(PagingOptionDTO pagingOption) {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new LabelMapper()
+                    new LabelMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
@@ -132,16 +141,15 @@ public class LabelDAOImpl implements LabelDAO {
     }
 
     @Override
-    public List<Label> findAll(long limit, long skip) {
+    public Collection<Label> findWithFilter(LabelFilter filter) {
         try {
             return jdbcTemplate.query(
-                    QUERY_LIMIT,
+                    QUERY_FILTER,
                     new LabelMapper(),
-                    limit,
-                    skip
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
+            log.warn("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -161,7 +169,7 @@ public class LabelDAOImpl implements LabelDAO {
     }
 
     @Override
-    public List<Label> findLabelByProductId(String productId) {
+    public Collection<Label> findLabelByProductId(String productId) {
         try {
             return jdbcTemplate.query(
                     QUERY_LABEL_BY_PRODUCT_ID,
@@ -170,34 +178,6 @@ public class LabelDAOImpl implements LabelDAO {
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND BY PRODUCT ID] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Label> findLabelByName(String name) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_LABEL_BY_NAME,
-                    new LabelMapper(),
-                    "%" + name + "%"
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY NAME] {}", err.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public List<Label> findLabelByTitle(String title) {
-        try {
-            return jdbcTemplate.query(
-                    QUERY_LABEL_BY_TITLE,
-                    new LabelMapper(),
-                    "%" + title + "%"
-            );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND BY TITLE] {}", err.getLocalizedMessage());
             return null;
         }
     }
