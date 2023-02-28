@@ -22,6 +22,7 @@ public class UserDTO {
     private Gender gender;
     private String email;
     private LocalDate dateOfBirth;
+    private String updateBy;
 
     /**
      * update All information of User
@@ -35,6 +36,7 @@ public class UserDTO {
         user.setPhone(request.get("phone"));
         user.setEmail(request.get("email"));
         user.setPassword(request.get("password"));
+        user.setUpdateBy(request.get("updateBy"));
 
         if (request.containsKey("isActive"))
             user.setActive(Boolean.parseBoolean(request.get("isActive")));

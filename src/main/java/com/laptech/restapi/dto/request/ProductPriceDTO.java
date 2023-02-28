@@ -12,11 +12,13 @@ public class ProductPriceDTO {
     private String id;
     private BigDecimal listed_price;
     private BigDecimal price;
+    private String updateBy;
 
-    public ProductPriceDTO(String id, BigDecimal listed_price, BigDecimal price) {
+    public ProductPriceDTO(String id, BigDecimal listed_price, BigDecimal price, String updateBy) {
         this.id = id;
         this.listed_price = listed_price;
         this.price = price;
+        this.updateBy = updateBy;
     }
 
     public String getId() {
@@ -41,5 +43,13 @@ public class ProductPriceDTO {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
     }
 }
