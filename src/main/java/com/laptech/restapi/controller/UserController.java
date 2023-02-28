@@ -84,7 +84,7 @@ public class UserController {
     @GetMapping("/users/{id}/activate")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> enableUser(@PathVariable("id") long userId) {
-        userService.enable(userId);
+        userService.enable(userId, );
         return DataResponse.success("Activate user");
     }
 
@@ -92,7 +92,7 @@ public class UserController {
     @GetMapping("/users/{id}/block")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> disableUser(@PathVariable("id") long userId) {
-        userService.disable(userId);
+        userService.disable(userId, );
         return DataResponse.success("Block user");
     }
 

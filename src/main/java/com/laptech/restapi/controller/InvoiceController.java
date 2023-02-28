@@ -98,7 +98,7 @@ public class InvoiceController {
         invoiceService.updateInvoicePaymentMethodAndPaidStatus(
                 invoiceId,
                 request.get("paymentType"),
-                Boolean.parseBoolean(request.get("isPaid")));
+                Boolean.parseBoolean(request.get("isPaid")), );
         return DataResponse.success("Update payment method and paid status");
     }
 
@@ -107,7 +107,7 @@ public class InvoiceController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<BaseResponse> updateInvoiceStatus(@PathVariable("id") String invoiceId,
                                                             @RequestBody Map<String, String> body) {
-        invoiceService.updateStatus(invoiceId, OrderStatus.valueOf(body.get("status").trim().toUpperCase()));
+        invoiceService.updateStatus(invoiceId, OrderStatus.valueOf(body.get("status").trim().toUpperCase()), );
         return DataResponse.success("Update invoice's order status");
     }
 

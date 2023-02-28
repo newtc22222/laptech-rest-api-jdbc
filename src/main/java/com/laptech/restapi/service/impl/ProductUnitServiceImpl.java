@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -12,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -65,23 +67,29 @@ public class ProductUnitServiceImpl implements ProductUnitService {
     }
 
     @Override
-    public void delete(String unitId) {
+    public void delete(String unitId, String updateBy) {
         if (productUnitDAO.findById(unitId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find unit with id=" + unitId);
         } else {
-            if (productUnitDAO.delete(unitId) == 0) {
+            if (productUnitDAO.delete(unitId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this unit!");
             }
         }
     }
 
     @Override
-    public List<ProductUnit> findAll(Long page, Long size) { // maybe useless
-        if (size == null)
-            return productUnitDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return productUnitDAO.findAll(limit, skip);
+    public long count() {
+        return productUnitDAO.count();
+    }
+
+    @Override
+    public Collection<ProductUnit> findAll(String sortBy, String sortDir, Long page, Long size) { // maybe useless
+        return productUnitDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<ProductUnit> findWithFilter(Map<String, Object> params) {
+        return null;
     }
 
     @Override
@@ -94,20 +102,20 @@ public class ProductUnitServiceImpl implements ProductUnitService {
     }
 
     @Override
-    public void updateProductUnitProperties(String unitId, int quantity, BigDecimal price, BigDecimal discountPrice) {
+    public void updateProductUnitProperties(String unitId, int quantity, BigDecimal price, BigDecimal discountPrice, String updateBy) {
         // check
 
         if (productUnitDAO.findById(unitId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find unit with id=" + unitId);
         } else {
-            if (productUnitDAO.updateProductUnitProperties(unitId, quantity, price, discountPrice) == 0) {
+            if (productUnitDAO.updateProductUnitProperties(unitId, quantity, price, discountPrice, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this unit!");
             }
         }
     }
 
     @Override
-    public List<ProductUnit> getProductUnitByCartId(String cartId) {
+    public Collection<ProductUnit> getProductUnitByCartId(String cartId) {
         if (cartDAO.findById(cartId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find cart with id=" + cartId);
         }
@@ -115,7 +123,7 @@ public class ProductUnitServiceImpl implements ProductUnitService {
     }
 
     @Override
-    public List<ProductUnit> getProductUnitByInvoiceId(String invoiceId) {
+    public Collection<ProductUnit> getProductUnitByInvoiceId(String invoiceId) {
         if (invoiceDAO.findById(invoiceId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find invoice with id=" + invoiceId);
         }

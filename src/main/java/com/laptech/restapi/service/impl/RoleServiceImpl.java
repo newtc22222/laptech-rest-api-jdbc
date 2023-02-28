@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -10,7 +11,9 @@ import com.laptech.restapi.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @since 2023-02-06
@@ -54,23 +57,29 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void delete(Integer roleId) {
+    public void delete(Integer roleId, String updateBy) {
         if (roleDAO.findById(roleId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find role with id=" + roleId);
         } else {
-            if (roleDAO.delete(roleId) == 0) {
+            if (roleDAO.delete(roleId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this role!");
             }
         }
     }
 
     @Override
-    public List<Role> findAll(Long page, Long size) {
-        if (size == null)
-            return roleDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return roleDAO.findAll(limit, skip);
+    public long count() {
+        return roleDAO.count();
+    }
+
+    @Override
+    public Collection<Role> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return roleDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Role> findWithFilter(Map<String, Object> params) {
+        return null;
     }
 
     @Override

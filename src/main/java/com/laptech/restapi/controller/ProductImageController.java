@@ -86,7 +86,7 @@ public class ProductImageController {
         } catch (IllegalArgumentException err) {
             throw new InvalidArgumentException(err.getLocalizedMessage());
         }
-        productImageService.updatePathAndType(imageId, path, type);
+        productImageService.updateUrlAndType(imageId, path, type, );
         return DataResponse.success("Update product's image");
     }
 

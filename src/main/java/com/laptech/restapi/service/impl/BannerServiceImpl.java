@@ -1,19 +1,19 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.BannerDAO;
+import com.laptech.restapi.dto.filter.BannerFilter;
 import com.laptech.restapi.model.Banner;
 import com.laptech.restapi.service.BannerService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Nhat Phi
@@ -52,6 +52,7 @@ public class BannerServiceImpl implements BannerService {
             oldBanner.setLinkProduct(banner.getLinkProduct());
             oldBanner.setUsedDate(banner.getUsedDate());
             oldBanner.setEndedDate(banner.getEndedDate());
+            oldBanner.setUpdateBy(banner.getUpdateBy());
 
             if (bannerDAO.update(oldBanner) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this banner!");
@@ -60,22 +61,45 @@ public class BannerServiceImpl implements BannerService {
     }
 
     @Override
-    public void delete(Long bannerId) {
+    public void delete(Long bannerId, String updateBy) {
         if (bannerDAO.findById(bannerId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find banner with id=" + bannerId);
         } else {
-            if (bannerDAO.delete(bannerId) == 0)
+            if (bannerDAO.delete(bannerId, updateBy) == 0)
                 throw new InternalServerErrorException("[Error] Failed to remove this banner!");
         }
     }
 
     @Override
-    public List<Banner> findAll(Long page, Long size) {
-        if (size == null)
-            return bannerDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return bannerDAO.findAll(limit, skip);
+    public long count() {
+        return 0;
+    }
+
+    @Override
+    public Collection<Banner> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return bannerDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Banner> findWithFilter(Map<String, Object> params) {
+        Set<Banner> bannerSet = new HashSet<>(bannerDAO.findAll());
+
+        BannerFilter filter = new BannerFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        Collection<Banner> bannerFilter = bannerDAO.findWithFilter(filter);
+        bannerSet.removeIf(item -> !bannerFilter.contains(item));
+
+        if (params.containsKey("startDate") && params.containsKey("endDate")) {
+            Date startDate = Date.valueOf(params.get("startDate").toString());
+            Date endDate = Date.valueOf(params.get("endDate").toString());
+            Collection<Banner> bannerList = bannerDAO.findBannerByDateRange(startDate, endDate);
+            bannerSet.removeIf(item -> !bannerList.contains(item));
+        }
+        if (params.containsKey("date")) {
+            Collection<Banner> bannerList = bannerDAO.findBannerByDate(Date.valueOf(params.get("date").toString()));
+            bannerSet.removeIf(item -> !bannerList.contains(item));
+        }
+
+        return bannerSet;
     }
 
     @Override
@@ -85,26 +109,5 @@ public class BannerServiceImpl implements BannerService {
             throw new ResourceNotFoundException("[Info] Cannot find banner with id=" + bannerId);
         }
         return banner;
-    }
-
-    @Override
-    public Set<Banner> filter(Map<String, String> params) {
-        Set<Banner> bannerSet = new HashSet<>(bannerDAO.findAll());
-
-        if (params.containsKey("startDate") && params.containsKey("endDate")) {
-            Date startDate = Date.valueOf(params.get("startDate"));
-            Date endDate = Date.valueOf(params.get("endDate"));
-            List<Banner> bannerList = bannerDAO.findBannerByDateRange(startDate, endDate);
-            bannerSet.removeIf(item -> !bannerList.contains(item));
-        }
-        if (params.containsKey("date")) {
-            List<Banner> bannerList = bannerDAO.findBannerByDate(Date.valueOf(params.get("date")));
-            bannerSet.removeIf(item -> !bannerList.contains(item));
-        }
-        if (params.containsKey("type")) {
-            List<Banner> bannerList = bannerDAO.findBannerByType(params.get("type"));
-            bannerSet.removeIf(item -> !bannerList.contains(item));
-        }
-        return bannerSet;
     }
 }

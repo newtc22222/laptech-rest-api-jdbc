@@ -3,7 +3,7 @@ package com.laptech.restapi.service;
 import com.laptech.restapi.model.ProductUnit;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -11,9 +11,9 @@ import java.util.List;
  */
 
 public interface ProductUnitService extends BaseService<ProductUnit, String> {
-    void updateProductUnitProperties(String unitId, int quantity, BigDecimal price, BigDecimal discountPrice);
+    void updateProductUnitProperties(String unitId, int quantity, BigDecimal price, BigDecimal discountPrice, String updateBy);
 
-    List<ProductUnit> getProductUnitByCartId(String cartId);
+    Collection<ProductUnit> getProductUnitByCartId(String cartId);
 
-    List<ProductUnit> getProductUnitByInvoiceId(String invoiceId);
+    Collection<ProductUnit> getProductUnitByInvoiceId(String invoiceId);
 }

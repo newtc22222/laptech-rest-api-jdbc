@@ -2,7 +2,7 @@ package com.laptech.restapi.service;
 
 import com.laptech.restapi.model.RefreshToken;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface RefreshTokenService {
     void insert(RefreshToken token);
@@ -11,9 +11,9 @@ public interface RefreshTokenService {
 
     int count();
 
-    List<RefreshToken> findAll(Long page, Long size);
+    Collection<RefreshToken> findAll(Long page, Long size);
 
     RefreshToken findRefreshTokenByCode(String code);
 
-    List<RefreshToken> findRefreshTokenByUserId(long userId);
+    Collection<RefreshToken> findRefreshTokenByUserId(long userId);
 }

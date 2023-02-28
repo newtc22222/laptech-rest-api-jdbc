@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -7,16 +8,12 @@ import com.laptech.restapi.dao.ImportProductDAO;
 import com.laptech.restapi.dao.ProductDAO;
 import com.laptech.restapi.model.ImportProduct;
 import com.laptech.restapi.service.ImportProductService;
+import com.laptech.restapi.util.ConvertDate;
 import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Nhat Phi
@@ -65,22 +62,61 @@ public class ImportProductServiceImpl implements ImportProductService {
     }
 
     @Override
-    public void delete(String ticketId) {
+    public void delete(String ticketId, String updateBy) {
         if (importProductDAO.findById(ticketId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find ticket with id=" + ticketId);
         } else {
-            if (importProductDAO.delete(ticketId) == 0)
+            if (importProductDAO.delete(ticketId, updateBy) == 0)
                 throw new InternalServerErrorException("[Error] Failed to remove this ticket!");
         }
     }
 
     @Override
-    public List<ImportProduct> findAll(Long page, Long size) {
-        if (size == null)
-            return importProductDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return importProductDAO.findAll(limit, skip);
+    public long count() {
+        return importProductDAO.count();
+    }
+
+    @Override
+    public Collection<ImportProduct> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return importProductDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<ImportProduct> findWithFilter(Map<String, Object> params) {
+        Set<ImportProduct> ticketSet = new HashSet<>(importProductDAO.findAll());
+        Set<ImportProduct> notSuit = new HashSet<>();
+
+        if (params.containsKey("productId")) {
+            Collection<ImportProduct> ticketList = importProductDAO.findImportProductByProductId(params.get("productId").toString());
+            ticketList.forEach(ticket -> {
+                if (!ticketSet.contains(ticket)) {
+                    notSuit.add(ticket);
+                }
+            });
+        }
+        if (params.containsKey("date")) {
+            Collection<ImportProduct> ticketList = importProductDAO.findImportProductByDate(
+                    ConvertDate.getDateFromString(params.get("date").toString()));
+            ticketList.forEach(ticket -> {
+                if (!ticketSet.contains(ticket)) {
+                    notSuit.add(ticket);
+                }
+            });
+        }
+        if (params.containsKey("startDate") && params.containsKey("endedDate")) {
+            Collection<ImportProduct> ticketList = importProductDAO.findImportProductByDateRange(
+                    ConvertDateTime.getDateTimeFromString(params.get("startDate").toString()),
+                    ConvertDateTime.getDateTimeFromString(params.get("endDate").toString())
+            );
+            ticketList.forEach(ticket -> {
+                if (!ticketSet.contains(ticket)) {
+                    notSuit.add(ticket);
+                }
+            });
+        }
+        ticketSet.removeAll(notSuit);
+
+        return ticketSet;
     }
 
     @Override
@@ -93,48 +129,10 @@ public class ImportProductServiceImpl implements ImportProductService {
     }
 
     @Override
-    public List<ImportProduct> findImportProductByProductId(String productId) {
+    public Collection<ImportProduct> findImportProductByProductId(String productId) {
         if (productDAO.findById(productId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
         }
         return importProductDAO.findImportProductByProductId(productId);
-    }
-
-    @Override
-    public Set<ImportProduct> filter(Map<String, String> params) {
-        Set<ImportProduct> ticketSet = new HashSet<>(importProductDAO.findAll());
-        Set<ImportProduct> notSuit = new HashSet<>();
-
-        if (params.containsKey("productId")) {
-            List<ImportProduct> ticketList = importProductDAO.findImportProductByProductId(params.get("productId"));
-            ticketList.forEach(ticket -> {
-                if (!ticketSet.contains(ticket)) {
-                    notSuit.add(ticket);
-                }
-            });
-        }
-        if (params.containsKey("date")) {
-            List<ImportProduct> ticketList = importProductDAO.findImportProductByDate(
-                    LocalDate.parse(params.get("date"), DateTimeFormatter.ISO_LOCAL_DATE));
-            ticketList.forEach(ticket -> {
-                if (!ticketSet.contains(ticket)) {
-                    notSuit.add(ticket);
-                }
-            });
-        }
-        if (params.containsKey("startDate") && params.containsKey("endedDate")) {
-            List<ImportProduct> ticketList = importProductDAO.findImportProductByDateRange(
-                    ConvertDateTime.getDateTimeFromString(params.get("startDate")),
-                    ConvertDateTime.getDateTimeFromString(params.get("endDate"))
-            );
-            ticketList.forEach(ticket -> {
-                if (!ticketSet.contains(ticket)) {
-                    notSuit.add(ticket);
-                }
-            });
-        }
-        ticketSet.removeAll(notSuit);
-
-        return ticketSet;
     }
 }

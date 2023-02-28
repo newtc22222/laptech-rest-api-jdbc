@@ -1,6 +1,6 @@
 package com.laptech.restapi.service.impl;
 
-import com.laptech.restapi.common.enums.Gender;
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.enums.RoleType;
 import com.laptech.restapi.common.exception.*;
 import com.laptech.restapi.dao.RoleDAO;
@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Nhat Phi
@@ -74,7 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(Long userId) {
+    public void delete(Long userId, String updateBy) {
         User oldUser = userDAO.findById(userId);
         if (oldUser == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
@@ -82,19 +79,32 @@ public class UserServiceImpl implements UserService {
             if (oldUser.isActive()) {
                 throw new BadRequestException("[Info] You can't delete an active user!");
             }
-            if (userDAO.delete(userId, ) == 0) {
+            if (userDAO.delete(userId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to delete user!");
             }
         }
     }
 
     @Override
-    public List<User> findAll(Long page, Long size) {
-        if (size == null)
-            return userDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return userDAO.findAll(limit, skip);
+    public long count() {
+        return userDAO.count();
+    }
+
+    @Override
+    public Collection<User> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return userDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<User> findWithFilter(Map<String, Object> params) {
+        Set<User> userSet = new HashSet<>(userDAO.findAll());
+
+
+        if (params.containsKey("role")) {
+            Collection<User> userList = userDAO.findUserByRole(params.get("role").toString());
+            userSet.removeIf(user -> !userList.contains(user));
+        }
+        return userSet;
     }
 
     @Override
@@ -103,13 +113,6 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         }
-//        User currentUser = AuthenticateUserUtil.getCurrentUser();
-//        if(currentUser == null) {
-//            throw new BadRequestException("[Info] You need to login before using this system!");
-//        }
-//        if(currentUser.getId() != userId) {
-//            throw new ForbiddenException("[Error] You can't have grand for access to this account");
-//        }
         return user;
     }
 
@@ -127,22 +130,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void enable(long userId) {
+    public void enable(long userId, String updateBy) {
         if (userDAO.findById(userId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         } else {
-            if (userDAO.enable(userId) == 0) {
+            if (userDAO.enable(userId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to enable user!");
             }
         }
     }
 
     @Override
-    public void disable(long userId) {
+    public void disable(long userId, String updateBy) {
         if (userDAO.findById(userId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         } else {
-            if (userDAO.disable(userId) == 0) {
+            if (userDAO.disable(userId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to disable user!");
             }
         }
@@ -181,23 +184,5 @@ public class UserServiceImpl implements UserService {
             throw new InvalidArgumentException(auditPhone);
         }
         return userDAO.findUserByPhone(phone);
-    }
-
-    @Override
-    public Set<User> filter(Map<String, String> params) {
-        Set<User> userSet = new HashSet<>(userDAO.findAll());
-        if (params.containsKey("name")) {
-            List<User> userList = userDAO.findUserByName(params.get("name"));
-            userSet.removeIf(user -> !userList.contains(user));
-        }
-        if (params.containsKey("gender")) {
-            List<User> userList = userDAO.findUserByGender(Gender.valueOf(params.get("gender")));
-            userSet.removeIf(user -> !userList.contains(user));
-        }
-        if (params.containsKey("role")) {
-            List<User> userList = userDAO.findUserByRole(params.get("role"));
-            userSet.removeIf(user -> !userList.contains(user));
-        }
-        return userSet;
     }
 }

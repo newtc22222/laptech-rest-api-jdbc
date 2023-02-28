@@ -9,7 +9,7 @@ import com.laptech.restapi.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @since 2023-02-08
@@ -42,7 +42,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public List<RefreshToken> findAll(Long page, Long size) {
+    public Collection<RefreshToken> findAll(Long page, Long size) {
         if (size == null)
             return refreshTokenDAO.findAll();
         long limit = size;
@@ -56,7 +56,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public List<RefreshToken> findRefreshTokenByUserId(long userId) {
+    public Collection<RefreshToken> findRefreshTokenByUserId(long userId) {
         if (userDAO.findById(userId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         }

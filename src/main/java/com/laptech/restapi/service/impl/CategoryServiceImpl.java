@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -9,7 +10,8 @@ import com.laptech.restapi.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -55,22 +57,28 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void delete(Long categoryId) {
+    public void delete(Long categoryId, String updateBy) {
         if (categoryDAO.findById(categoryId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find category with id=" + categoryId);
         } else {
-            if (categoryDAO.delete(categoryId) == 0)
+            if (categoryDAO.delete(categoryId, updateBy) == 0)
                 throw new InternalServerErrorException("[Error] Failed to remove this category!");
         }
     }
 
     @Override
-    public List<Category> findAll(Long page, Long size) {
-        if (size == null)
-            return categoryDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return categoryDAO.findAll(limit, skip);
+    public long count() {
+        return categoryDAO.count();
+    }
+
+    @Override
+    public Collection<Category> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return categoryDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Category> findWithFilter(Map<String, Object> params) {
+        return null;
     }
 
     @Override

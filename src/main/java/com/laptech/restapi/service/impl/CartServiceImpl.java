@@ -9,7 +9,8 @@ import com.laptech.restapi.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -46,19 +47,29 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void delete(Long userId) {
+    public void delete(Long userId, String updateBy) {
         Cart existsCart = cartDAO.findCartByUserId(userId);
         if (existsCart == null) {
             throw new ResourceNotFoundException("[Info] Can not find this cart in system!");
         } else {
-            if (cartDAO.delete(existsCart.getId()) == 0) {
+            if (cartDAO.delete(existsCart.getId(), updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove cart!");
             }
         }
     }
 
     @Override
-    public List<Cart> findAll(Long page, Long size) {
+    public long count() {
+        return 0;
+    }
+
+    @Override
+    public Collection<Cart> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return null;
+    }
+
+    @Override
+    public Collection<Cart> findWithFilter(Map<String, Object> params) {
         return null;
     }
 

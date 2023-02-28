@@ -1,6 +1,7 @@
 package com.laptech.restapi.service;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * C-U-D, get all, get one
@@ -20,9 +21,13 @@ public interface BaseService<T, ID> {
 
     void update(T t, ID id);
 
-    void delete(ID id);
+    void delete(ID id, String updateBy);
 
-    List<T> findAll(Long page, Long size);
+    long count();
+
+    Collection<T> findAll(String sortBy, String sortDir, Long page, Long size);
+
+    Collection<T> findWithFilter(Map<String, Object> params);
 
     T findById(ID id);
 }

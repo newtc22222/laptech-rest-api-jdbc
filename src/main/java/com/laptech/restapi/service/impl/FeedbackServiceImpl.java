@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -11,9 +12,7 @@ import com.laptech.restapi.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Nhat Phi
@@ -64,22 +63,28 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public void delete(String feedbackId) {
+    public void delete(String feedbackId, String updateBy) {
         if (feedbackDAO.findById(feedbackId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find feedback with id=" + feedbackId);
         } else {
-            if (feedbackDAO.delete(feedbackId) == 0)
+            if (feedbackDAO.delete(feedbackId, updateBy) == 0)
                 throw new InternalServerErrorException("[Error] Failed to remove this feedback!");
         }
     }
 
     @Override
-    public List<Feedback> findAll(Long page, Long size) {
-        if (size == null)
-            return feedbackDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return feedbackDAO.findAll(limit, skip);
+    public long count() {
+        return feedbackDAO.count();
+    }
+
+    @Override
+    public Collection<Feedback> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return feedbackDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Feedback> findWithFilter(Map<String, Object> params) {
+        return null;
     }
 
     @Override
@@ -105,13 +110,5 @@ public class FeedbackServiceImpl implements FeedbackService {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         }
         return new HashSet<>(feedbackDAO.findFeedbackByUserId(userId));
-    }
-
-    @Override
-    public List<Feedback> getFeedbacksOfProductByRatingPoint(String productId, byte ratingPoint) {
-        if (productDAO.findById(productId) == null) {
-            throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
-        }
-        return feedbackDAO.findFeedbackByProductIdAndRatingPoint(productId, ratingPoint);
     }
 }

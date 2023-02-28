@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.enums.ImageType;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
@@ -11,9 +12,7 @@ import com.laptech.restapi.service.ProductImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Nhat Phi
@@ -61,23 +60,29 @@ public class ProductImageServiceImpl implements ProductImageService {
     }
 
     @Override
-    public void delete(String imageId) {
+    public void delete(String imageId, String updateBy) {
         if (productImageDAO.findById(imageId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find image with id=" + imageId);
         } else {
-            if (productImageDAO.delete(imageId) == 0) {
+            if (productImageDAO.delete(imageId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this image!");
             }
         }
     }
 
     @Override
-    public List<ProductImage> findAll(Long page, Long size) {
-        if (size == null)
-            return productImageDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return productImageDAO.findAll(limit, skip);
+    public long count() {
+        return productImageDAO.count();
+    }
+
+    @Override
+    public Collection<ProductImage> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return productImageDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<ProductImage> findWithFilter(Map<String, Object> params) {
+        return null;
     }
 
     @Override
@@ -90,20 +95,20 @@ public class ProductImageServiceImpl implements ProductImageService {
     }
 
     @Override
-    public void updatePathAndType(String imageId, String path, ImageType type) {
+    public void updateUrlAndType(String imageId, String url, ImageType type, String updateBy) {
         // check
 
         if (productImageDAO.findById(imageId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find image with id=" + imageId);
         } else {
-            if (productImageDAO.updatePathAndType(imageId, path, type) == 0) {
+            if (productImageDAO.updateUrlAndType(imageId, url, type, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this image!");
             }
         }
     }
 
     @Override
-    public List<ProductImage> findByProductId(String productId) {
+    public Collection<ProductImage> findByProductId(String productId) {
         if (productDAO.findById(productId) == null)
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
         return productImageDAO.findProductImageByProductId(productId);
@@ -111,7 +116,7 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public Set<ProductImage> filter(String productId, String imageType) {
-        List<ProductImage> images = null;
+        Collection<ProductImage> images = null;
         if (productId != null || imageType != null) {
             if (productId == null) {
                 images = productImageDAO.findProductImageByImageType(ImageType.valueOf(imageType));
@@ -119,11 +124,6 @@ public class ProductImageServiceImpl implements ProductImageService {
                 if (productDAO.findById(productId) == null)
                     throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
                 images = productImageDAO.findProductImageByProductId(productId);
-            } else {
-                images = productImageDAO.findProductImageByProductIdAndImageType(
-                        productId,
-                        ImageType.valueOf(imageType)
-                );
             }
         }
         return (images != null) ? new HashSet<>(images) : null;

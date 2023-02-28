@@ -1,18 +1,21 @@
 package com.laptech.restapi.service.impl;
 
 import com.laptech.restapi.audit.AddressAudit;
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.InvalidArgumentException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.AddressDAO;
 import com.laptech.restapi.dao.UserDAO;
+import com.laptech.restapi.dto.filter.AddressFilter;
 import com.laptech.restapi.model.Address;
 import com.laptech.restapi.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -37,7 +40,7 @@ public class AddressServiceImpl implements AddressService {
             throw new ResourceAlreadyExistsException("[Info] This address has already existed in system!");
         }
 
-        Long newAddressId = addressDAO.insert(address);
+        String newAddressId = addressDAO.insert(address);
         if (newAddressId == null)
             throw new InternalServerErrorException("[Error] Failed to insert new address!");
 
@@ -45,7 +48,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public void update(Address address, Long addressId) {
+    public void update(Address address, String addressId) {
         String invalidArguments = AddressAudit.getInvalidArguments(address);
         if (invalidArguments != null) {
             throw new InvalidArgumentException(invalidArguments);
@@ -61,6 +64,7 @@ public class AddressServiceImpl implements AddressService {
             oldAddress.setLine3(address.getLine3());
             oldAddress.setStreet(address.getStreet());
             oldAddress.setDefault(address.isDefault());
+            oldAddress.setUpdateBy(address.getUpdateBy());
 
             if (addressDAO.update(oldAddress) == 0) {
                 throw new InternalServerErrorException("[Error] Fail to update this address!");
@@ -69,26 +73,32 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public void delete(Long addressId) {
+    public void delete(String addressId, String updateBy) {
         if (addressDAO.findById(addressId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot found address with id=" + addressId);
         } else {
-            if (addressDAO.delete(addressId) == 0)
+            if (addressDAO.delete(addressId, updateBy) == 0)
                 throw new InternalServerErrorException("[Error] Failed to remove this address!");
         }
     }
 
     @Override
-    public List<Address> findAll(Long page, Long size) {
-        if (size == null)
-            return addressDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return addressDAO.findAll(limit, skip);
+    public long count() {
+        return addressDAO.count();
     }
 
     @Override
-    public Address findById(Long addressId) {
+    public Collection<Address> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return addressDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Address> findWithFilter(Map<String, Object> params) {
+        return addressDAO.findAll();
+    }
+
+    @Override
+    public Address findById(String addressId) {
         Address address = addressDAO.findById(addressId);
         if (address == null) {
             throw new ResourceNotFoundException("[Info] Cannot found address with id=" + addressId);
@@ -97,7 +107,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<Address> findAddressByUserId(long userId) {
+    public Collection<Address> findAddressByUserId(long userId) {
         if (userDAO.findById(userId) == null)
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         return addressDAO.findAddressByUserId(userId);

@@ -2,7 +2,7 @@ package com.laptech.restapi.service;
 
 import com.laptech.restapi.model.Comment;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -10,7 +10,7 @@ import java.util.Set;
  */
 
 public interface CommentService extends BaseService<Comment, String> {
-    Set<Comment> getAllCommentsOfProduct(String productId);
+    Collection<Comment> getAllCommentsOfProduct(String productId);
 
-    Set<Comment> getAllCommentsOfUser(String phone);
+    Collection<Comment> getAllCommentsOfUser(String phone);
 }

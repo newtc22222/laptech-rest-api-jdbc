@@ -3,6 +3,7 @@ package com.laptech.restapi.service;
 import com.laptech.restapi.common.enums.OrderStatus;
 import com.laptech.restapi.model.Invoice;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,19 +14,9 @@ import java.util.Set;
  */
 
 public interface InvoiceService extends BaseService<Invoice, String> {
-    void updateStatus(String invoiceId, OrderStatus status);
+    void updateStatus(String invoiceId, OrderStatus status, String updateBy);
 
-    void updateInvoicePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid);
+    void updateInvoicePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid, String updateBy);
 
-    List<Invoice> getInvoicesOfUser(long userId);
-
-    /**
-     * Filter options:
-     * - address
-     * - date | start date + end date
-     * - payment type
-     * - order status
-     * - payment status
-     */
-    Set<Invoice> filter(Map<String, String> params);
+    Collection<Invoice> getInvoicesOfUser(long userId);
 }

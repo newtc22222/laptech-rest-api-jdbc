@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.InvalidArgumentException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
@@ -12,8 +13,9 @@ import com.laptech.restapi.util.AuditUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,22 +63,28 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void delete(String commentId) {
+    public void delete(String commentId, String updateBy) {
         if (commentDAO.findById(commentId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find comment with id=" + commentId);
         } else {
-            if (commentDAO.delete(commentId) == 0)
+            if (commentDAO.delete(commentId, updateBy) == 0)
                 throw new InternalServerErrorException("[Error] Failed to remove this comment!");
         }
     }
 
     @Override
-    public List<Comment> findAll(Long page, Long size) {
-        if (size == null)
-            return commentDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return commentDAO.findAll(limit, skip);
+    public long count() {
+        return commentDAO.count();
+    }
+
+    @Override
+    public Collection<Comment> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return commentDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Comment> findWithFilter(Map<String, Object> params) {
+        return null;
     }
 
     @Override

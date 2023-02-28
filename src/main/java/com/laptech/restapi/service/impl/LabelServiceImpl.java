@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -9,7 +10,8 @@ import com.laptech.restapi.service.LabelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @since 2023-02-06
@@ -54,23 +56,29 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public void delete(Long labelId) {
+    public void delete(Long labelId, String updateBy) {
         if (labelDAO.findById(labelId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find label with id=" + labelId);
         } else {
-            if (labelDAO.delete(labelId) == 0) {
+            if (labelDAO.delete(labelId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this label!");
             }
         }
     }
 
     @Override
-    public List<Label> findAll(Long page, Long size) {
-        if (size == null)
-            return labelDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return labelDAO.findAll(limit, skip);
+    public long count() {
+        return labelDAO.count();
+    }
+
+    @Override
+    public Collection<Label> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return labelDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Label> findWithFilter(Map<String, Object> params) {
+        return null;
     }
 
     @Override

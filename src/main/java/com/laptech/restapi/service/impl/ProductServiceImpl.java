@@ -1,6 +1,6 @@
 package com.laptech.restapi.service.impl;
 
-import com.laptech.restapi.common.enums.ImageType;
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -9,6 +9,7 @@ import com.laptech.restapi.dto.request.ProductPriceDTO;
 import com.laptech.restapi.dto.response.ProductCardDTO;
 import com.laptech.restapi.dto.response.ProductDetailDTO;
 import com.laptech.restapi.model.Discount;
+import com.laptech.restapi.model.Label;
 import com.laptech.restapi.model.Product;
 import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.service.ProductService;
@@ -85,23 +86,62 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void delete(String productId) {
+    public void delete(String productId, String updateBy) {
         if (productDAO.findById(productId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
         } else {
-            if (productDAO.delete(productId, ) == 0) {
+            if (productDAO.delete(productId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this product!");
             }
         }
     }
 
     @Override
-    public List<Product> findAll(Long page, Long size) {
-        if (size == null)
-            return productDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return productDAO.findAll(limit, skip);
+    public long count() {
+        return productDAO.count();
+    }
+
+    @Override
+    public Collection<Product> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return productDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Product> findWithFilter(Map<String, Object> params) {
+        Set<Product> productSet = new HashSet<>(productDAO.findAll());
+
+        if (params.containsKey("brandId")) {
+            List<String> brandIdList = (List<String>) params.get("brandId");
+            List<Product> productList = new ArrayList<>();
+            brandIdList.forEach(brandId -> productList.addAll(
+                    productDAO.findProductByBrandId(Long.parseLong(brandId))
+            ));
+            productSet.removeIf(item -> !productList.contains(item));
+        }
+        if (params.containsKey("categoryId")) {
+            List<String> categoryIdList = (List<String>) params.get("categoryId");
+            List<Product> productList = new ArrayList<>();
+            categoryIdList.forEach(categoryId -> productList.addAll(
+                    productDAO.findProductByCategoryId(Long.parseLong(categoryId))
+            ));
+            productSet.removeIf(item -> !productList.contains(item));
+        }
+        if (params.containsKey("startPrice") && params.containsKey("endPrice")) {
+            Collection<Product> productList = productDAO.findProductByPriceRange(
+                    new BigDecimal(String.valueOf(params.get("startPrice"))),
+                    new BigDecimal(String.valueOf(params.get("endPrice")))
+            );
+            productSet.removeIf(item -> !productList.contains(item));
+        }
+        if (params.containsKey("label")) {
+            List<String> labelIdList = (List<String>) params.get("label");
+            List<Product> productList = new ArrayList<>();
+            labelIdList.forEach(labelId -> productList.addAll(
+                    productDAO.findProductByLabelId(Long.parseLong(labelId))
+            ));
+            productSet.removeIf(item -> !productList.contains(item));
+        }
+        return productSet;
     }
 
     @Override
@@ -120,7 +160,7 @@ public class ProductServiceImpl implements ProductService {
         if (productDAO.findById(productPriceDTO.getId()) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productPriceDTO.getId());
         } else {
-            if (productDAO.updatePrice(productPriceDTO) == 0) {
+            if (productDAO.updatePrice(productPriceDTO, productPriceDTO.getUpdateBy()) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this product!");
             }
         }
@@ -224,9 +264,9 @@ public class ProductServiceImpl implements ProductService {
                     cardDTO.setId(product.getId());
                     cardDTO.setName(product.getName());
 
-                    List<ProductImage> imageList = productImageDAO.findProductImageByProductIdAndImageType(product.getId(), ImageType.ADVERTISE);
+                    Collection<ProductImage> imageList = productImageDAO.findWithFilter(null);
                     cardDTO.setImagesRepresentUrl(imageList.stream().map(ProductImage::getUrl).collect(Collectors.toList()));
-                    cardDTO.setLabelList(labelDAO.findLabelByProductId(product.getId()));
+                    cardDTO.setLabelList(new ArrayList<>(labelDAO.findLabelByProductId(product.getId())));
                     cardDTO.setPrice(product.getListedPrice());
 
                     Discount discountInDate = discountDAO.findDiscountByProductIdUseInDate(product.getId());
@@ -242,9 +282,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductDetailDTO getProductDetail(Product product) {
         ProductDetailDTO dto = new ProductDetailDTO();
         dto.setProduct(product);
-        dto.setLabelList(labelDAO.findLabelByProductId(product.getId()));
-        dto.setImageList(productImageDAO.findProductImageByProductId(product.getId()));
-        dto.setAccessories(productDAO.findAccessoryByProductId(product.getId()));
+        dto.setLabelList((List<Label>) labelDAO.findLabelByProductId(product.getId()));
+        dto.setImageList((List<ProductImage>) productImageDAO.findProductImageByProductId(product.getId()));
+        dto.setAccessories((List<Product>) productDAO.findAccessoryByProductId(product.getId()));
 
         Discount discountInDate = discountDAO.findDiscountByProductIdUseInDate(product.getId());
         dto.setDiscountPrice(getDiscountPrice(discountInDate, product));
@@ -260,63 +300,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findProductByBrandId(long brandId) {
+    public Collection<Product> findProductByBrandId(long brandId) {
         if (brandDAO.findById(brandId) == null)
             throw new ResourceNotFoundException("[Info] Cannot find brand with id=" + brandId);
         return productDAO.findProductByBrandId(brandId);
     }
 
     @Override
-    public List<Product> findProductByCategoryId(long categoryId) {
+    public Collection<Product> findProductByCategoryId(long categoryId) {
         if (categoryDAO.findById(categoryId) == null)
             throw new ResourceNotFoundException("[Info] Cannot find category with id=" + categoryId);
         return productDAO.findProductByCategoryId(categoryId);
-    }
-
-    @Override
-    public Set<Product> filter(Map<String, Object> params) {
-        Set<Product> productSet = new HashSet<>(productDAO.findAll());
-
-        if (params.containsKey("name")) {
-            List<Product> productList = productDAO.findProductByName(params.get("name").toString());
-            productSet.removeIf(item -> !productList.contains(item));
-        }
-        if (params.containsKey("brandId")) {
-            List<String> brandIdList = (List<String>) params.get("brandId");
-            List<Product> productList = new ArrayList<>();
-            brandIdList.forEach(brandId -> productList.addAll(
-                    productDAO.findProductByBrandId(Long.parseLong(brandId))
-            ));
-            productSet.removeIf(item -> !productList.contains(item));
-        }
-        if (params.containsKey("categoryId")) {
-            List<String> categoryIdList = (List<String>) params.get("categoryId");
-            List<Product> productList = new ArrayList<>();
-            categoryIdList.forEach(categoryId -> productList.addAll(
-                    productDAO.findProductByCategoryId(Long.parseLong(categoryId))
-            ));
-            productSet.removeIf(item -> !productList.contains(item));
-        }
-        if (params.containsKey("releasedYear")) {
-            List<Product> productList =
-                    productDAO.findProductByReleasedYear(Integer.parseInt(String.valueOf(params.get("releasedYear"))));
-            productSet.removeIf(item -> !productList.contains(item));
-        }
-        if (params.containsKey("startPrice") && params.containsKey("endPrice")) {
-            List<Product> productList = productDAO.findProductByPriceRange(
-                    new BigDecimal(String.valueOf(params.get("startPrice"))),
-                    new BigDecimal(String.valueOf(params.get("endPrice")))
-            );
-            productSet.removeIf(item -> !productList.contains(item));
-        }
-        if (params.containsKey("label")) {
-            List<String> labelIdList = (List<String>) params.get("label");
-            List<Product> productList = new ArrayList<>();
-            labelIdList.forEach(labelId -> productList.addAll(
-                    productDAO.findProductByLabel(Long.parseLong(labelId))
-            ));
-            productSet.removeIf(item -> !productList.contains(item));
-        }
-        return productSet;
     }
 }

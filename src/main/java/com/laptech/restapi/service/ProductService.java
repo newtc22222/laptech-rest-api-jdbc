@@ -6,7 +6,6 @@ import com.laptech.restapi.dto.response.ProductDetailDTO;
 import com.laptech.restapi.model.Product;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,29 +38,7 @@ public interface ProductService extends BaseService<Product, String> {
 
     Set<Product> findAccessoryOfProduct(String productId);
 
-    List<Product> findProductByBrandId(long brandId);
+    Collection<Product> findProductByBrandId(long brandId);
 
-    List<Product> findProductByCategoryId(long categoryId);
-
-    /**
-     * Filter options:
-     * <ul>
-     * <li>name</li>
-     * <li>brand id</li>
-     * <li>category id</li>
-     * <li>released year</li>
-     * <li>start price + end price</li>
-     * <li><b>label name</b></li>
-     * </ul>
-     * <b>In future plan ...</b>
-     * <ul>
-     * <li>on discount</li>
-     * <li>top seller</li>
-     * </ul>
-     * <br/>
-     * <b>Below is laptop's properties <i>[remove]</i></b>
-     * ram capacity | cpu brand + cpu type | screen size | graphic card type | hard drive type + capacity
-     * <br/>
-     */
-    Set<Product> filter(Map<String, Object> params);
+    Collection<Product> findProductByCategoryId(long categoryId);
 }

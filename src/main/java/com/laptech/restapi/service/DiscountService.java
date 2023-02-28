@@ -2,9 +2,7 @@ package com.laptech.restapi.service;
 
 import com.laptech.restapi.model.Discount;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * @author Nhat Phi
@@ -12,7 +10,5 @@ import java.util.Set;
  */
 
 public interface DiscountService extends BaseService<Discount, Long> {
-    List<Discount> getDiscountsOfProduct(String productId);
-
-    Set<Discount> filter(Map<String, String> params);
+    Collection<Discount> getDiscountsOfProduct(String productId);
 }

@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.impl;
 
+import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -9,7 +10,8 @@ import com.laptech.restapi.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -54,21 +56,27 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public void delete(Long brandId) {
+    public void delete(Long brandId, String updateBy) {
         if (brandDAO.findById(brandId) == null) {
             throw new ResourceNotFoundException("cannot find brand with id=" + brandId);
         } else {
-            brandDAO.delete(brandId);
+            brandDAO.delete(brandId, updateBy);
         }
     }
 
     @Override
-    public List<Brand> findAll(Long page, Long size) {
-        if (size == null)
-            return brandDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return brandDAO.findAll(limit, skip);
+    public long count() {
+        return brandDAO.count();
+    }
+
+    @Override
+    public Collection<Brand> findAll(String sortBy, String sortDir, Long page, Long size) {
+        return brandDAO.findAll(new PagingOptionDTO(sortBy, sortDir, page, size));
+    }
+
+    @Override
+    public Collection<Brand> findWithFilter(Map<String, Object> params) {
+        return null;
     }
 
     @Override

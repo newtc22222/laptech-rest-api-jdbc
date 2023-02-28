@@ -9,21 +9,13 @@ import java.util.Set;
 public interface UserService extends BaseService<User, Long> {
     void updateInformation(UserDTO user, long userId);
 
-    void enable(long userId);
+    void enable(long userId, String updateBy);
 
-    void disable(long userId);
+    void disable(long userId, String updateBy);
 
     void insertRole(long userId, int roleId);
 
     void removeRole(long userId, int roleId);
 
     User findUserByPhone(String phone);
-
-    /**
-     * Filter options:
-     * - name
-     * - gender
-     * - role
-     */
-    Set<User> filter(Map<String, String> params);
 }
