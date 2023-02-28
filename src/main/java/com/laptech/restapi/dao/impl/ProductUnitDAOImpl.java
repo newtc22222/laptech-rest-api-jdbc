@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -50,10 +50,8 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     private String QUERY_PRODUCT_ITEMS_BY_CART_ID;
     @Value("${sp_FindProductUnitByInvoiceId}")
     private String QUERY_PRODUCT_ITEMS_BY_INVOICE_ID;
-
-    @Value("${}")
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "cart_id=? and invoice_id=? and product_id=? and item_quantity=? and item_price=? and item_discount_price=?", "");
+    @Value("${sp_CheckExistProductUnit}")
+    private String QUERY_CHECK_EXITS;
 
     @Value("${sp_CountAllProductUnit}")
     private String COUNT_ALL;
@@ -71,7 +69,8 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     unit.getInvoiceId(),
                     unit.getQuantity(),
                     unit.getPrice().doubleValue(),
-                    unit.getDiscountPrice().doubleValue()
+                    unit.getDiscountPrice().doubleValue(),
+                    unit.getUpdateBy()
             );
             return unit.getId();
         } catch (DataAccessException err) {
@@ -91,7 +90,8 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     unit.getInvoiceId(),
                     unit.getQuantity(),
                     unit.getPrice().doubleValue(),
-                    unit.getDiscountPrice().doubleValue()
+                    unit.getDiscountPrice().doubleValue(),
+                    unit.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error(err);
@@ -100,14 +100,15 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     }
 
     @Override
-    public int updateProductUnitProperties(String itemId, int quantity, BigDecimal price, BigDecimal discountPrice) {
+    public int updateProductUnitProperties(String itemId, int quantity, BigDecimal price, BigDecimal discountPrice, String updateBy) {
         try {
             return jdbcTemplate.update(
                     UPDATE_PRODUCT_ITEM_PROPERTIES,
                     itemId,
                     quantity,
                     price.doubleValue(),
-                    discountPrice.doubleValue()
+                    discountPrice.doubleValue(),
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error(err);
@@ -120,7 +121,8 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    itemId
+                    itemId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error(err);
@@ -130,12 +132,31 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
 
     @Override
     public long count() {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public long countWithFilter(ProductUnitFilter filter) {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -160,12 +181,30 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
 
     @Override
     public Collection<ProductUnit> findAll(PagingOptionDTO pagingOption) {
-        return null;
+        try {
+            return jdbcTemplate.query(
+                    QUERY_ALL,
+                    new ProductUnitMapper(),
+                    pagingOption.getObject()
+            );
+        } catch (DataAccessException err) {
+            log.error("[FIND ALL] {}", err.getLocalizedMessage());
+            return null;
+        }
     }
 
     @Override
     public Collection<ProductUnit> findWithFilter(ProductUnitFilter filter) {
-        return null;
+        try {
+            return jdbcTemplate.query(
+                    QUERY_ALL,
+                    new ProductUnitMapper(),
+                    filter.getObject(true)
+            );
+        } catch (DataAccessException err) {
+            log.error("[FIND ALL] {}", err.getLocalizedMessage());
+            return null;
+        }
     }
 
     @Override

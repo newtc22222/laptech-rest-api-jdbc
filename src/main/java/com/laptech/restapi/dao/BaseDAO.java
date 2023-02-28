@@ -26,6 +26,10 @@ public interface BaseDAO<T, F extends SortOptionDTO, ID> {
 
     Collection<T> findAll(PagingOptionDTO pagingOption);
 
+    default Collection<T> findAll() {
+        return this.findAll(new PagingOptionDTO(null, null, null, null));
+    }
+
     Collection<T> findWithFilter(F filter);
 
     T findById(ID id);

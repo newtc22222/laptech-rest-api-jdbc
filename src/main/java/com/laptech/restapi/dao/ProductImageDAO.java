@@ -11,7 +11,7 @@ import java.util.Collection;
  * @since 2022-11-21
  */
 public interface ProductImageDAO extends BaseDAO<ProductImage, ProductImageFilter, String> {
-    int updateUrlAndType(String imageId, String url, ImageType type);
+    int updateUrlAndType(String imageId, String url, ImageType type, String updateBy);
 
     Collection<ProductImage> findProductImageByProductId(String productId);
 

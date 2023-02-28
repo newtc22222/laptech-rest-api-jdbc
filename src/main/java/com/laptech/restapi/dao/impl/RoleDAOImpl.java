@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -48,7 +49,7 @@ public class RoleDAOImpl implements RoleDAO {
     @Value("${sp_FindRoleByUserId}")
     private String QUERY_ROLE_BY_USER_ID;
     @Value("${sp_CheckExistRole}")
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where name=?", "tbl_role"); // maybe upgrade
+    private String QUERY_CHECK_EXITS;
 
     @Value("${sp_CountAllRole}")
     private String COUNT_ALL;
@@ -62,7 +63,8 @@ public class RoleDAOImpl implements RoleDAO {
                     INSERT,
                     Integer.class,
                     role.getName(),
-                    role.getDescription()
+                    role.getDescription(),
+                    role.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
@@ -77,7 +79,8 @@ public class RoleDAOImpl implements RoleDAO {
                     UPDATE,
                     role.getId(),
                     role.getName(),
-                    role.getDescription()
+                    role.getDescription(),
+                    role.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -90,7 +93,8 @@ public class RoleDAOImpl implements RoleDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    roleId
+                    roleId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -100,12 +104,31 @@ public class RoleDAOImpl implements RoleDAO {
 
     @Override
     public long count() {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public long countWithFilter(RoleFilter filter) {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -128,7 +151,8 @@ public class RoleDAOImpl implements RoleDAO {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new RoleMapper()
+                    new RoleMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.error("[FIND ALL] {}", err.getLocalizedMessage());

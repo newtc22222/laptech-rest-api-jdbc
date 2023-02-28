@@ -20,6 +20,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -60,9 +61,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     private String QUERY_INVOICES_BY_ORDER_STATUS;
 
     @Value("${sp_CheckExistInvoice}")
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "user_id=? and address=? and phone=? and payment_amount=? and ship_cost=? and discount_amount=? and " +
-            "tax=? and payment_total=? and payment_type=? and is_paid=? and order_status=? and note=?", "tbl_invoice");
+    private String QUERY_CHECK_EXITS;
 
     @Value("${sp_CountAllInvoice}")
     private String COUNT_ALL;
@@ -77,6 +76,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     invoice.getId(),
                     invoice.getUserId(),
                     invoice.getAddress(),
+                    invoice.getPhone(),
                     invoice.getPaymentAmount().doubleValue(),
                     invoice.getShipCost(),
                     invoice.getDiscountAmount().doubleValue(),
@@ -85,7 +85,8 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     invoice.getPaymentType(),
                     invoice.isPaid(),
                     invoice.getOrderStatus().toString(),
-                    invoice.getNote()
+                    invoice.getNote(),
+                    invoice.getUpdateBy()
             );
             return invoice.getId();
         } catch (DataAccessException err) {
@@ -111,7 +112,8 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     invoice.getPaymentType(),
                     invoice.isPaid(),
                     invoice.getOrderStatus().toString(),
-                    invoice.getNote()
+                    invoice.getNote(),
+                    invoice.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -120,12 +122,13 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public int updateOrderStatus(String invoiceId, OrderStatus status) {
+    public int updateOrderStatus(String invoiceId, OrderStatus status, String updateBy) {
         try {
             return jdbcTemplate.update(
                     UPDATE_ORDER_STATUS,
                     invoiceId,
-                    status.toString()
+                    status.toString(),
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE STATUS] {}", err.getLocalizedMessage());
@@ -134,13 +137,14 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     }
 
     @Override
-    public int updatePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid) {
+    public int updatePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid, String updateBy) {
         try {
             return jdbcTemplate.update(
                     UPDATE_PAYMENT_TYPE_AND_PAID_STATUS,
                     invoiceId,
                     paymentType,
-                    isPaid
+                    isPaid,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE PAYMENT] {}", err.getLocalizedMessage());
@@ -153,7 +157,8 @@ public class InvoiceDAOImpl implements InvoiceDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    invoiceId
+                    invoiceId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -163,18 +168,36 @@ public class InvoiceDAOImpl implements InvoiceDAO {
 
     @Override
     public long count() {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public long countWithFilter(InvoiceFilter filter) {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public boolean isExists(Invoice invoice) {
         try {
-
             Invoice existsInvoice = jdbcTemplate.queryForObject(
                     QUERY_CHECK_EXITS,
                     new InvoiceMapper(),

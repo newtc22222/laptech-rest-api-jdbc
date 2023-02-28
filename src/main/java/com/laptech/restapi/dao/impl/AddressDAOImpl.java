@@ -52,11 +52,11 @@ public class AddressDAOImpl implements AddressDAO {
     private String COUNT_WITH_CONDITION;
 
     @Override
-    public Long insert(Address address) {
+    public String insert(Address address) {
         try {
             return jdbcTemplate.queryForObject(
                             INSERT,
-                            Long.class,
+                            String.class,
                             address.getId(),
                             address.getUserId(),
                             address.getCountry(),
@@ -95,7 +95,7 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    public int delete(Long addressId, String updateBy) {
+    public int delete(String addressId, String updateBy) {
         try {
             return jdbcTemplate.update(
                     DELETE,
@@ -207,7 +207,7 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    public Address findById(Long addressId) {
+    public Address findById(String addressId) {
         try {
             return jdbcTemplate.queryForObject(
                     QUERY_ONE_BY_ID,

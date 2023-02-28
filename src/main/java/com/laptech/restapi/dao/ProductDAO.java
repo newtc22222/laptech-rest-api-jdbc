@@ -12,7 +12,7 @@ import java.util.Collection;
  * @since 2022-11-21
  */
 public interface ProductDAO extends BaseDAO<Product, ProductFilter, String> {
-    int updatePrice(ProductPriceDTO productPriceDTO);
+    int updatePrice(ProductPriceDTO productPriceDTO, String updateBy);
 
     Collection<Product> findAccessoryByProductId(String productId);
 

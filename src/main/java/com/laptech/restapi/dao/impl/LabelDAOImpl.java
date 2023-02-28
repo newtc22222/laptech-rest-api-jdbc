@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -43,8 +44,7 @@ public class LabelDAOImpl implements LabelDAO {
     @Value("${sp_FindLabelByProductId}")
     private String QUERY_LABEL_BY_PRODUCT_ID;
     @Value("${sp_CheckExistLabel}")
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "name=? and icon=? and title=? and description=?", "tbl_label");
+    private String QUERY_CHECK_EXITS;
 
     @Value("${sp_CountAllLabel}")
     private String COUNT_ALL;
@@ -60,7 +60,8 @@ public class LabelDAOImpl implements LabelDAO {
                     label.getName(),
                     label.getIcon(),
                     label.getTitle(),
-                    label.getDescription()
+                    label.getDescription(),
+                    label.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
@@ -77,7 +78,8 @@ public class LabelDAOImpl implements LabelDAO {
                     label.getName(),
                     label.getIcon(),
                     label.getTitle(),
-                    label.getDescription()
+                    label.getDescription(),
+                    label.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -90,7 +92,8 @@ public class LabelDAOImpl implements LabelDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    labelId
+                    labelId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -100,12 +103,31 @@ public class LabelDAOImpl implements LabelDAO {
 
     @Override
     public long count() {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public long countWithFilter(LabelFilter filter) {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override

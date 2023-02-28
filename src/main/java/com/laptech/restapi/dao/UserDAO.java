@@ -14,9 +14,9 @@ public interface UserDAO extends BaseDAO<User, UserFilter, Long> {
     int updateInformation(UserDTO userDTO);
     int updatePassword(User user);
 
-    int enable(long userId);
+    int enable(long userId, String updateBy);
 
-    int disable(long userId);
+    int disable(long userId, String updateBy);
 
     User findUserByPhone(String phone);
 

@@ -11,7 +11,7 @@ import java.util.Collection;
  * @since 2022-11-21
  */
 public interface ProductUnitDAO extends BaseDAO<ProductUnit, ProductUnitFilter, String> {
-    int updateProductUnitProperties(String itemId, int quantity, BigDecimal price, BigDecimal discountPrice);
+    int updateProductUnitProperties(String itemId, int quantity, BigDecimal price, BigDecimal discountPrice, String updateBy);
 
     Collection<ProductUnit> findProductUnitByCartId(String cartId);
 

@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
  * @since 2022-11-22
  */
-
 @Transactional
 @Log4j2
 @Component
@@ -40,9 +40,7 @@ public class UserDAOImpl implements UserDAO {
     @Value("${sp_UpdateUserPassword}")
     private String UPDATE_PASSWORD;
     @Value("${sp_UpdateUserAccountStatus}")
-    private String ENABLE_USER;
-    @Value("${sp_UpdateUserAccountStatus}")
-    private String DISABLE_USER;
+    private String CHANGE_USER_ACCOUNT_STATUS;
     @Value("${sp_DeleteUser}")
     private String DELETE_USER;
     @Value("${sp_FindAllUsers}")
@@ -57,12 +55,7 @@ public class UserDAOImpl implements UserDAO {
     private String QUERY_USER_BY_ROLE;
 
     @Value("${sp_CheckExistUser}")
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "name=? and gender=? and date_of_birth=? and phone=? and email=?", "tbl_user");
-    private final String QUERY_ONE_BY_REFRESH_TOKEN =
-            String.format("select u.* from %s u, %s rf " +
-                            "where rf.refresh_token=? and rf.expired_date < now() and u.id = rf.user_id",
-                            "tbl_user", "tbl_refresh_token");
+    private String QUERY_CHECK_EXITS;
 
     @Value("${sp_CountAllUser}")
     private String COUNT_ALL;
@@ -79,7 +72,9 @@ public class UserDAOImpl implements UserDAO {
                     user.getGender().toString(),
                     user.getDateOfBirth(),
                     user.getPhone(),
-                    user.getEmail()
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getMessage());
@@ -98,7 +93,8 @@ public class UserDAOImpl implements UserDAO {
                     user.getDateOfBirth(),
                     user.getPhone(),
                     user.getEmail(),
-                    user.getPassword()
+                    user.getPassword(),
+                    user.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getMessage());
@@ -115,7 +111,8 @@ public class UserDAOImpl implements UserDAO {
                     userDTO.getName(),
                     userDTO.getGender().toString(),
                     userDTO.getDateOfBirth(),
-                    userDTO.getEmail()
+                    userDTO.getEmail(),
+                    userDTO.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE INFO] {}", err.getMessage());
@@ -125,16 +122,27 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public int updatePassword(User user) {
-        return 0;
+        try {
+            return jdbcTemplate.update(
+                    UPDATE_PASSWORD,
+                    user.getId(),
+                    user.getPassword(),
+                    user.getUpdateBy()
+            );
+        } catch (DataAccessException err) {
+            log.error("[UPDATE PASSWORD] {}", err.getMessage());
+            return 0;
+        }
     }
 
     @Override
-    public int enable(long userId) {
+    public int enable(long userId, String updateBy) {
         try {
             return jdbcTemplate.update(
-                    ENABLE_USER,
+                    CHANGE_USER_ACCOUNT_STATUS,
                     userId,
-                    true
+                    true,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[ENABLE] {}", err.getMessage());
@@ -143,12 +151,13 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public int disable(long userId) {
+    public int disable(long userId, String updateBy) {
         try {
             return jdbcTemplate.update(
-                    DISABLE_USER,
+                    CHANGE_USER_ACCOUNT_STATUS,
                     userId,
-                    false
+                    false,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DISABLE] {}", err.getMessage());
@@ -175,12 +184,31 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public long count() {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public long countWithFilter(UserFilter filter) {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
@@ -259,9 +287,14 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User findUserByRefreshToken(String refreshToken) {
+        String query = String.format("select u.* " +
+                        "from %s u, %s rf " +
+                        "where rf.refresh_token=? " +
+                        "and rf.expired_date < now() " +
+                        "and u.id = rf.user_id", "tbl_user", "tbl_refresh_token");
         try {
             return jdbcTemplate.queryForObject(
-                    QUERY_ONE_BY_REFRESH_TOKEN,
+                    query,
                     new UserMapper(),
                     refreshToken
             );

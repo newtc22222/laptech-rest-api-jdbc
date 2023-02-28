@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -49,9 +49,8 @@ public class ProductImageDAOImpl implements ProductImageDAO {
     private String QUERY_PRODUCT_IMAGES_BY_PRODUCT_ID;
     @Value("${sp_FindProductImageByImageType}")
     private String QUERY_PRODUCT_IMAGES_BY_IMAGE_TYPE;
-    @Value("${}")
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "product_id=? and feedback_id=? and url=? and type=?", "tbl_product_image");
+    @Value("${sp_CheckExistProductImage}")
+    private String QUERY_CHECK_EXITS;
 
     @Value("${sp_CountAllProductImage}")
     private String COUNT_ALL;
@@ -67,7 +66,8 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     image.getProductId(),
                     image.getFeedbackId(),
                     image.getUrl(),
-                    image.getType().toString()
+                    image.getType().toString(),
+                    image.getUpdateBy()
             );
             return image.getId();
         } catch (DataAccessException err) {
@@ -85,7 +85,8 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     image.getProductId(),
                     image.getFeedbackId(),
                     image.getUrl(),
-                    image.getType().toString()
+                    image.getType().toString(),
+                    image.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -94,13 +95,14 @@ public class ProductImageDAOImpl implements ProductImageDAO {
     }
 
     @Override
-    public int updateUrlAndType(String imageId, String url, ImageType type) {
+    public int updateUrlAndType(String imageId, String url, ImageType type, String updateBy) {
         try {
             return jdbcTemplate.update(
                     UPDATE_URL_AND_TYPE,
                     imageId,
                     url,
-                    type.toString()
+                    type.toString(),
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE PATH AND TYPE] {}", err.getLocalizedMessage());
@@ -113,7 +115,8 @@ public class ProductImageDAOImpl implements ProductImageDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    imageId
+                    imageId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
@@ -123,18 +126,36 @@ public class ProductImageDAOImpl implements ProductImageDAO {
 
     @Override
     public long count() {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public long countWithFilter(ProductImageFilter filter) {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public boolean isExists(ProductImage image) {
         try {
-
             ProductImage existsImage = jdbcTemplate.queryForObject(
                     QUERY_CHECK_EXITS,
                     new ProductImageMapper(),
@@ -155,7 +176,8 @@ public class ProductImageDAOImpl implements ProductImageDAO {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new ProductImageMapper()
+                    new ProductImageMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.error("[FIND ALL] {}", err.getLocalizedMessage());
@@ -168,7 +190,8 @@ public class ProductImageDAOImpl implements ProductImageDAO {
         try {
             return jdbcTemplate.query(
                     QUERY_FILTER,
-                    new ProductImageMapper()
+                    new ProductImageMapper(),
+                    filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
             log.error("[FIND LIMIT] {}", err.getLocalizedMessage());

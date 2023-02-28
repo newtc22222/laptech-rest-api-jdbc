@@ -184,7 +184,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     filter.getObject(true)
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
+            log.warn("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
     }

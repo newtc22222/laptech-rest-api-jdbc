@@ -13,9 +13,9 @@ import java.util.Collection;
  * @since 2022-11-21
  */
 public interface InvoiceDAO extends BaseDAO<Invoice, InvoiceFilter, String> {
-    int updateOrderStatus(String invoiceId, OrderStatus status);
+    int updateOrderStatus(String invoiceId, OrderStatus status, String updateBy);
 
-    int updatePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid);
+    int updatePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid, String updateBy);
 
     Collection<Invoice> findInvoiceByUserId(long userId);
     Collection<Invoice> findInvoiceByOrderStatus(OrderStatus status);

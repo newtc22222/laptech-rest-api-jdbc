@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Nhat Phi
@@ -60,11 +60,8 @@ public class ProductDAOImpl implements ProductDAO {
     private String QUERY_PRODUCTS_BY_PRICE_RANGE;
     @Value("${sp_FindProductByLabelId}")
     private String QUERY_PRODUCTS_BY_LABEL;
-
     @Value("${sp_CheckExistProduct}")
-    private final String QUERY_CHECK_EXITS = String.format("select * from %s where " +
-            "brand_id=? and category_id=? and name=? and released_date=? and quantity_in_stock=? and listed_price=? and " +
-            "specifications=? and description_detail=?", "tbl_product");
+    private String QUERY_CHECK_EXITS;
 
     @Value("${sp_CountAllProduct}")
     private String COUNT_ALL;
@@ -84,7 +81,8 @@ public class ProductDAOImpl implements ProductDAO {
                     product.getQuantityInStock(),
                     product.getListedPrice(),
                     product.getSpecifications(),
-                    product.getDescriptionDetail()
+                    product.getDescriptionDetail(),
+                    product.getUpdateBy()
             );
             return product.getId();
         } catch (DataAccessException err) {
@@ -106,7 +104,8 @@ public class ProductDAOImpl implements ProductDAO {
                     product.getQuantityInStock(),
                     product.getListedPrice(),
                     product.getSpecifications(),
-                    product.getDescriptionDetail()
+                    product.getDescriptionDetail(),
+                    product.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error(err);
@@ -115,12 +114,13 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public int updatePrice(ProductPriceDTO productDTO) {
+    public int updatePrice(ProductPriceDTO productDTO, String updateBy) {
         try {
             return jdbcTemplate.update(
                     UPDATE_PRICE,
                     productDTO.getListed_price(),
-                    productDTO.getId()
+                    productDTO.getId(),
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error(err);
@@ -133,7 +133,8 @@ public class ProductDAOImpl implements ProductDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    productId
+                    productId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error(err);
@@ -143,18 +144,36 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public long count() {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_ALL,
+                    Long.class
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public long countWithFilter(ProductFilter filter) {
-        return 0;
+        try {
+            Long count = jdbcTemplate.queryForObject(
+                    COUNT_WITH_CONDITION,
+                    Long.class,
+                    filter.getObject(false)
+            );
+            return Objects.requireNonNull(count);
+        } catch (DataAccessException | NullPointerException err) {
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
+            return 0;
+        }
     }
 
     @Override
     public boolean isExists(Product product) {
         try {
-
             Product existsProduct = jdbcTemplate.queryForObject(
                     QUERY_CHECK_EXITS,
                     new ProductMapper(),
@@ -163,9 +182,7 @@ public class ProductDAOImpl implements ProductDAO {
                     product.getName(),
                     Date.valueOf(product.getReleasedDate()),
                     product.getQuantityInStock(),
-                    product.getListedPrice(),
-                    product.getSpecifications(),
-                    product.getDescriptionDetail()
+                    product.getListedPrice()
             );
             return existsProduct != null;
         } catch (DataAccessException err) {
@@ -179,7 +196,8 @@ public class ProductDAOImpl implements ProductDAO {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new ProductMapper()
+                    new ProductMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn(err);

@@ -4,9 +4,13 @@ import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.dao.LogSystemDAO;
 import com.laptech.restapi.dto.filter.LogSystemFilter;
 import com.laptech.restapi.model.LogSystem;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
@@ -14,6 +18,10 @@ import java.util.Collection;
  * @author Nhat Phi
  * @since 2023-02-27
  */
+@Transactional
+@Log4j2
+@Component
+@PropertySource("classpath:query.properties")
 public class LogSystemDAOImpl implements LogSystemDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
