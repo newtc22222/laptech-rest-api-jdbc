@@ -1,5 +1,6 @@
 package com.laptech.restapi.dto.filter;
 
+import com.laptech.restapi.util.ConvertDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -32,6 +34,16 @@ public class BannerFilter extends BaseFilter {
         this.linkProduct = linkProduct;
         this.usedDate = usedDate;
         this.endedDate = endedDate;
+    }
+
+    public BannerFilter(Map<String, String> params) {
+        super(params);
+        this.path = params.get("path");
+        this.type = params.get("type");
+        this.title = params.get("title");
+        this.linkProduct = params.get("linkProduct");
+        this.usedDate = ConvertDate.getDateFromString(params.get("usedDate"));
+        this.endedDate = ConvertDate.getDateFromString(params.get("endedDate"));
     }
 
     public Object[] getObject(boolean hasSort) {

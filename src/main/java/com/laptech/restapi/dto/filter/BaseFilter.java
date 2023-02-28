@@ -1,6 +1,7 @@
 package com.laptech.restapi.dto.filter;
 
 import com.laptech.restapi.common.dto.SortOptionDTO;
+import com.laptech.restapi.util.ConvertDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -28,6 +30,15 @@ public abstract class BaseFilter extends SortOptionDTO {
         this.deletedDate = deletedDate;
         this.isDel = isDel;
         this.updateBy = updateBy;
+    }
+
+    public BaseFilter(Map<String, String> baseParams){
+        super(baseParams.get("sortBy"),baseParams.get("sortDir"));
+        this.createdDate = ConvertDate.getDateFromString(baseParams.get("createdDate"));
+        this.modifiedDate = ConvertDate.getDateFromString(baseParams.get("modifiedDate"));
+        this.deletedDate = ConvertDate.getDateFromString(baseParams.get("deletedDate"));
+        this.isDel = baseParams.get("idDel") != null ? Boolean.parseBoolean(baseParams.get("idDel")) : null;
+        this.updateBy = baseParams.get("updateBy");
     }
 
     public Object[] getObject(boolean hasSort) {
