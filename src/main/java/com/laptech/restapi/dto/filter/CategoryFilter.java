@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -26,6 +27,13 @@ public class CategoryFilter extends BaseFilter {
         this.name = name;
         this.image = image;
         this.description = description;
+    }
+
+    public CategoryFilter(Map<String, String> params) {
+        super(params);
+        this.name = params.get("name");
+        this.image = params.get("image");
+        this.description = params.get("description");
     }
 
     public Object[] getObject(boolean hasSort) {

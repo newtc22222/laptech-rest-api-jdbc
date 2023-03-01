@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -33,6 +34,16 @@ public class ProductUnitFilter extends BaseFilter {
         this.quantity = quantity;
         this.price = price;
         this.discountPrice = discountPrice;
+    }
+
+    public ProductUnitFilter(Map<String, String> params) {
+        super(params);
+        this.productId = params.get("productId");
+        this.cartId = params.get("cartId");
+        this.invoiceId = params.get("invoiceId");
+        this.quantity = (params.get("quantity") != null) ? Integer.parseInt(params.get("quantity")) : null;
+        this.price = (params.get("price") != null) ? new BigDecimal(params.get("price")) : null;
+        this.discountPrice = (params.get("discountPrice") != null) ? new BigDecimal(params.get("discountPrice")) : null;
     }
 
     public Object[] getObject(boolean hasSort) {

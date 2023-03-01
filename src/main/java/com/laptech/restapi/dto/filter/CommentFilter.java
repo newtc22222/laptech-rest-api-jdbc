@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -29,6 +30,15 @@ public class CommentFilter extends BaseFilter {
         this.username = username;
         this.phone = phone;
         this.content = content;
+    }
+
+    public CommentFilter(Map<String, String> params) {
+        super(params);
+        this.rootCommentId = params.get("rootCommentId");
+        this.productId = params.get("productId");
+        this.username = params.get("username");
+        this.phone = params.get("phone");
+        this.content = params.get("content");
     }
 
     public Object[] getObject(boolean hasSort) {

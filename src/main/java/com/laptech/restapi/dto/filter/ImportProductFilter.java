@@ -1,5 +1,6 @@
 package com.laptech.restapi.dto.filter;
 
+import com.laptech.restapi.util.ConvertDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -30,6 +32,14 @@ public class ImportProductFilter extends BaseFilter {
         this.quantity = quantity;
         this.importedPrice = importedPrice;
         this.importedDate = importedDate;
+    }
+
+    public ImportProductFilter(Map<String, String> params) {
+        super(params);
+        this.productId = params.get("productId");
+        this.quantity = (params.get("quantity") != null) ? Long.parseLong(params.get("quantity")) : null;
+        this.importedPrice = (params.get("importedPrice") != null) ? new BigDecimal(params.get("importedPrice")) : null;
+        this.importedDate = ConvertDate.getDateFromString(params.get("importedDate"));
     }
 
     public Object[] getObject(boolean hasSort) {

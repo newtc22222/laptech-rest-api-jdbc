@@ -1,6 +1,7 @@
 package com.laptech.restapi.dto.filter;
 
 import com.laptech.restapi.common.enums.DiscountType;
+import com.laptech.restapi.util.ConvertDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -35,6 +37,16 @@ public class DiscountFilter extends BaseFilter {
         this.maxAmount = maxAmount;
         this.appliedDate = appliedDate;
         this.endedDate = endedDate;
+    }
+
+    public DiscountFilter(Map<String, String> params) {
+        super(params);
+        this.code = params.get("code");
+        this.rate = (params.get("rate") != null) ? Float.parseFloat(params.get("rate")) : null;
+        this.appliedType = DiscountType.valueOf(params.get("appliedType"));
+        this.maxAmount = (params.get("maxAmount") != null) ? new BigDecimal(params.get("maxAmount")) : null;
+        this.appliedDate = ConvertDate.getDateFromString(params.get("appliedDate"));
+        this.endedDate = ConvertDate.getDateFromString(params.get("endedDate"));
     }
 
     public Object[] getObject(boolean hasSort) {

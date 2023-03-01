@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -29,6 +30,14 @@ public class LogSystemFilter extends SortOptionDTO {
         this.actionDate = actionDate;
         this.actionBy = actionBy;
         this.actionName = actionName;
+    }
+
+    public LogSystemFilter(Map<String, String> params) {
+        super(params.get("sortBy"), params.get("sortDir"));
+        this.actionTable = params.get("actionTable");
+        this.setActionDate(params.get("actionDate"));
+        this.actionBy = params.get("actionBy");
+        this.actionName = params.get("actionName");
     }
 
     public void setActionDate(String actionDate) {

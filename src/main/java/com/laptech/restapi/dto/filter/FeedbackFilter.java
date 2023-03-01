@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -27,6 +28,14 @@ public class FeedbackFilter extends BaseFilter {
         this.userId = userId;
         this.content = content;
         this.ratingPoint = ratingPoint;
+    }
+
+    public FeedbackFilter(Map<String, String> params) {
+        super(params);
+        this.productId = params.get("productId");
+        this.userId = (params.get("userId") != null) ? Long.parseLong(params.get("userId")) : null;
+        this.content = params.get("content");
+        this.ratingPoint = (params.get("ratingPoint") != null) ? Byte.parseByte(params.get("ratingPoint")) : null;
     }
 
     public Object[] getObject(boolean hasSort) {

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -23,6 +24,12 @@ public class RoleFilter extends BaseFilter {
         super(sortBy, sortDir, createdDate, modifiedDate, deletedDate, isDel, updateBy);
         this.name = name;
         this.description = description;
+    }
+
+    public RoleFilter(Map<String,String> params) {
+        super(params);
+        this.name = params.get("name");
+        this.description = params.get("description");
     }
 
     public Object[] getObject(boolean hasSort) {

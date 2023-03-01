@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -29,6 +30,14 @@ public class ProductImageFilter extends BaseFilter{
         this.feedbackId = feedbackId;
         this.url = url;
         this.type = type;
+    }
+
+    public ProductImageFilter(Map<String, String> params) {
+        super(params);
+        this.productId = params.get("productId");
+        this.feedbackId = params.get("feedbackId");
+        this.url = params.get("url");
+        this.type = (params.get("type") != null) ? ImageType.valueOf(params.get("type")) : null;
     }
 
     public Object[] getObject(boolean hasSort) {

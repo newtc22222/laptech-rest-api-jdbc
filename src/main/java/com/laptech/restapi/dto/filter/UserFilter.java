@@ -2,6 +2,7 @@ package com.laptech.restapi.dto.filter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laptech.restapi.common.enums.Gender;
+import com.laptech.restapi.util.ConvertDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -33,6 +35,15 @@ public class UserFilter extends BaseFilter {
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.isActive = isActive;
+    }
+
+    public UserFilter(Map<String,String> params) {
+        super(params);
+        this.name = params.get("name");
+        this.gender = (params.get("gender") != null) ? Gender.valueOf(params.get("gender")) : null;
+        this.dateOfBirth = ConvertDate.getDateFromString(params.get("dateOfBirth"));
+        this.email = params.get("email");
+        this.isActive = (params.get("isActive") != null) ? Boolean.parseBoolean(params.get("isActive")) : null;
     }
 
     public Object[] getObject(boolean hasSort) {

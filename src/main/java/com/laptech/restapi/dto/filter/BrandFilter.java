@@ -5,9 +5,11 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -27,6 +29,14 @@ public class BrandFilter extends BaseFilter{
         this.country = country;
         this.establishYear = establishYear;
         this.logo = logo;
+    }
+
+    public BrandFilter(Map<String, String> params) {
+        super(params);
+        this.name = params.get("name");
+        this.country = params.get("country");
+        this.establishYear = Year.parse(params.get("year"), DateTimeFormatter.ofPattern("yyyy"));
+        this.logo = params.get("logo");
     }
 
     public Object[] getObject(boolean hasSort) {
