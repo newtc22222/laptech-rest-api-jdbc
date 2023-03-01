@@ -56,6 +56,7 @@ public class DiscountServiceImpl implements DiscountService {
             oldDiscount.setMaxAmount(discount.getMaxAmount());
             oldDiscount.setAppliedDate(discount.getAppliedDate());
             oldDiscount.setEndedDate(discount.getEndedDate());
+            oldDiscount.setUpdateBy(discount.getUpdateBy());
 
             if (discountDAO.update(discount) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this discount!");

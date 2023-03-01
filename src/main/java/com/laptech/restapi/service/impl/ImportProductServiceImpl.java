@@ -56,6 +56,7 @@ public class ImportProductServiceImpl implements ImportProductService {
             oldTicket.setQuantity(ticket.getQuantity());
             oldTicket.setImportedPrice(ticket.getImportedPrice());
             oldTicket.setImportedDate(ticket.getImportedDate());
+            oldTicket.setUpdateBy(ticket.getUpdateBy());
 
             if (importProductDAO.update(oldTicket) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this ticket!");

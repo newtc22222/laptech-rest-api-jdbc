@@ -64,6 +64,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             oldInvoice.setPaid(invoice.isPaid());
             oldInvoice.setOrderStatus(invoice.getOrderStatus());
             oldInvoice.setNote(invoice.getNote());
+            oldInvoice.setUpdateBy(invoice.getUpdateBy());
 
             if (invoiceDAO.update(invoice) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this invoice!");

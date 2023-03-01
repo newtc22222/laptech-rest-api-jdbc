@@ -37,6 +37,7 @@ public class CartServiceImpl implements CartService {
             throw new ResourceNotFoundException("[Info] Can not find this cart in system!");
         } else {
             oldCart.setDiscountId(cart.getDiscountId());
+            oldCart.setUpdateBy(cart.getUpdateBy());
 
             if (cartDAO.update(oldCart) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this cart!");

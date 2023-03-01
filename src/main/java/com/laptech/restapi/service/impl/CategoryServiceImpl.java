@@ -51,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
             oldCategory.setName(category.getName());
             oldCategory.setImage(category.getImage());
             oldCategory.setDescription(category.getDescription());
+            oldCategory.setUpdateBy(category.getUpdateBy());
 
             if (categoryDAO.update(oldCategory) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this category!");

@@ -51,6 +51,7 @@ public class RoleServiceImpl implements RoleService {
         } else {
             oldRole.setName(role.getName());
             oldRole.setDescription(role.getDescription());
+            oldRole.setUpdateBy(role.getUpdateBy());
 
             if (roleDAO.update(oldRole) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this role!");

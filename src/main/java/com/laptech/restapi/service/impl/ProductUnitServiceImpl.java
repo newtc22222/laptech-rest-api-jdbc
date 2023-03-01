@@ -61,6 +61,7 @@ public class ProductUnitServiceImpl implements ProductUnitService {
             oldUnit.setQuantity(productUnit.getQuantity());
             oldUnit.setPrice(productUnit.getPrice());
             oldUnit.setDiscountPrice(productUnit.getDiscountPrice());
+            oldUnit.setUpdateBy(productUnit.getUpdateBy());
 
             if (productUnitDAO.update(oldUnit) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this unit!");

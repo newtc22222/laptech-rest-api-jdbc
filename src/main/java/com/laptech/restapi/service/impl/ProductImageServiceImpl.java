@@ -54,6 +54,7 @@ public class ProductImageServiceImpl implements ProductImageService {
             oldImage.setFeedbackId(productImage.getFeedbackId());
             oldImage.setUrl(productImage.getUrl());
             oldImage.setType(productImage.getType());
+            oldImage.setUpdateBy(productImage.getUpdateBy());
 
             if (productImageDAO.update(oldImage) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this image!");

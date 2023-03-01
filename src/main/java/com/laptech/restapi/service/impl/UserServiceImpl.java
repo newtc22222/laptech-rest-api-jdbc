@@ -65,6 +65,7 @@ public class UserServiceImpl implements UserService {
             oldUser.setPhone(user.getPhone());
             oldUser.setEmail(user.getEmail());
             oldUser.setPassword(user.getPassword());
+            oldUser.setUpdateBy(user.getUpdateBy());
 
             if (userDAO.update(oldUser) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update user!");

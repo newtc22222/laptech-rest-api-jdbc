@@ -50,6 +50,7 @@ public class BrandServiceImpl implements BrandService {
             oldBrand.setCountry(brand.getCountry());
             oldBrand.setLogo(brand.getLogo());
             oldBrand.setEstablishDate(brand.getEstablishDate());
+            oldBrand.setUpdateBy(brand.getUpdateBy());
 
             if (brandDAO.update(oldBrand) == 0) {
                 throw new InternalServerErrorException("Can not update this brand!");

@@ -57,6 +57,7 @@ public class CommentServiceImpl implements CommentService {
             oldComment.setPhone(comment.getPhone());
             oldComment.setUsername(comment.getUsername());
             oldComment.setContent(comment.getContent());
+            oldComment.setUpdateBy(comment.getUpdateBy());
 
             if (commentDAO.update(oldComment) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this comment!");

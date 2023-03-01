@@ -50,6 +50,7 @@ public class LabelServiceImpl implements LabelService {
             oldLabel.setIcon(label.getIcon());
             oldLabel.setTitle(label.getTitle());
             oldLabel.setDescription(label.getDescription());
+            oldLabel.setUpdateBy(label.getUpdateBy());
 
             if (labelDAO.update(oldLabel) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update label!");

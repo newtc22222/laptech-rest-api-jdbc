@@ -80,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
             oldProduct.setListedPrice(product.getListedPrice());
             oldProduct.setSpecifications(product.getSpecifications());
             oldProduct.setDescriptionDetail(product.getDescriptionDetail());
+            oldProduct.setUpdateBy(product.getUpdateBy());
 
             if (productDAO.update(oldProduct) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this product!");

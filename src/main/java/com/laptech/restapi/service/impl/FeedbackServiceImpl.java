@@ -57,6 +57,7 @@ public class FeedbackServiceImpl implements FeedbackService {
             oldFeedback.setUserId(feedback.getUserId());
             oldFeedback.setContent(feedback.getContent());
             oldFeedback.setRatingPoint(feedback.getRatingPoint());
+            oldFeedback.setUpdateBy(feedback.getUpdateBy());
 
             if (feedbackDAO.update(oldFeedback) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this feedback!");
