@@ -72,7 +72,7 @@ public class BannerServiceImpl implements BannerService {
 
     @Override
     public long count() {
-        return 0;
+        return bannerDAO.count();
     }
 
     @Override
@@ -82,11 +82,8 @@ public class BannerServiceImpl implements BannerService {
 
     @Override
     public Collection<Banner> findWithFilter(Map<String, Object> params) {
-        Set<Banner> bannerSet = new HashSet<>(bannerDAO.findAll());
-
         BannerFilter filter = new BannerFilter(ConvertMap.changeAllValueFromObjectToString(params));
-        Collection<Banner> bannerFilter = bannerDAO.findWithFilter(filter);
-        bannerSet.removeIf(item -> !bannerFilter.contains(item));
+        Set<Banner> bannerSet = (Set<Banner>) bannerDAO.findWithFilter(filter);
 
         if (params.containsKey("startDate") && params.containsKey("endDate")) {
             Date startDate = Date.valueOf(params.get("startDate").toString());
@@ -98,7 +95,6 @@ public class BannerServiceImpl implements BannerService {
             Collection<Banner> bannerList = bannerDAO.findBannerByDate(Date.valueOf(params.get("date").toString()));
             bannerSet.removeIf(item -> !bannerList.contains(item));
         }
-
         return bannerSet;
     }
 

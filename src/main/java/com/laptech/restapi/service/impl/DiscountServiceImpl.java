@@ -6,9 +6,11 @@ import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.DiscountDAO;
 import com.laptech.restapi.dao.ProductDAO;
+import com.laptech.restapi.dto.filter.DiscountFilter;
 import com.laptech.restapi.model.Discount;
 import com.laptech.restapi.service.DiscountService;
 import com.laptech.restapi.util.ConvertDateTime;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +86,8 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public Collection<Discount> findWithFilter(Map<String, Object> params) {
-        Set<Discount> discountSet = new HashSet<>(discountDAO.findAll());
+        DiscountFilter filter = new DiscountFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        Set<Discount> discountSet = (Set<Discount>) discountDAO.findWithFilter(filter);
 
         if (params.containsKey("startDate") && params.containsKey("endDate")) {
             Collection<Discount> discountList = discountDAO.findDiscountByDateRange(
@@ -93,7 +96,6 @@ public class DiscountServiceImpl implements DiscountService {
             );
             discountSet.removeIf(item -> !discountList.contains(item));
         }
-
         return discountSet;
     }
 

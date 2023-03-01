@@ -5,8 +5,10 @@ import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.CategoryDAO;
+import com.laptech.restapi.dto.filter.CategoryFilter;
 import com.laptech.restapi.model.Category;
 import com.laptech.restapi.service.CategoryService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +80,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Collection<Category> findWithFilter(Map<String, Object> params) {
-        return null;
+        CategoryFilter filter = new CategoryFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        return categoryDAO.findWithFilter(filter);
     }
 
     @Override

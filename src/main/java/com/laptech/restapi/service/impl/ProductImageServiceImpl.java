@@ -7,8 +7,10 @@ import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.ProductDAO;
 import com.laptech.restapi.dao.ProductImageDAO;
+import com.laptech.restapi.dto.filter.ProductImageFilter;
 import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.service.ProductImageService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,7 +84,8 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public Collection<ProductImage> findWithFilter(Map<String, Object> params) {
-        return null;
+        ProductImageFilter filter = new ProductImageFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        return productImageDAO.findWithFilter(filter);
     }
 
     @Override
@@ -116,16 +119,9 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public Set<ProductImage> filter(String productId, String imageType) {
-        Collection<ProductImage> images = null;
-        if (productId != null || imageType != null) {
-            if (productId == null) {
-                images = productImageDAO.findProductImageByImageType(ImageType.valueOf(imageType));
-            } else if (imageType == null) {
-                if (productDAO.findById(productId) == null)
-                    throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
-                images = productImageDAO.findProductImageByProductId(productId);
-            }
-        }
-        return (images != null) ? new HashSet<>(images) : null;
+        Collection<ProductImage> imageCollectionByProduct = productImageDAO.findProductImageByProductId(productId);
+        Collection<ProductImage> imageCollectionByType = productImageDAO.findProductImageByImageType(ImageType.valueOf(imageType));
+        imageCollectionByProduct.removeIf(item -> !imageCollectionByType.contains(item));
+        return (Set<ProductImage>) imageCollectionByProduct;
     }
 }

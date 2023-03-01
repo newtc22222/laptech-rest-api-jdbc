@@ -5,8 +5,10 @@ import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.LabelDAO;
+import com.laptech.restapi.dto.filter.LabelFilter;
 import com.laptech.restapi.model.Label;
 import com.laptech.restapi.service.LabelService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +80,8 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public Collection<Label> findWithFilter(Map<String, Object> params) {
-        return null;
+        LabelFilter filter = new LabelFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        return labelDAO.findWithFilter(filter);
     }
 
     @Override

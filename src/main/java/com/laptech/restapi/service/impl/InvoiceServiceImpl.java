@@ -7,10 +7,12 @@ import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.InvoiceDAO;
 import com.laptech.restapi.dao.UserDAO;
+import com.laptech.restapi.dto.filter.InvoiceFilter;
 import com.laptech.restapi.model.Invoice;
 import com.laptech.restapi.service.InvoiceService;
 import com.laptech.restapi.util.ConvertDate;
 import com.laptech.restapi.util.ConvertDateTime;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +95,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Collection<Invoice> findWithFilter(Map<String, Object> params) {
-        Set<Invoice> invoiceSet = new HashSet<>(invoiceDAO.findAll());
+        InvoiceFilter filter = new InvoiceFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        Set<Invoice> invoiceSet = (Set<Invoice>) invoiceDAO.findWithFilter(filter);
 
         if (params.containsKey("date")) {
             Collection<Invoice> invoiceList = invoiceDAO.findInvoiceByDate(
@@ -111,7 +114,6 @@ public class InvoiceServiceImpl implements InvoiceService {
             Collection<Invoice> invoiceList = invoiceDAO.findInvoiceByOrderStatus(OrderStatus.valueOf(params.get("status").toString()));
             invoiceSet.removeIf(item -> !invoiceList.contains(item));
         }
-
         return invoiceSet;
     }
 

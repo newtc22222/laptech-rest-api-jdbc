@@ -6,8 +6,10 @@ import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.RoleDAO;
 import com.laptech.restapi.dao.UserDAO;
+import com.laptech.restapi.dto.filter.RoleFilter;
 import com.laptech.restapi.model.Role;
 import com.laptech.restapi.service.RoleService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +81,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Collection<Role> findWithFilter(Map<String, Object> params) {
-        return null;
+        RoleFilter filter = new RoleFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        return roleDAO.findWithFilter(filter);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.*;
+import com.laptech.restapi.dto.filter.ProductFilter;
 import com.laptech.restapi.dto.request.ProductPriceDTO;
 import com.laptech.restapi.dto.response.ProductCardDTO;
 import com.laptech.restapi.dto.response.ProductDetailDTO;
@@ -13,6 +14,7 @@ import com.laptech.restapi.model.Label;
 import com.laptech.restapi.model.Product;
 import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.service.ProductService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -108,23 +110,34 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Collection<Product> findWithFilter(Map<String, Object> params) {
-        Set<Product> productSet = new HashSet<>(productDAO.findAll());
+        Set<Product> productSet = (Set<Product>) productDAO.findAll();
 
         if (params.containsKey("brandId")) {
-            List<String> brandIdList = (List<String>) params.get("brandId");
-            List<Product> productList = new ArrayList<>();
-            brandIdList.forEach(brandId -> productList.addAll(
-                    productDAO.findProductByBrandId(Long.parseLong(brandId))
-            ));
-            productSet.removeIf(item -> !productList.contains(item));
+            String[] brandIdList = (String[]) params.get("brandId");
+            Set<Product> products = new HashSet<>();
+            Arrays.asList(brandIdList).forEach(brandId ->
+                    products.addAll(productDAO.findProductByBrandId(Long.parseLong(brandId)))
+            );
+            productSet.removeIf(item -> !products.contains(item));
+            params.remove("brandId");
         }
         if (params.containsKey("categoryId")) {
-            List<String> categoryIdList = (List<String>) params.get("categoryId");
-            List<Product> productList = new ArrayList<>();
-            categoryIdList.forEach(categoryId -> productList.addAll(
-                    productDAO.findProductByCategoryId(Long.parseLong(categoryId))
-            ));
-            productSet.removeIf(item -> !productList.contains(item));
+            String[] categoryIdList = (String[]) params.get("categoryId");
+            Set<Product> products = new HashSet<>();
+            Arrays.asList(categoryIdList).forEach(categoryId ->
+                    products.addAll(productDAO.findProductByCategoryId(Long.parseLong(categoryId)))
+            );
+            productSet.removeIf(item -> !products.contains(item));
+            params.remove("categoryId");
+        }
+        if (params.containsKey("labelId")) {
+            String[] labelIdList = (String[]) params.get("label");
+            Set<Product> products = new HashSet<>();
+            Arrays.asList(labelIdList).forEach(labelId ->
+                    products.addAll(productDAO.findProductByLabelId(Long.parseLong(labelId)))
+            );
+            productSet.removeIf(item -> !products.contains(item));
+            params.remove("labelId");
         }
         if (params.containsKey("startPrice") && params.containsKey("endPrice")) {
             Collection<Product> productList = productDAO.findProductByPriceRange(
@@ -133,14 +146,10 @@ public class ProductServiceImpl implements ProductService {
             );
             productSet.removeIf(item -> !productList.contains(item));
         }
-        if (params.containsKey("label")) {
-            List<String> labelIdList = (List<String>) params.get("label");
-            List<Product> productList = new ArrayList<>();
-            labelIdList.forEach(labelId -> productList.addAll(
-                    productDAO.findProductByLabelId(Long.parseLong(labelId))
-            ));
-            productSet.removeIf(item -> !productList.contains(item));
-        }
+
+        ProductFilter filter = new ProductFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        Collection<Product> products = productDAO.findWithFilter(filter);
+        productSet.removeIf(item -> !products.contains(item));
         return productSet;
     }
 

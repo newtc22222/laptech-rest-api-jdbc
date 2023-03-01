@@ -6,10 +6,12 @@ import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.ImportProductDAO;
 import com.laptech.restapi.dao.ProductDAO;
+import com.laptech.restapi.dto.filter.ImportProductFilter;
 import com.laptech.restapi.model.ImportProduct;
 import com.laptech.restapi.service.ImportProductService;
 import com.laptech.restapi.util.ConvertDate;
 import com.laptech.restapi.util.ConvertDateTime;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,39 +85,25 @@ public class ImportProductServiceImpl implements ImportProductService {
 
     @Override
     public Collection<ImportProduct> findWithFilter(Map<String, Object> params) {
-        Set<ImportProduct> ticketSet = new HashSet<>(importProductDAO.findAll());
-        Set<ImportProduct> notSuit = new HashSet<>();
+        ImportProductFilter filter = new ImportProductFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        Set<ImportProduct> ticketSet = (Set<ImportProduct>) importProductDAO.findWithFilter(filter);
 
         if (params.containsKey("productId")) {
             Collection<ImportProduct> ticketList = importProductDAO.findImportProductByProductId(params.get("productId").toString());
-            ticketList.forEach(ticket -> {
-                if (!ticketSet.contains(ticket)) {
-                    notSuit.add(ticket);
-                }
-            });
+            ticketSet.removeIf(item -> !ticketList.contains(item));
         }
         if (params.containsKey("date")) {
             Collection<ImportProduct> ticketList = importProductDAO.findImportProductByDate(
                     ConvertDate.getDateFromString(params.get("date").toString()));
-            ticketList.forEach(ticket -> {
-                if (!ticketSet.contains(ticket)) {
-                    notSuit.add(ticket);
-                }
-            });
+            ticketSet.removeIf(item -> !ticketList.contains(item));
         }
         if (params.containsKey("startDate") && params.containsKey("endedDate")) {
             Collection<ImportProduct> ticketList = importProductDAO.findImportProductByDateRange(
                     ConvertDateTime.getDateTimeFromString(params.get("startDate").toString()),
                     ConvertDateTime.getDateTimeFromString(params.get("endDate").toString())
             );
-            ticketList.forEach(ticket -> {
-                if (!ticketSet.contains(ticket)) {
-                    notSuit.add(ticket);
-                }
-            });
+            ticketSet.removeIf(item -> !ticketList.contains(item));
         }
-        ticketSet.removeAll(notSuit);
-
         return ticketSet;
     }
 

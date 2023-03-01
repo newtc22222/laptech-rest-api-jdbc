@@ -43,11 +43,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public Collection<RefreshToken> findAll(Long page, Long size) {
-        if (size == null)
-            return refreshTokenDAO.findAll();
-        long limit = size;
-        long skip = size * (page - 1);
-        return refreshTokenDAO.findAll(limit, skip);
+        return refreshTokenDAO.findAll(size, (page - 1) * size);
     }
 
     @Override

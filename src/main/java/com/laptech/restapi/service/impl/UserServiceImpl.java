@@ -6,10 +6,12 @@ import com.laptech.restapi.common.exception.*;
 import com.laptech.restapi.dao.RoleDAO;
 import com.laptech.restapi.dao.UserDAO;
 import com.laptech.restapi.dao.UserRoleDAO;
+import com.laptech.restapi.dto.filter.UserFilter;
 import com.laptech.restapi.dto.request.UserDTO;
 import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.UserService;
 import com.laptech.restapi.util.AuditUtil;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -97,8 +99,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<User> findWithFilter(Map<String, Object> params) {
-        Set<User> userSet = new HashSet<>(userDAO.findAll());
-
+        UserFilter filter = new UserFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        Set<User> userSet = (Set<User>) userDAO.findWithFilter(filter);
 
         if (params.containsKey("role")) {
             Collection<User> userList = userDAO.findUserByRole(params.get("role").toString());

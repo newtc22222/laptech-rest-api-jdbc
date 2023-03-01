@@ -7,8 +7,10 @@ import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.CartDAO;
 import com.laptech.restapi.dao.InvoiceDAO;
 import com.laptech.restapi.dao.ProductUnitDAO;
+import com.laptech.restapi.dto.filter.ProductUnitFilter;
 import com.laptech.restapi.model.ProductUnit;
 import com.laptech.restapi.service.ProductUnitService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,7 +91,8 @@ public class ProductUnitServiceImpl implements ProductUnitService {
 
     @Override
     public Collection<ProductUnit> findWithFilter(Map<String, Object> params) {
-        return null;
+        ProductUnitFilter filter = new ProductUnitFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        return productUnitDAO.findWithFilter(filter);
     }
 
     @Override

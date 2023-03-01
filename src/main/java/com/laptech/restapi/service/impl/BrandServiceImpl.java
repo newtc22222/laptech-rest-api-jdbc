@@ -5,8 +5,10 @@ import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.BrandDAO;
+import com.laptech.restapi.dto.filter.BrandFilter;
 import com.laptech.restapi.model.Brand;
 import com.laptech.restapi.service.BrandService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,7 +78,8 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Collection<Brand> findWithFilter(Map<String, Object> params) {
-        return null;
+        BrandFilter filter = new BrandFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        return brandDAO.findWithFilter(filter);
     }
 
     @Override

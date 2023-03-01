@@ -7,8 +7,10 @@ import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.FeedbackDAO;
 import com.laptech.restapi.dao.ProductDAO;
 import com.laptech.restapi.dao.UserDAO;
+import com.laptech.restapi.dto.filter.FeedbackFilter;
 import com.laptech.restapi.model.Feedback;
 import com.laptech.restapi.service.FeedbackService;
+import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +86,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public Collection<Feedback> findWithFilter(Map<String, Object> params) {
-        return null;
+        FeedbackFilter filter = new FeedbackFilter(ConvertMap.changeAllValueFromObjectToString(params));
+        return feedbackDAO.findWithFilter(filter);
     }
 
     @Override

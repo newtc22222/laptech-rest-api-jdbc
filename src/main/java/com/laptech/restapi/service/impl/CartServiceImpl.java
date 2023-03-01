@@ -19,8 +19,6 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart insert(Cart cart) {
-        //check
-
         if (cartDAO.isExists(cart)) {
             throw new ResourceAlreadyExistsException("[Info] This cart has already existed in system!");
         }
@@ -60,7 +58,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public long count() {
-        return 0;
+        return cartDAO.count();
     }
 
     @Override
