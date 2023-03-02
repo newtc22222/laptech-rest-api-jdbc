@@ -31,11 +31,6 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address insert(Address address) {
-        String invalidArguments = AddressAudit.getInvalidArguments(address);
-        if (invalidArguments != null) {
-            throw new InvalidArgumentException(invalidArguments);
-        }
-
         if (addressDAO.isExists(address)) {
             throw new ResourceAlreadyExistsException("[Info] This address has already existed in system!");
         }
@@ -49,11 +44,6 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void update(Address address, String addressId) {
-        String invalidArguments = AddressAudit.getInvalidArguments(address);
-        if (invalidArguments != null) {
-            throw new InvalidArgumentException(invalidArguments);
-        }
-
         Address oldAddress = addressDAO.findById(addressId);
         if (oldAddress == null) {
             throw new ResourceNotFoundException("[Info] Cannot find address with id=" + addressId);
