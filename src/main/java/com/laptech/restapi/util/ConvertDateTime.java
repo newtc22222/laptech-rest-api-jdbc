@@ -29,6 +29,7 @@ public class ConvertDateTime {
 
     public static LocalDateTime getDateTimeFromResultSet(ResultSet rs, String column) {
         try {
+            if(rs.getString(column) == null) return null;
             return LocalDateTime.parse(rs.getString(column), DATE_TIME_PATTERN);
         } catch (DateTimeParseException | SQLException err) {
             logger.info("[PARSE DATE TIME FROM RESULT SET] {}", err.getLocalizedMessage());
