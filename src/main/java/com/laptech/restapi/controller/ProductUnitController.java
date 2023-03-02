@@ -31,15 +31,33 @@ public class ProductUnitController {
     @ApiOperation(value = "Get all units in cart", response = ProductUnit.class)
     @GetMapping("/cart/{cartId}/units")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<List<ProductUnit>> getProductUnitsByCartId(@PathVariable("cartId") String cartId) {
-        return ResponseEntity.ok(productUnitService.getProductUnitByCartId(cartId));
+    public ResponseEntity<DataResponse> getProductUnitsByCartId(@PathVariable("cartId") String cartId,
+                                                                @RequestParam(defaultValue = "false") boolean isCard) {
+        Collection<ProductUnit> unitCollection = productUnitService.getProductUnitByCartId(cartId);
+        Collection<?> collection = (isCard)
+                ? productUnitService.getProductUnitCardCollection(unitCollection)
+                : unitCollection;
+
+        return DataResponse.getCollectionSuccess(
+                "Get product unit of cart",
+                collection
+        );
     }
 
     @ApiOperation(value = "Get all units in receipt", response = ProductUnit.class)
     @GetMapping("/invoice/{invoiceId}/units")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<List<ProductUnit>> getProductUnitsByInvoiceId(@PathVariable("invoiceId") String invoiceId) {
-        return ResponseEntity.ok(productUnitService.getProductUnitByInvoiceId(invoiceId));
+    public ResponseEntity<DataResponse> getProductUnitsByInvoiceId(@PathVariable("invoiceId") String invoiceId,
+                                                                   @RequestParam(defaultValue = "false") boolean isCard) {
+        Collection<ProductUnit> unitCollection = productUnitService.getProductUnitByInvoiceId(invoiceId);
+        Collection<?> collection = (isCard)
+                ? productUnitService.getProductUnitCardCollection(unitCollection)
+                : unitCollection;
+
+        return DataResponse.getCollectionSuccess(
+                "Get product unit of invoice",
+                collection
+        );
     }
 
     @ApiOperation(value = "Get an unit with id", response = ProductUnit.class)
