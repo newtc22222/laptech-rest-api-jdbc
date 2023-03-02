@@ -45,7 +45,7 @@ public class ProductImageController {
     }
 
     @ApiOperation(value = "Get image with filter", response = ProductImage.class)
-    @GetMapping("/images")
+    @GetMapping("/images/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<DataResponse> getImageWithFilter() {
         Map<String, Object> params = new HashMap<>();

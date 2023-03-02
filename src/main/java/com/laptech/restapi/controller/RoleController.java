@@ -40,7 +40,7 @@ public class RoleController {
     }
 
     @ApiOperation(value = "Get role with filter", response = Role.class)
-    @GetMapping("/roles")
+    @GetMapping("/roles/filter")
     public ResponseEntity<DataResponse> getRoleWithFilter() {
         Map<String, Object> params = new HashMap<>();
 

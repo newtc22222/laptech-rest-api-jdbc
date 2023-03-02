@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class ImportProductController {
     }
 
     @ApiOperation(value = "Get ticket with filter", response = ImportProduct.class)
-    @GetMapping("/imported")
+    @GetMapping("/imported/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<DataResponse> getImportProductWithFilter(@RequestParam(value = "date", required = false) String date,
                                                                    @RequestParam(value = "startDate", required = false) String startDate,
