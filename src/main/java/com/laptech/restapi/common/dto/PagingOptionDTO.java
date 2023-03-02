@@ -39,7 +39,7 @@ public class PagingOptionDTO extends SortOptionDTO {
     public Object[] getObject() {
         List<Object> objects = new ArrayList<>();
         objects.add(super.getSortBy());
-        objects.add(super.getSortDir());
+        objects.add(super.getSortDir().toString());
         objects.add(this.offset);
         objects.add(this.count);
         return objects.toArray();

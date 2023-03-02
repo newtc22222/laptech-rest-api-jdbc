@@ -12,12 +12,7 @@ public class SortOptionDTO {
 
     public SortOptionDTO(String sortBy, String sortDir) {
         this.sortBy = sortBy;
-        try {
-            this.sortDir = SortDir.valueOf(sortDir);
-        }
-        catch (IllegalArgumentException err) {
-            this.sortDir = SortDir.ASC;
-        }
+        this.sortDir = (sortDir == null || sortDir.equals("")) ? SortDir.ASC : SortDir.valueOf(sortDir);
     }
 
     public String getSortBy() {
