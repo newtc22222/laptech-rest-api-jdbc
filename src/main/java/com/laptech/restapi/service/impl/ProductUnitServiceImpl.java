@@ -1,13 +1,14 @@
 package com.laptech.restapi.service.impl;
 
 import com.laptech.restapi.common.dto.PagingOptionDTO;
+import com.laptech.restapi.common.enums.ImageType;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
-import com.laptech.restapi.dao.CartDAO;
-import com.laptech.restapi.dao.InvoiceDAO;
-import com.laptech.restapi.dao.ProductUnitDAO;
+import com.laptech.restapi.dao.*;
 import com.laptech.restapi.dto.filter.ProductUnitFilter;
+import com.laptech.restapi.dto.response.ProductUnitCardDTO;
+import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.model.ProductUnit;
 import com.laptech.restapi.service.ProductUnitService;
 import com.laptech.restapi.util.ConvertMap;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Nhat Phi
@@ -26,12 +29,16 @@ import java.util.Map;
 public class ProductUnitServiceImpl implements ProductUnitService {
     @Autowired
     private ProductUnitDAO productUnitDAO;
-
     @Autowired
     private CartDAO cartDAO;
-
     @Autowired
     private InvoiceDAO invoiceDAO;
+    @Autowired
+    private DiscountDAO discountDAO;
+    @Autowired
+    private ProductDAO productDAO;
+    @Autowired
+    private ProductImageDAO productImageDAO;
 
     @Override
     public ProductUnit insert(ProductUnit productUnit) {
