@@ -30,7 +30,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO {
     private String INSERT;
     @Value("${sp_FindRefreshTokenByCode}")
     private String QUERY_ONE_BY_CODE;
-    @Value("${}")
+    @Value("${sp_FindRefreshTokenByUserId}")
     private final String QUERY_REFRESH_TOKEN_BY_USER_ID = String.format("select * from %s where user_id=?", "");
 
     @Value("${sp_CountAllRefreshToken}")
