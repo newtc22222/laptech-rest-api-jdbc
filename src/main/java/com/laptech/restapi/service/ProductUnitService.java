@@ -17,4 +17,6 @@ public interface ProductUnitService extends BaseService<ProductUnit, String> {
     Collection<ProductUnit> getProductUnitByCartId(String cartId);
 
     Collection<ProductUnit> getProductUnitByInvoiceId(String invoiceId);
+
+    Collection<ProductUnitCardDTO> getProductUnitCardCollection(Collection<ProductUnit> collection);
 }

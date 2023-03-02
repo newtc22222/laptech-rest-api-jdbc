@@ -140,4 +140,26 @@ public class ProductUnitServiceImpl implements ProductUnitService {
         }
         return productUnitDAO.findProductUnitByInvoiceId(invoiceId);
     }
+
+    @Override
+    public Collection<ProductUnitCardDTO> getProductUnitCardCollection(Collection<ProductUnit> collection) {
+        return collection.stream().map(item -> {
+            ProductUnitCardDTO dto = new ProductUnitCardDTO();
+            dto.setId(item.getId());
+            dto.setCartId(item.getCartId());
+            dto.setInvoiceId(item.getInvoiceId());
+            dto.setDiscountPrice(item.getDiscountPrice());
+            dto.setDiscounts(discountDAO.findDiscountByProductId(item.getProductId()));
+            dto.setProduct(productDAO.findById(item.getProductId()));
+
+            List<ProductImage> images = productImageDAO
+                    .findProductImageByProductId(item.getProductId())
+                    .stream()
+                    .filter(image -> image.getType() == ImageType.ADVERTISE)
+                    .collect(Collectors.toList());
+            dto.setImageRepresent(images.get(0));
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }
