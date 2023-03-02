@@ -49,25 +49,46 @@ public class DataResponse extends BaseResponse {
                 ));
     }
 
-    public static ResponseEntity<DataResponse> success(String actionName, Object newData) {
+    public static<T> ResponseEntity<DataResponse> success(String actionName, T newObject) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new DataResponse(
                         HttpStatus.CREATED,
                         actionName + " successfully!",
                         1,
-                        newData
+                        newObject
                 ));
     }
 
-    public static ResponseEntity<DataResponse> getListSuccess(String actionName, long recordCount, Object data) {
+    public static<T> ResponseEntity<DataResponse> getObjectSuccess(String actionName, T object) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new DataResponse(
                         HttpStatus.OK,
                         actionName + " successfully!",
-                        recordCount,
-                        data
+                        1,
+                        object
+                ));
+    }
+
+    public static<T> ResponseEntity<DataResponse> getCollectionSuccess(String actionName, Collection<T> collection) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse(
+                        HttpStatus.OK,
+                        actionName + " successfully!",
+                        collection.size(),
+                        collection
+                ));
+    }
+    public static<T> ResponseEntity<DataResponse> getCollectionSuccess(String actionName, long totalRecord, Collection<T> collection) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse(
+                        HttpStatus.OK,
+                        actionName + " successfully!",
+                        totalRecord,
+                        collection
                 ));
     }
 }

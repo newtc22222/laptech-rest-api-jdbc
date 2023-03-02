@@ -12,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Nhat Phi
@@ -30,29 +30,43 @@ public class BannerController {
 
     @ApiOperation(value = "Get all banners in system", response = Banner.class)
     @GetMapping("")
-    public ResponseEntity<Collection<Banner>> getBanners(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                         @RequestParam(required = false) Long size,
-                                                         @RequestParam(value = "startDate", required = false) String startDate,
-                                                         @RequestParam(value = "endDate", required = false) String endDate,
-                                                         @RequestParam(value = "date", required = false) String date,
-                                                         @RequestParam(value = "type", required = false) String type) {
-        if (startDate == null && endDate == null && date == null && type == null) {
-            return ResponseEntity.ok(bannerService.findAll(page, size));
-        }
+    public ResponseEntity<DataResponse> getAllBanner(@RequestParam(required = false) String sortBy,
+                                                     @RequestParam(required = false) String sortDir,
+                                                     @RequestParam(required = false) Long page,
+                                                     @RequestParam(required = false) Long size) {
+        return DataResponse.getCollectionSuccess(
+                "Get all banners",
+                bannerService.count(),
+                bannerService.findAll(sortBy, sortDir, page, size)
+        );
+    }
 
-        Map<String, String> params = new HashMap<>();
-        if (startDate != null) params.put("startDate", startDate);
-        if (endDate != null) params.put("endDate", endDate);
-        if (date != null) params.put("date", date);
-        if (type != null) params.put("type", type);
-        return ResponseEntity.ok(bannerService.filter(params));
+    @ApiOperation(value = "Get banners with filter", response = Banner.class)
+    @GetMapping("filter")
+    public ResponseEntity<DataResponse> getBannerWithFilter(@RequestParam(value = "startDate", required = false) String startDate,
+                                                            @RequestParam(value = "endDate", required = false) String endDate,
+                                                            @RequestParam(value = "date", required = false) String date,
+                                                            @RequestParam(value = "type", required = false) String type) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        params.put("date", date);
+        params.put("type", type);
+        Set<Banner> banners = (Set<Banner>) bannerService.findWithFilter(params);
+        return DataResponse.getCollectionSuccess(
+                "Get banner with filter",
+                banners
+        );
     }
 
     @ApiOperation(value = "Get banner by bannerId", response = Banner.class)
     @GetMapping("{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Banner> findBannerById(@PathVariable("id") long bannerId) {
-        return ResponseEntity.ok(bannerService.findById(bannerId));
+    public ResponseEntity<DataResponse> findBannerById(@PathVariable("id") long bannerId) {
+        return DataResponse.getObjectSuccess(
+                "Get banner",
+                bannerService.findById(bannerId)
+        );
     }
 
     @ApiOperation(value = "Create new banner", response = DataResponse.class)
@@ -77,8 +91,9 @@ public class BannerController {
     @ApiOperation(value = "Delete banner", response = BaseResponse.class)
     @DeleteMapping("{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BaseResponse> deleteBanner(@PathVariable("id") long bannerId) {
-        bannerService.delete(bannerId);
+    public ResponseEntity<BaseResponse> deleteBanner(@PathVariable("id") long bannerId,
+                                                     @RequestBody(required = false) Map<String, String> body) {
+        bannerService.delete(bannerId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete banner");
     }
 }

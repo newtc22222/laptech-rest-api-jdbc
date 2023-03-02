@@ -14,7 +14,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -30,42 +32,64 @@ public class CommentController {
 
     @ApiOperation(value = "Get all comments", response = Comment.class)
     @GetMapping("/comments")
-    public ResponseEntity<List<Comment>> getAllComments(@RequestParam(required = false, defaultValue = "1") Long page,
+    public ResponseEntity<DataResponse> getAllComments(@RequestParam(required = false) String sortBy,
+                                                        @RequestParam(required = false) String sortDir,
+                                                        @RequestParam(required = false) Long page,
                                                         @RequestParam(required = false) Long size) {
-        return ResponseEntity.ok(commentService.findAll(page, size));
+        return DataResponse.getCollectionSuccess(
+                "Get all comments",
+                commentService.count(),
+                commentService.findAll(sortBy, sortDir, page, size)
+        );
+    }
+
+    @ApiOperation(value = "Get comments with filter", response = Comment.class)
+    @GetMapping("/comments/filter")
+    public ResponseEntity<DataResponse> getCommentWithFilter() {
+        Map<String, Object> params = new HashMap<>();
+        return DataResponse.getCollectionSuccess(
+                "Get all comments",
+                commentService.findWithFilter(params)
+        );
     }
 
     @ApiOperation(value = "Get all comments of a product", response = Comment.class)
     @GetMapping("/products/{productId}/comments")
-    public ResponseEntity<Collection<Comment>> getCommentsOfProduct(@PathVariable("productId") String productId) {
-        return ResponseEntity.ok(commentService.getAllCommentsOfProduct(productId));
+    public ResponseEntity<DataResponse> getCommentsOfProduct(@PathVariable("productId") String productId) {
+        return DataResponse.getCollectionSuccess(
+                "Get comments of product",
+                commentService.getAllCommentsOfProduct(productId)
+        );
     }
 
     @ApiOperation(value = "Get all comments of a user", response = Comment.class)
     @GetMapping("/users/{phoneNumber}/comments")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Collection<Comment>> getCommentsOfUser(@RequestParam("phoneNumber") String phone) {
-        return ResponseEntity.ok(commentService.getAllCommentsOfUser(phone));
+    public ResponseEntity<DataResponse> getCommentsOfUser(@RequestParam("phoneNumber") String phone) {
+        return DataResponse.getCollectionSuccess(
+                "Get comments of user",
+                commentService.getAllCommentsOfUser(phone)
+        );
     }
 
     @ApiOperation(value = "Get one comment with id", response = Comment.class)
     @GetMapping("/comments/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<Comment> findCommentById(@PathVariable("id") String commentId) {
-        return ResponseEntity.ok(commentService.findById(commentId));
+    public ResponseEntity<DataResponse> findCommentById(@PathVariable("id") String commentId) {
+        return DataResponse.getObjectSuccess(
+                "Get comment",
+                commentService.findById(commentId)
+        );
     }
 
     @ApiOperation(value = "Create a new comment", response = DataResponse.class)
     @PostMapping("/comments")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<?> createNewComment(@RequestBody CommentDTO commentDTO) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new DataResponse(
-                        HttpStatus.CREATED,
-                        "Create new comment success!",
-                        commentService.insert(CommentDTO.transform(commentDTO))
-                ));
+    public ResponseEntity<DataResponse> createNewComment(@RequestBody CommentDTO commentDTO) {
+        return DataResponse.success(
+                "Create new comment",
+                commentService.insert(CommentDTO.transform(commentDTO))
+        );
     }
 
     @ApiOperation(value = "Update a comment", response = BaseResponse.class)
@@ -74,26 +98,15 @@ public class CommentController {
     public ResponseEntity<BaseResponse> updateComment(@PathVariable("id") String commentId,
                                                       @RequestBody CommentDTO commentDTO) {
         commentService.update(CommentDTO.transform(commentDTO), commentId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new DataResponse(
-                        HttpStatus.OK,
-                        "Update comment success!",
-                        null
-                ));
+        return DataResponse.success("Update comment");
     }
 
     @ApiOperation(value = "Remove a comment", response = BaseResponse.class)
     @DeleteMapping("/comments/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<BaseResponse> deleteComment(@PathVariable("id") String commentId) {
-        commentService.delete(commentId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new DataResponse(
-                        HttpStatus.OK,
-                        "Delete comment success!",
-                        null
-                ));
+    public ResponseEntity<BaseResponse> deleteComment(@PathVariable("id") String commentId,
+                                                      @RequestBody(required = false)Map<String, String> body) {
+        commentService.delete(commentId, (body != null) ? body.get("updateBy") : null);
+        return DataResponse.success("Delete comment");
     }
 }

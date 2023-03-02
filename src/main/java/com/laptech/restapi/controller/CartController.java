@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @author Nhat Phi
  * @since 2022-11-25
@@ -26,8 +28,11 @@ public class CartController {
     @ApiOperation(value = "Get cart of user (Only 1 cart)", response = Cart.class)
     @GetMapping("/users/{userId}/cart")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Cart> getCartOfUser(@PathVariable("userId") long userId) {
-        return ResponseEntity.ok(cartService.findById(userId));
+    public ResponseEntity<DataResponse> getCartOfUser(@PathVariable("userId") long userId) {
+        return DataResponse.getObjectSuccess(
+                "Get cart of user",
+                cartService.findById(userId)
+        );
     }
 
     @ApiOperation(value = "Create new cart for user", response = DataResponse.class)
@@ -52,8 +57,9 @@ public class CartController {
     @ApiOperation(value = "Remove old cart (or transform to invoice table)", response = BaseResponse.class)
     @DeleteMapping("/users/{userId}/cart")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseResponse> deleteCart(@PathVariable("userId") long userId) {
-        cartService.delete(userId);
+    public ResponseEntity<BaseResponse> deleteCart(@PathVariable("userId") long userId,
+                                                   @RequestBody(required = false)Map<String, String> body) {
+        cartService.delete(userId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete cart");
     }
 }

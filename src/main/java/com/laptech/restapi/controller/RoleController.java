@@ -11,7 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 2023-02-07
@@ -27,22 +28,45 @@ public class RoleController {
 
     @ApiOperation(value = "Get all role in system", response = Role.class)
     @GetMapping("/roles")
-    public ResponseEntity<List<Role>> getAllRole(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                 @RequestParam(required = false) Long size) {
-        return ResponseEntity.ok(roleService.findAll(page, size));
+    public ResponseEntity<DataResponse> getAllRoles(@RequestParam(required = false) String sortBy,
+                                                    @RequestParam(required = false) String sortDir,
+                                                    @RequestParam(required = false) Long page,
+                                                    @RequestParam(required = false) Long size) {
+        return DataResponse.getCollectionSuccess(
+                "Get all roles",
+                roleService.count(),
+                roleService.findAll(sortBy, sortDir, page, size)
+        );
+    }
+
+    @ApiOperation(value = "Get role with filter", response = Role.class)
+    @GetMapping("/roles")
+    public ResponseEntity<DataResponse> getRoleWithFilter() {
+        Map<String, Object> params = new HashMap<>();
+
+        return DataResponse.getCollectionSuccess(
+                "Get role with filter",
+                roleService.findWithFilter(params)
+        );
     }
 
     @ApiOperation(value = "Get roles of user in system", response = Role.class)
     @GetMapping("/users/{userId}/role")
-    public ResponseEntity<List<Role>> getRolesOfUser(@PathVariable(value = "userId") long userId) {
-        return ResponseEntity.ok(roleService.findRoleByUserId(userId));
+    public ResponseEntity<DataResponse> getRolesOfUser(@PathVariable(value = "userId") long userId) {
+        return DataResponse.getCollectionSuccess(
+                "Get role of user",
+                roleService.findRoleByUserId(userId)
+        );
     }
 
     @ApiOperation(value = "Get a role with id", response = Role.class)
     @GetMapping("/roles/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Role> getRoleById(@PathVariable(value = "id") int roleId) {
-        return ResponseEntity.ok(roleService.findById(roleId));
+    public ResponseEntity<DataResponse> getRoleById(@PathVariable(value = "id") int roleId) {
+        return DataResponse.getObjectSuccess(
+                "Get role",
+                roleService.findById(roleId)
+        );
     }
 
     @ApiOperation(value = "Create new role", response = DataResponse.class)
@@ -67,8 +91,9 @@ public class RoleController {
     @ApiOperation(value = "Delete role in system", response = BaseResponse.class)
     @DeleteMapping("/roles/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BaseResponse> deleteRole(@PathVariable(value = "id") int roleId) {
-        roleService.delete(roleId);
+    public ResponseEntity<BaseResponse> deleteRole(@PathVariable(value = "id") int roleId,
+                                                   @RequestBody(required = false) Map<String, String> body) {
+        roleService.delete(roleId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete role");
     }
 }

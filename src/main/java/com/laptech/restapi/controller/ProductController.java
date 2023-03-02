@@ -3,7 +3,6 @@ package com.laptech.restapi.controller;
 import com.laptech.restapi.dto.request.ProductPriceDTO;
 import com.laptech.restapi.dto.response.BaseResponse;
 import com.laptech.restapi.dto.response.DataResponse;
-import com.laptech.restapi.dto.response.ProductDetailDTO;
 import com.laptech.restapi.model.Product;
 import com.laptech.restapi.service.ProductService;
 import io.swagger.annotations.Api;
@@ -30,70 +29,104 @@ public class ProductController {
 
     @ApiOperation(value = "Get all products in system", response = Product.class)
     @GetMapping("/products")
-    public ResponseEntity<Collection<?>> getAllProduct(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                       @RequestParam(required = false) Long size,
-                                                       @RequestParam(value = "isCard", required = false, defaultValue = "false") Boolean isCard,
-                                                       @RequestParam(value = "name", required = false) String name,
-                                                       @RequestParam(value = "brandId", required = false) List<String> brandId,
-                                                       @RequestParam(value = "categoryId", required = false) String categoryId,
-                                                       @RequestParam(value = "releasedYear", required = false) String releasedYear,
-                                                       @RequestParam(value = "startPrice", required = false) String startPrice,
-                                                       @RequestParam(value = "endPrice", required = false) String endPrice,
-                                                       @RequestParam(value = "label", required = false) List<String> labelId) {
-        Collection<Product> productCollection;
-        if (name == null && brandId == null && categoryId == null && releasedYear == null
-                && startPrice == null && endPrice == null) {
-            productCollection = productService.findAll(page, size);
-        } else {
-            Map<String, Object> params = new HashMap<>();
-            if (name != null) params.put("name", name);
-            if (brandId != null) params.put("brandId", brandId);
-            if (categoryId != null) params.put("categoryId", categoryId);
-            if (releasedYear != null) params.put("releasedYear", releasedYear);
-            if (startPrice != null) params.put("startPrice", startPrice);
-            if (endPrice != null) params.put("endPrice", endPrice);
-            if (labelId != null) params.put("labelId", labelId);
-            productCollection = productService.filter(params);
-        }
-        if (isCard != null && isCard) {
-            return ResponseEntity.ok(productService.getProductCardDTO(productCollection));
-        }
-        return ResponseEntity.ok(productCollection);
+    public ResponseEntity<DataResponse> getAllProduct(@RequestParam(required = false) String sortBy,
+                                                      @RequestParam(required = false) String sortDir,
+                                                      @RequestParam(required = false) Long page,
+                                                      @RequestParam(required = false) Long size,
+                                                      @RequestParam(defaultValue = "false") boolean isCard) {
+        Collection<Product> products = productService.findAll(sortBy, sortDir, page, size);
+        Collection<?> collection = (isCard) ? productService.getProductCardDTO(products) : products; // how?
+        return DataResponse.getCollectionSuccess(
+                "Get all products",
+                productService.count(),
+                collection
+        );
+    }
+
+    @ApiOperation(value = "Get product with filter", response = Product.class)
+    @GetMapping("/products/filter")
+    public ResponseEntity<DataResponse> getProductWithFilter(@RequestParam(value = "name", required = false) String name,
+                                                             @RequestParam(value = "brandId", required = false) List<String> brandId,
+                                                             @RequestParam(value = "categoryId", required = false) String categoryId,
+                                                             @RequestParam(value = "releasedYear", required = false) String releasedYear,
+                                                             @RequestParam(value = "startPrice", required = false) String startPrice,
+                                                             @RequestParam(value = "endPrice", required = false) String endPrice,
+                                                             @RequestParam(value = "label", required = false) List<String> labelId,
+                                                             @RequestParam(defaultValue = "false") boolean isCard) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("brandId", brandId);
+        params.put("categoryId", categoryId);
+        params.put("releasedYear", releasedYear);
+        params.put("startPrice", startPrice);
+        params.put("endPrice", endPrice);
+        params.put("labelId", labelId);
+
+        Collection<Product> products = productService.findWithFilter(params);
+        Collection<?> collection = (isCard) ? productService.getProductCardDTO(products) : products;
+
+        return DataResponse.getCollectionSuccess(
+                "Get product with filter",
+                collection
+        );
     }
 
     @ApiOperation(value = "Get a product in system with id", response = Product.class)
     @GetMapping("/products/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") String productId,
-                                            @RequestParam(value = "isDetail", required = false, defaultValue = "false") Boolean isDetail) {
+    public ResponseEntity<DataResponse> getProductById(@PathVariable("id") String productId) {
+        return DataResponse.getObjectSuccess(
+                "Get product",
+                productService.findById(productId)
+        );
+    }
+
+    @ApiOperation(value = "Get a product with id and full detail", response = Product.class)
+    @GetMapping("/products/{id}/detail")
+    public ResponseEntity<DataResponse> getProductByIdWithDetails(@PathVariable("id") String productId) {
         Product product = productService.findById(productId);
-        if (isDetail != null && isDetail) {
-            return ResponseEntity.ok(productService.getProductDetail(product));
-        }
-        return ResponseEntity.ok(product);
+        return DataResponse.getObjectSuccess(
+                "Get product with full detail",
+                productService.getProductDetail(product)
+        );
     }
 
     @ApiOperation(value = "Get all products of a brand in system", response = Product.class)
     @GetMapping("/brands/{brandId}/products")
-    public ResponseEntity<List<Product>> getProductOfBrand(@PathVariable("brandId") long brandId) {
-        return ResponseEntity.ok(productService.findProductByBrandId(brandId));
+    public ResponseEntity<DataResponse> getProductOfBrand(@PathVariable("brandId") long brandId,
+                                                          @RequestParam(defaultValue = "false") boolean isCard) {
+        Collection<Product> products = productService.findProductByBrandId(brandId);
+        Collection<?> collection = (isCard) ? productService.getProductCardDTO(products) : products;
+
+        return DataResponse.getCollectionSuccess(
+                "Get product of brand",
+                collection
+        );
     }
 
     @ApiOperation(value = "Get all products of a category in system", response = Product.class)
     @GetMapping("/categories/{categoryId}/products")
-    public ResponseEntity<List<Product>> getProductOfCategory(@PathVariable("categoryId") long categoryId) {
-        return ResponseEntity.ok(productService.findProductByCategoryId(categoryId));
+    public ResponseEntity<DataResponse> getProductOfCategory(@PathVariable("categoryId") long categoryId,
+                                                             @RequestParam(defaultValue = "false") boolean isCard) {
+        Collection<Product> products = productService.findProductByCategoryId(categoryId);
+        Collection<?> collection = (isCard) ? productService.getProductCardDTO(products) : products;
+
+        return DataResponse.getCollectionSuccess(
+                "Get product of category",
+                collection
+        );
     }
 
     @ApiOperation(value = "Get all accessories of a product", response = Product.class)
     @GetMapping("/products/{productId}/accessories")
-    public ResponseEntity<Set<Product>> getAccessoryOfProduct(@PathVariable("productId") String productId) {
-        return ResponseEntity.ok(productService.findAccessoryOfProduct(productId));
-    }
+    public ResponseEntity<DataResponse> getAccessoryOfProduct(@PathVariable("productId") String productId,
+                                                              @RequestParam(defaultValue = "false") boolean isCard) {
+        Collection<Product> products = productService.findAccessoryOfProduct(productId);
+        Collection<?> collection = (isCard) ? productService.getProductCardDTO(products) : products;
 
-    @ApiOperation(value = "Get a product with full detail in system", response = ProductDetailDTO.class)
-    @GetMapping("/products/{id}/details")
-    public ResponseEntity<ProductDetailDTO> getProductDetail(@PathVariable("id") String productId) {
-        return ResponseEntity.ok(productService.getProductDetail(productService.findById(productId)));
+        return DataResponse.getCollectionSuccess(
+                "Get accessory of product",
+                collection
+        );
     }
 
     @ApiOperation(value = "Create a new product (product)", response = DataResponse.class)
@@ -126,8 +159,9 @@ public class ProductController {
     @ApiOperation(value = "Delete product from system", response = BaseResponse.class)
     @DeleteMapping("/products/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BaseResponse> deleteProduct(@PathVariable("id") String productId) {
-        productService.delete(productId);
+    public ResponseEntity<BaseResponse> deleteProduct(@PathVariable("id") String productId,
+                                                      @RequestBody(required = false) Map<String, String> body) {
+        productService.delete(productId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete product");
     }
 

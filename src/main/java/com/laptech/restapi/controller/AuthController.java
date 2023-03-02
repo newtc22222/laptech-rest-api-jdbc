@@ -41,16 +41,22 @@ public class AuthController {
 
     @ApiOperation(value = "Handle login for an user", response = JwtResponse.class)
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest jwtRequest) {
+    public ResponseEntity<DataResponse> login(@RequestBody JwtRequest jwtRequest) {
         if (jwtRequest.getPhone().startsWith("0")) {
             jwtRequest.setPhone(jwtRequest.getPhone().replaceAll("^.", "+84"));
         }
-        return ResponseEntity.ok(jwtService.createJwtToken(jwtRequest));
+        return DataResponse.getObjectSuccess(
+                "Login",
+                jwtService.createJwtToken(jwtRequest)
+        );
     }
 
     @ApiOperation(value = "Use refresh token to get new accessToken", response = TokenRefreshResponse.class)
     @PostMapping(value = {"/refreshToken", "/refresh-token"})
-    public ResponseEntity<TokenRefreshResponse> refreshToken(@RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(jwtService.refreshJwtToken(body.get("refreshToken")));
+    public ResponseEntity<DataResponse> refreshToken(@RequestBody Map<String, String> body) {
+        return DataResponse.getObjectSuccess(
+                "Refresh Token",
+                jwtService.refreshJwtToken(body.get("refreshToken"))
+        );
     }
 }

@@ -15,7 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,26 +33,50 @@ public class ProductImageController {
     @ApiOperation(value = "Get all images in system", response = ProductImage.class)
     @GetMapping("/images")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<List<ProductImage>> getAllImages(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                           @RequestParam(required = false) Long size) {
-        return ResponseEntity.ok(productImageService.findAll(page, size));
+    public ResponseEntity<DataResponse> getAllImages(@RequestParam(required = false) String sortBy,
+                                                     @RequestParam(required = false) String sortDir,
+                                                     @RequestParam(required = false) Long page,
+                                                     @RequestParam(required = false) Long size) {
+        return DataResponse.getCollectionSuccess(
+                "Get all images",
+                productImageService.count(),
+                productImageService.findAll(sortBy, sortDir, page, size)
+        );
+    }
+
+    @ApiOperation(value = "Get image with filter", response = ProductImage.class)
+    @GetMapping("/images")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<DataResponse> getImageWithFilter() {
+        Map<String, Object> params = new HashMap<>();
+
+        return DataResponse.getCollectionSuccess(
+                "Get all images",
+                productImageService.findWithFilter(params)
+        );
     }
 
     @ApiOperation(value = "Get an image with id", response = ProductImage.class)
     @GetMapping("/images/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<ProductImage> getImageById(@PathVariable("id") String imageId) {
-        return ResponseEntity.ok(productImageService.findById(imageId));
+    public ResponseEntity<DataResponse> getImageById(@PathVariable("id") String imageId) {
+        return DataResponse.getObjectSuccess(
+                "Get image",
+                productImageService.findById(imageId)
+        );
     }
 
     @ApiOperation(value = "Get all images of product", response = ProductImage.class)
     @GetMapping("/products/{productId}/images")
-    public ResponseEntity<Collection<ProductImage>> getProductImagesByProductId(@PathVariable("productId") String productId,
-                                                                                @RequestParam(value = "type", required = false) String type) {
-        if (type == null) {
-            return ResponseEntity.ok(productImageService.findByProductId(productId));
-        }
-        return ResponseEntity.ok(productImageService.filter(productId, type));
+    public ResponseEntity<DataResponse> getProductImagesByProductId(@PathVariable("productId") String productId,
+                                                                    @RequestParam(required = false) String type) {
+        Collection<ProductImage> collection = (type != null)
+                ? productImageService.filter(productId, type)
+                : productImageService.findByProductId(productId);
+        return DataResponse.getCollectionSuccess(
+                "Get image of product",
+                collection
+        );
     }
 
     @ApiOperation(value = "Import a new image (link)", response = DataResponse.class)
@@ -78,23 +102,24 @@ public class ProductImageController {
     @PatchMapping("/images/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> updateProductImagePathAndType(@PathVariable("id") String imageId,
-                                                                      @RequestBody Map<String, String> imageRequest) {
-        String path = imageRequest.get("path");
+                                                                      @RequestBody Map<String, String> body) {
+        String url = body.get("url");
         ImageType type;
         try {
-            type = ImageType.valueOf(imageRequest.get("type"));
+            type = ImageType.valueOf(body.get("type"));
         } catch (IllegalArgumentException err) {
             throw new InvalidArgumentException(err.getLocalizedMessage());
         }
-        productImageService.updateUrlAndType(imageId, path, type, );
+        productImageService.updateUrlAndType(imageId, url, type, body.get("updateBy"));
         return DataResponse.success("Update product's image");
     }
 
     @ApiOperation(value = "Delete an image", response = BaseResponse.class)
     @DeleteMapping("/images/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BaseResponse> deleteProductImage(@PathVariable("id") String imageId) {
-        productImageService.delete(imageId);
+    public ResponseEntity<BaseResponse> deleteProductImage(@PathVariable("id") String imageId,
+                                                           @RequestBody(required = false) Map<String, String> body) {
+        productImageService.delete(imageId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete product's image");
     }
 }

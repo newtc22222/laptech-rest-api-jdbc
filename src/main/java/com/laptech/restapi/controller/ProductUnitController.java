@@ -13,7 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -45,8 +45,11 @@ public class ProductUnitController {
     @ApiOperation(value = "Get an unit with id", response = ProductUnit.class)
     @GetMapping("/units/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<ProductUnit> getProductUnitsById(@PathVariable("id") String unitId) {
-        return ResponseEntity.ok(productUnitService.findById(unitId));
+    public ResponseEntity<DataResponse> getProductUnitsById(@PathVariable("id") String unitId) {
+        return DataResponse.getObjectSuccess(
+                "Get product unit",
+                productUnitService.findById(unitId)
+        );
     }
 
     @ApiOperation(value = "Add an unit to cart", response = DataResponse.class)
@@ -72,19 +75,20 @@ public class ProductUnitController {
     @PatchMapping("/units/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseResponse> updateProductUnitProperties(@PathVariable("id") String unitId,
-                                                                    @RequestBody Map<String, String> unitRequest) {
-        int quantity = Integer.getInteger(unitRequest.get("quantity"));
-        BigDecimal price = new BigDecimal(unitRequest.get("price"));
-        BigDecimal discountPrice = new BigDecimal(unitRequest.get("discountPrice"));
-        productUnitService.updateProductUnitProperties(unitId, quantity, price, discountPrice);
+                                                                    @RequestBody Map<String, String> body) {
+        int quantity = Integer.getInteger(body.get("quantity"));
+        BigDecimal price = new BigDecimal(body.get("price"));
+        BigDecimal discountPrice = new BigDecimal(body.get("discountPrice"));
+        productUnitService.updateProductUnitProperties(unitId, quantity, price, discountPrice, body.get("updateBy"));
         return DataResponse.success("Update unit's information");
     }
 
     @ApiOperation(value = "Remove an unit in cart (or invoice)", response = BaseResponse.class)
     @DeleteMapping("/units/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<BaseResponse> deleteProductUnit(@PathVariable("id") String unitId) {
-        productUnitService.delete(unitId);
+    public ResponseEntity<BaseResponse> deleteProductUnit(@PathVariable("id") String unitId,
+                                                          @RequestBody(required = false) Map<String, String> body) {
+        productUnitService.delete(unitId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Remove unit");
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -27,16 +29,35 @@ public class BrandController {
 
     @ApiOperation(value = "Get all brands in system", response = Brand.class)
     @GetMapping("")
-    public ResponseEntity<List<Brand>> getAllBrand(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                   @RequestParam(required = false) Long size) {
-        return ResponseEntity.ok(brandService.findAll(page, size));
+    public ResponseEntity<DataResponse> getAllBrands(@RequestParam(required = false) String sortBy,
+                                                     @RequestParam(required = false) String sortDir,
+                                                     @RequestParam(required = false) Long page,
+                                                     @RequestParam(required = false) Long size) {
+        return DataResponse.getCollectionSuccess(
+                "Get all brands",
+                brandService.count(),
+                brandService.findAll(sortBy, sortDir, page, size)
+        );
+    }
+
+    @ApiOperation(value = "Get brand with filter", response = Brand.class)
+    @GetMapping("filter")
+    public ResponseEntity<DataResponse> getBrandWithFilter() {
+        Map<String, Object> params = new HashMap<>();
+        return DataResponse.getCollectionSuccess(
+                "Get brand with filter",
+                brandService.findWithFilter(params)
+        );
     }
 
     @ApiOperation(value = "Get one brand in system with id", response = Brand.class)
     @GetMapping("{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Brand> getBrandById(@PathVariable("id") long brandId) {
-        return ResponseEntity.ok(brandService.findById(brandId));
+    public ResponseEntity<DataResponse> getBrandById(@PathVariable("id") long brandId) {
+        return DataResponse.getObjectSuccess(
+                "Get brand",
+                brandService.findById(brandId)
+        );
     }
 
     @ApiOperation(value = "Create a new brand", response = DataResponse.class)
@@ -61,8 +82,9 @@ public class BrandController {
     @ApiOperation(value = "Delete brand in system", response = BaseResponse.class)
     @DeleteMapping("{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BaseResponse> deleteBrand(@PathVariable("id") long brandId) {
-        brandService.delete(brandId);
+    public ResponseEntity<BaseResponse> deleteBrand(@PathVariable("id") long brandId,
+                                                    @RequestBody(required = false) Map<String, String> body) {
+        brandService.delete(brandId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete brand");
     }
 }

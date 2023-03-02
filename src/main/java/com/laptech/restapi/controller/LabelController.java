@@ -11,7 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 2023-02-07
@@ -26,16 +27,35 @@ public class LabelController {
 
     @ApiOperation(value = "Get all label in system", response = Label.class)
     @GetMapping("")
-    public ResponseEntity<List<Label>> getAllLabel(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                   @RequestParam(required = false) Long size) {
-        return ResponseEntity.ok(labelService.findAll(page, size));
+    public ResponseEntity<DataResponse> getAllLabels(@RequestParam(required = false) String sortBy,
+                                                    @RequestParam(required = false) String sortDir,
+                                                    @RequestParam(required = false) Long page,
+                                                    @RequestParam(required = false) Long size) {
+        return DataResponse.getCollectionSuccess(
+                "Get all labels",
+                labelService.count(),
+                labelService.findAll(sortBy, sortDir, page, size)
+        );
+    }
+
+    @ApiOperation(value = "Get label with limit", response = Label.class)
+    @GetMapping("filter")
+    public ResponseEntity<DataResponse> getLabelWithFilter() {
+        Map<String, Object> params = new HashMap<>();
+        return DataResponse.getCollectionSuccess(
+                "Get all labels",
+                labelService.findWithFilter(params)
+        );
     }
 
     @ApiOperation(value = "Get a label with id", response = Label.class)
     @GetMapping("{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Label> getLabelById(@PathVariable(value = "id") long labelId) {
-        return ResponseEntity.ok(labelService.findById(labelId));
+    public ResponseEntity<DataResponse> getLabelById(@PathVariable(value = "id") long labelId) {
+        return DataResponse.getObjectSuccess(
+                "Get label",
+                labelService.findById(labelId)
+        );
     }
 
     @ApiOperation(value = "Create new label", response = DataResponse.class)
@@ -60,8 +80,9 @@ public class LabelController {
     @ApiOperation(value = "Delete label in system", response = BaseResponse.class)
     @DeleteMapping("{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BaseResponse> deleteLabel(@PathVariable(value = "id") long labelId) {
-        labelService.delete(labelId);
+    public ResponseEntity<BaseResponse> deleteLabel(@PathVariable(value = "id") long labelId,
+                                                    @RequestBody(required = false) Map<String, String> body) {
+        labelService.delete(labelId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete label");
     }
 }

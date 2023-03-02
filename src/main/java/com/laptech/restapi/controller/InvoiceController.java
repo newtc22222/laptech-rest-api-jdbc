@@ -13,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,42 +31,59 @@ public class InvoiceController {
     @ApiOperation(value = "Get all invoices", response = Invoice.class)
     @GetMapping("/invoices")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Collection<Invoice>> getAllInvoices(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                              @RequestParam(required = false) Long size,
-                                                              @RequestParam(value = "address", required = false) String address,
+    public ResponseEntity<DataResponse> getAllInvoices(@RequestParam(required = false) String sortBy,
+                                                       @RequestParam(required = false) String sortDir,
+                                                       @RequestParam(required = false) Long page,
+                                                       @RequestParam(required = false) Long size) {
+        return DataResponse.getCollectionSuccess(
+                "Get all invoices",
+                invoiceService.count(),
+                invoiceService.findAll(sortBy, sortDir, page, size)
+        );
+    }
+
+    @ApiOperation(value = "Get invoice with filter", response = Invoice.class)
+    @GetMapping("/invoices/filter")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<DataResponse> getAllInvoices(@RequestParam(value = "address", required = false) String address,
                                                               @RequestParam(value = "date", required = false) String date,
                                                               @RequestParam(value = "startDate", required = false) String startDate,
                                                               @RequestParam(value = "endDate", required = false) String endDate,
                                                               @RequestParam(value = "paymentType", required = false) String paymentType,
                                                               @RequestParam(value = "status", required = false) String status,
                                                               @RequestParam(value = "isPaid", required = false) String isPaid) {
-        if (address == null && date == null && startDate == null && endDate == null
-                && paymentType == null && status == null && isPaid == null) {
-            return ResponseEntity.ok(invoiceService.findAll(page, size));
-        }
-        Map<String, String> params = new HashMap<>();
-        if (address != null) params.put("address", address);
-        if (date != null) params.put("date", date);
-        if (startDate != null) params.put("startDate", startDate);
-        if (endDate != null) params.put("endDate", endDate);
-        if (paymentType != null) params.put("paymentType", paymentType);
-        if (status != null) params.put("status", status);
-        if (isPaid != null) params.put("isPaid", isPaid);
-        return ResponseEntity.ok(invoiceService.filter(params));
+        Map<String, Object> params = new HashMap<>();
+        params.put("address", address);
+        params.put("date", date);
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        params.put("paymentType", paymentType);
+        params.put("status", status);
+        params.put("isPaid", isPaid);
+        return DataResponse.getCollectionSuccess(
+                "Get invoice with filter",
+                invoiceService.findWithFilter(params)
+        );
     }
 
     @ApiOperation(value = "Get one invoice with id", response = Invoice.class)
     @GetMapping("/invoices/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<Invoice> getInvoiceById(@PathVariable("id") String invoiceId) {
-        return ResponseEntity.ok(invoiceService.findById(invoiceId));
+    public ResponseEntity<DataResponse> getInvoiceById(@PathVariable("id") String invoiceId) {
+        return DataResponse.getObjectSuccess(
+                "Get invoice",
+                invoiceService.findById(invoiceId)
+        );
     }
 
     @ApiOperation(value = "Get all invoices of user", response = Invoice.class)
     @GetMapping("/users/{userId}/invoices")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<List<Invoice>> getInvoicesOfUser(@PathVariable("userId") long userId) {
-        return ResponseEntity.ok(invoiceService.getInvoicesOfUser(userId));
+    public ResponseEntity<DataResponse> getInvoicesOfUser(@PathVariable("userId") long userId) {
+        return DataResponse.getCollectionSuccess(
+                "Get invoices of user",
+                invoiceService.getInvoicesOfUser(userId)
+        );
     }
 
     @ApiOperation(value = "Create a new Invoice", response = DataResponse.class)
@@ -94,11 +109,11 @@ public class InvoiceController {
     @PatchMapping("/invoices/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<BaseResponse> updateInvoicePaymentMethodAndPaidStatus(@PathVariable("id") String invoiceId,
-                                                                                @RequestBody Map<String, String> request) {
+                                                                                @RequestBody Map<String, String> body) {
         invoiceService.updateInvoicePaymentMethodAndPaidStatus(
                 invoiceId,
-                request.get("paymentType"),
-                Boolean.parseBoolean(request.get("isPaid")), );
+                body.get("paymentType"),
+                Boolean.parseBoolean(body.get("isPaid")), body.get("updateBy"));
         return DataResponse.success("Update payment method and paid status");
     }
 
@@ -107,15 +122,19 @@ public class InvoiceController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<BaseResponse> updateInvoiceStatus(@PathVariable("id") String invoiceId,
                                                             @RequestBody Map<String, String> body) {
-        invoiceService.updateStatus(invoiceId, OrderStatus.valueOf(body.get("status").trim().toUpperCase()), );
+        invoiceService.updateStatus(
+                invoiceId,
+                OrderStatus.valueOf(body.get("status").toUpperCase()),
+                body.get("updateBy"));
         return DataResponse.success("Update invoice's order status");
     }
 
     @ApiOperation(value = "Remove an invoice", response = BaseResponse.class)
     @DeleteMapping("/invoices/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseResponse> deleteInvoice(@PathVariable("id") String invoiceId) {
-        invoiceService.delete(invoiceId);
+    public ResponseEntity<BaseResponse> deleteInvoice(@PathVariable("id") String invoiceId,
+                                                      @RequestBody(required = false) Map<String, String> body) {
+        invoiceService.delete(invoiceId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete invoice");
     }
 }

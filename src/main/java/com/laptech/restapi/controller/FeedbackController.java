@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Nhat Phi
@@ -26,35 +26,57 @@ public class FeedbackController {
     @Autowired
     private FeedbackService feedbackService;
 
-    @ApiOperation(value = "Get all feedbacks (with limit)", response = Feedback.class)
+    @ApiOperation(value = "Get all feedbacks", response = Feedback.class)
     @GetMapping("/feedbacks")
-    public ResponseEntity<List<Feedback>> getNewFeedbacks(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                          @RequestParam(required = false) Long size) {
-        return ResponseEntity.ok(feedbackService.findAll(page, size));
+    public ResponseEntity<DataResponse> getAllFeedbacks(@RequestParam(required = false) String sortBy,
+                                                        @RequestParam(required = false) String sortDir,
+                                                        @RequestParam(required = false) Long page,
+                                                        @RequestParam(required = false) Long size) {
+        return DataResponse.getCollectionSuccess(
+                "Get all feedbacks",
+                feedbackService.count(),
+                feedbackService.findAll(sortBy, sortDir, page, size)
+        );
+    }
+
+    @ApiOperation(value = "Get feedback with filter", response = Feedback.class)
+    @GetMapping("/feedbacks/filter")
+    public ResponseEntity<DataResponse> getFeedbackWithFilter() {
+        Map<String, Object> params = new HashMap<>();
+
+        return DataResponse.getCollectionSuccess(
+                "Get feedback with filter",
+                feedbackService.findWithFilter(params)
+        );
     }
 
     @ApiOperation(value = "Get one feedback with id", response = Feedback.class)
     @GetMapping("/feedbacks/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<Feedback> getFeedbackById(@PathVariable("id") String feedbackId) {
-        return ResponseEntity.ok(feedbackService.findById(feedbackId));
+    public ResponseEntity<DataResponse> getFeedbackById(@PathVariable("id") String feedbackId) {
+        return DataResponse.getObjectSuccess(
+                "Get feedback",
+                feedbackService.findById(feedbackId)
+        );
     }
 
     @ApiOperation(value = "Get all feedbacks of a product", response = Feedback.class)
     @GetMapping("/products/{productId}/feedbacks")
-    public ResponseEntity<Collection<Feedback>> getFeedbacksOfProduct(@PathVariable("productId") String productId,
-                                                                      @RequestParam(value = "point", required = false) Byte ratingPoint) {
-        if (ratingPoint != null) {
-            return ResponseEntity.ok(feedbackService.getFeedbacksOfProductByRatingPoint(productId, ratingPoint));
-        }
-        return ResponseEntity.ok(feedbackService.getAllFeedbacksOfProduct(productId));
+    public ResponseEntity<DataResponse> getFeedbacksOfProduct(@PathVariable("productId") String productId) {
+        return DataResponse.getCollectionSuccess(
+                "Get feedback of product",
+                feedbackService.getAllFeedbacksOfProduct(productId)
+        );
     }
 
     @ApiOperation(value = "Get all feedbacks of user with userId", response = Feedback.class)
     @GetMapping("/users/{userId}/feedbacks")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<Collection<Feedback>> getFeedbacksOfUser(@PathVariable("userId") long userId) {
-        return ResponseEntity.ok(feedbackService.getAllFeedbacksOfUser(userId));
+    public ResponseEntity<DataResponse> getFeedbacksOfUser(@PathVariable("userId") long userId) {
+        return DataResponse.getCollectionSuccess(
+                "Get feedback of user",
+                feedbackService.getAllFeedbacksOfUser(userId)
+        );
     }
 
     @ApiOperation(value = "Create a new feedback", response = DataResponse.class)
@@ -79,8 +101,9 @@ public class FeedbackController {
     @ApiOperation(value = "Delete a feedback", response = BaseResponse.class)
     @DeleteMapping("/feedbacks/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseResponse> deleteFeedback(@PathVariable("id") String feedbackId) {
-        feedbackService.delete(feedbackId);
+    public ResponseEntity<BaseResponse> deleteFeedback(@PathVariable("id") String feedbackId,
+                                                       @RequestBody(required = false) Map<String, String> body) {
+        feedbackService.delete(feedbackId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete feedback");
     }
 }

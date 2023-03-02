@@ -31,34 +31,51 @@ public class DiscountController {
 
     @ApiOperation(value = "Get all discounts in system", response = Discount.class)
     @GetMapping("/discounts")
-    public ResponseEntity<Collection<Discount>> getAllDiscount(@RequestParam(required = false, defaultValue = "1") Long page,
-                                                               @RequestParam(required = false) Long size,
-                                                               @RequestParam(value = "code", required = false) String code,
+    public ResponseEntity<DataResponse> getAllDiscounts(@RequestParam(required = false) String sortBy,
+                                                        @RequestParam(required = false) String sortDir,
+                                                        @RequestParam(required = false) Long page,
+                                                        @RequestParam(required = false) Long size) {
+        return DataResponse.getCollectionSuccess(
+                "Get all discount",
+                discountService.count(),
+                discountService.findAll(sortBy, sortDir, page, size)
+        );
+    }
+
+    @ApiOperation(value = "Get discount with filter", response = Discount.class)
+    @GetMapping("/discounts/filter")
+    public ResponseEntity<DataResponse> getDiscountWithFilter(@RequestParam(value = "code", required = false) String code,
                                                                @RequestParam(value = "startDate", required = false) String startDate,
                                                                @RequestParam(value = "endDate", required = false) String endDate,
                                                                @RequestParam(value = "type", required = false) String type) {
-        if (code == null && startDate == null && endDate == null && type == null) {
-            return ResponseEntity.ok(discountService.findAll(page, size));
-        }
-        Map<String, String> params = new HashMap<>();
-        if (code != null) params.put("code", code);
-        if (startDate != null) params.put("startDate", code);
-        if (endDate != null) params.put("endDate", code);
-        if (type != null) params.put("type", type);
-        return ResponseEntity.ok(discountService.filter(params));
+        Map<String, Object> params = new HashMap<>();
+        params.put("code", code);
+        params.put("startDate", code);
+        params.put("endDate", code);
+        params.put("type", type);
+        return DataResponse.getCollectionSuccess(
+                "Get discount with filter",
+                discountService.findWithFilter(params)
+        );
     }
 
     @ApiOperation(value = "Get one discount with id", response = Discount.class)
     @GetMapping("/discounts/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<Discount> getDiscountById(@PathVariable("id") long discountId) {
-        return ResponseEntity.ok(discountService.findById(discountId));
+    public ResponseEntity<DataResponse> getDiscountById(@PathVariable("id") long discountId) {
+        return DataResponse.getObjectSuccess(
+                "Get discount",
+                discountService.findById(discountId)
+        );
     }
 
     @ApiOperation(value = "Get all discounts of product (with productId)", response = Discount.class)
     @GetMapping("/products/{productId}/discounts")
-    public ResponseEntity<List<Discount>> getDiscountsOfProduct(@PathVariable("productId") String productId) {
-        return ResponseEntity.ok(discountService.getDiscountsOfProduct(productId));
+    public ResponseEntity<DataResponse> getDiscountsOfProduct(@PathVariable("productId") String productId) {
+        return DataResponse.getCollectionSuccess(
+                "Get discount of product",
+                discountService.getDiscountsOfProduct(productId)
+        );
     }
 
     @ApiOperation(value = "Create a new discount", response = DataResponse.class)
@@ -83,8 +100,9 @@ public class DiscountController {
     @ApiOperation(value = "Remove a discount", response = BaseResponse.class)
     @DeleteMapping("/discounts/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BaseResponse> deleteDiscount(@PathVariable("id") long discountId) {
-        discountService.delete(discountId);
+    public ResponseEntity<BaseResponse> deleteDiscount(@PathVariable("id") long discountId,
+                                                       @RequestBody(required = false) Map<String, String> body) {
+        discountService.delete(discountId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete discount");
     }
 }
