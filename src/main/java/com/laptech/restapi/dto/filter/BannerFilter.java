@@ -15,7 +15,8 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2023-02-23
  */
-@Getter @Setter
+@Getter
+@Setter
 public class BannerFilter extends BaseFilter {
     private String path;
     private String type;

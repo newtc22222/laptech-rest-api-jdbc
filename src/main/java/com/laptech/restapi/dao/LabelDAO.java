@@ -4,7 +4,6 @@ import com.laptech.restapi.dto.filter.LabelFilter;
 import com.laptech.restapi.model.Label;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Nhat Phi

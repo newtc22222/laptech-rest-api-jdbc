@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class ProductImageFilter extends BaseFilter{
+public class ProductImageFilter extends BaseFilter {
     private String productId;
     private String feedbackId;
     private String url;

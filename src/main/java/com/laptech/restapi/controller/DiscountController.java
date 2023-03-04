@@ -12,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,9 +43,9 @@ public class DiscountController {
     @ApiOperation(value = "Get discount with filter", response = Discount.class)
     @GetMapping("/discounts/filter")
     public ResponseEntity<DataResponse> getDiscountWithFilter(@RequestParam(value = "code", required = false) String code,
-                                                               @RequestParam(value = "startDate", required = false) String startDate,
-                                                               @RequestParam(value = "endDate", required = false) String endDate,
-                                                               @RequestParam(value = "type", required = false) String type) {
+                                                              @RequestParam(value = "startDate", required = false) String startDate,
+                                                              @RequestParam(value = "endDate", required = false) String endDate,
+                                                              @RequestParam(value = "type", required = false) String type) {
         Map<String, Object> params = new HashMap<>();
         params.put("code", code);
         params.put("startDate", code);

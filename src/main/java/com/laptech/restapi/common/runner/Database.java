@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 /**
  * Create sample data for User table
+ *
  * @since 2023-02-12
  */
 //@Component

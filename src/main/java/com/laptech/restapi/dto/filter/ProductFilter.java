@@ -18,7 +18,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class ProductFilter extends BaseFilter{
+public class ProductFilter extends BaseFilter {
     private Long brandId;
     private Long categoryId;
     private String name;

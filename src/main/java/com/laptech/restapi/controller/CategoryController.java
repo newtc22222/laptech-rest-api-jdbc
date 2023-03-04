@@ -7,13 +7,11 @@ import com.laptech.restapi.service.CategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,7 +63,7 @@ public class CategoryController {
     @PostMapping("")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<DataResponse> createNewCategory(@RequestBody Category category) {
-        return DataResponse.success("Create new category",categoryService.insert(category));
+        return DataResponse.success("Create new category", categoryService.insert(category));
     }
 
     @ApiOperation(value = "Update a category", response = BaseResponse.class)

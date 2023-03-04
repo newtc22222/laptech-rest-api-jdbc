@@ -55,18 +55,18 @@ public class AddressDAOImpl implements AddressDAO {
     public String insert(Address address) {
         try {
             return jdbcTemplate.queryForObject(
-                            INSERT,
-                            String.class,
-                            address.getId(),
-                            address.getUserId(),
-                            address.getCountry(),
-                            address.getLine1(),
-                            address.getLine2(),
-                            address.getLine3(),
-                            address.getStreet(),
-                            address.isDefault(),
-                            address.getUpdateBy()
-                    );
+                    INSERT,
+                    String.class,
+                    address.getId(),
+                    address.getUserId(),
+                    address.getCountry(),
+                    address.getLine1(),
+                    address.getLine2(),
+                    address.getLine3(),
+                    address.getStreet(),
+                    address.isDefault(),
+                    address.getUpdateBy()
+            );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
@@ -116,8 +116,7 @@ public class AddressDAOImpl implements AddressDAO {
                     Long.class
             );
             return Objects.requireNonNull(count);
-        }
-        catch (DataAccessException | NullPointerException err) {
+        } catch (DataAccessException | NullPointerException err) {
             log.warn("[COUNT ALL] {}", err.getLocalizedMessage());
             return 0;
         }
@@ -132,8 +131,7 @@ public class AddressDAOImpl implements AddressDAO {
                     filter.getObject(false)
             );
             return Objects.requireNonNull(count);
-        }
-        catch (DataAccessException | NullPointerException err) {
+        } catch (DataAccessException | NullPointerException err) {
             log.warn("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
             return 0;
         }

@@ -19,6 +19,7 @@ public interface ProductDAO extends BaseDAO<Product, ProductFilter, String> {
     Collection<Product> findProductByBrandId(long brandId);
 
     Collection<Product> findProductByCategoryId(long categoryId);
+
     Collection<Product> findProductByLabelId(long labelId);
 
     Collection<Product> findProductByReleasedYear(int year);

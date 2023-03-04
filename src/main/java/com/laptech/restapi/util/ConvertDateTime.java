@@ -18,7 +18,7 @@ public class ConvertDateTime {
     private static final DateTimeFormatter DATE_TIME_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static LocalDateTime getDateTimeFromString(String text) {
-        if(text == null || text.equals("")) return null;
+        if (text == null || text.equals("")) return null;
         try {
             return LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } catch (DateTimeParseException err) {
@@ -29,7 +29,7 @@ public class ConvertDateTime {
 
     public static LocalDateTime getDateTimeFromResultSet(ResultSet rs, String column) {
         try {
-            if(rs.getString(column) == null) return null;
+            if (rs.getString(column) == null) return null;
             return LocalDateTime.parse(rs.getString(column), DATE_TIME_PATTERN);
         } catch (DateTimeParseException | SQLException err) {
             logger.info("[PARSE DATE TIME FROM RESULT SET] {}", err.getLocalizedMessage());

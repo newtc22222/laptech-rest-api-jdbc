@@ -49,7 +49,7 @@ public class DataResponse extends BaseResponse {
                 ));
     }
 
-    public static<T> ResponseEntity<DataResponse> success(String actionName, T newObject) {
+    public static <T> ResponseEntity<DataResponse> success(String actionName, T newObject) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new DataResponse(
@@ -60,7 +60,7 @@ public class DataResponse extends BaseResponse {
                 ));
     }
 
-    public static<T> ResponseEntity<DataResponse> getObjectSuccess(String actionName, T object) {
+    public static <T> ResponseEntity<DataResponse> getObjectSuccess(String actionName, T object) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new DataResponse(
@@ -71,7 +71,7 @@ public class DataResponse extends BaseResponse {
                 ));
     }
 
-    public static<T> ResponseEntity<DataResponse> getCollectionSuccess(String actionName, Collection<T> collection) {
+    public static <T> ResponseEntity<DataResponse> getCollectionSuccess(String actionName, Collection<T> collection) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new DataResponse(
@@ -81,7 +81,8 @@ public class DataResponse extends BaseResponse {
                         collection
                 ));
     }
-    public static<T> ResponseEntity<DataResponse> getCollectionSuccess(String actionName, long totalRecord, Collection<T> collection) {
+
+    public static <T> ResponseEntity<DataResponse> getCollectionSuccess(String actionName, long totalRecord, Collection<T> collection) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new DataResponse(

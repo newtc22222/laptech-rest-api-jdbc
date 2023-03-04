@@ -15,7 +15,8 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2023-02-24
  */
-@Getter @Setter
+@Getter
+@Setter
 public abstract class BaseFilter extends SortOptionDTO {
     private LocalDate createdDate;
     private LocalDate modifiedDate;
@@ -32,8 +33,8 @@ public abstract class BaseFilter extends SortOptionDTO {
         this.updateBy = updateBy;
     }
 
-    public BaseFilter(Map<String, String> baseParams){
-        super(baseParams.get("sortBy"),baseParams.get("sortDir"));
+    public BaseFilter(Map<String, String> baseParams) {
+        super(baseParams.get("sortBy"), baseParams.get("sortDir"));
         this.createdDate = ConvertDate.getDateFromString(baseParams.get("createdDate"));
         this.modifiedDate = ConvertDate.getDateFromString(baseParams.get("modifiedDate"));
         this.deletedDate = ConvertDate.getDateFromString(baseParams.get("deletedDate"));
@@ -48,7 +49,7 @@ public abstract class BaseFilter extends SortOptionDTO {
         objects.add(Date.valueOf(this.deletedDate));
         objects.add(this.isDel);
         objects.add(this.updateBy);
-        if(hasSort) {
+        if (hasSort) {
             objects.add(super.getSortBy());
             objects.add(super.getSortDir().toString());
         }

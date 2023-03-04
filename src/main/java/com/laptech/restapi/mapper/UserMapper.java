@@ -3,7 +3,6 @@ package com.laptech.restapi.mapper;
 import com.laptech.restapi.common.enums.Gender;
 import com.laptech.restapi.model.User;
 import com.laptech.restapi.util.ConvertBaseModel;
-import com.laptech.restapi.util.ConvertDateTime;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

@@ -28,9 +28,9 @@ public class LabelController {
     @ApiOperation(value = "Get all label in system", response = Label.class)
     @GetMapping("")
     public ResponseEntity<DataResponse> getAllLabels(@RequestParam(required = false) String sortBy,
-                                                    @RequestParam(required = false) String sortDir,
-                                                    @RequestParam(required = false) Long page,
-                                                    @RequestParam(required = false) Long size) {
+                                                     @RequestParam(required = false) String sortDir,
+                                                     @RequestParam(required = false) Long page,
+                                                     @RequestParam(required = false) Long size) {
         return DataResponse.getCollectionSuccess(
                 "Get all labels",
                 labelService.count(),

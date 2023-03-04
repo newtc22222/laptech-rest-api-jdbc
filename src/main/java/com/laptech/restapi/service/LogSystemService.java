@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public interface LogSystemService {
     Collection<LogSystem> findAll(String sortBy, String sortDir, Long page, Long size);
+
     Collection<LogSystem> findByFilter(Map<String, Object> params);
+
     long count();
 }

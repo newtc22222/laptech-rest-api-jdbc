@@ -1,14 +1,11 @@
 package com.laptech.restapi.service.impl;
 
-import com.laptech.restapi.audit.AddressAudit;
 import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
-import com.laptech.restapi.common.exception.InvalidArgumentException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.AddressDAO;
 import com.laptech.restapi.dao.UserDAO;
-import com.laptech.restapi.dto.filter.AddressFilter;
 import com.laptech.restapi.model.Address;
 import com.laptech.restapi.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;

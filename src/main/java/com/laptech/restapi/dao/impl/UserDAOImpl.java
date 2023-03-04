@@ -288,10 +288,10 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public User findUserByRefreshToken(String refreshToken) {
         String query = String.format("select u.* " +
-                        "from %s u, %s rf " +
-                        "where rf.refresh_token=? " +
-                        "and rf.expired_date < now() " +
-                        "and u.id = rf.user_id", "tbl_user", "tbl_refresh_token");
+                "from %s u, %s rf " +
+                "where rf.refresh_token=? " +
+                "and rf.expired_date < now() " +
+                "and u.id = rf.user_id", "tbl_user", "tbl_refresh_token");
         try {
             return jdbcTemplate.queryForObject(
                     query,

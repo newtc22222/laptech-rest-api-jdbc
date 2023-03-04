@@ -1,6 +1,5 @@
 package com.laptech.restapi.dto.filter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laptech.restapi.common.enums.Gender;
 import com.laptech.restapi.util.ConvertDate;
 import lombok.Getter;
@@ -37,7 +36,7 @@ public class UserFilter extends BaseFilter {
         this.isActive = isActive;
     }
 
-    public UserFilter(Map<String,String> params) {
+    public UserFilter(Map<String, String> params) {
         super(params);
         this.name = params.get("name");
         this.gender = (params.get("gender") != null) ? Gender.valueOf(params.get("gender")) : null;

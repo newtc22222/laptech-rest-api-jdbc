@@ -12,7 +12,8 @@ import java.util.List;
  * @author Nhat Phi
  * @since 2023-02-23
  */
-@Getter @Setter
+@Getter
+@Setter
 public class AddressFilter extends BaseFilter {
     private Long userId;
     private String country;

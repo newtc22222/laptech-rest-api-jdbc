@@ -15,7 +15,7 @@ public class ConvertDate {
     private static final Logger logger = LoggerFactory.getLogger(ConvertDateTime.class);
 
     public static LocalDate getDateFromString(String text) {
-        if(text == null || text.equals("")) return null;
+        if (text == null || text.equals("")) return null;
         try {
             return LocalDate.parse(text, DateTimeFormatter.ISO_LOCAL_DATE);
         } catch (DateTimeParseException err) {

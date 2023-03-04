@@ -1,7 +1,6 @@
 package com.laptech.restapi.common.dto;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,7 +13,7 @@ public class PagingOptionDTO extends SortOptionDTO {
 
     public PagingOptionDTO(String sortBy, String sortDir, Long page, Long size) {
         super(sortBy, sortDir);
-        if(page != null && size != null) {
+        if (page != null && size != null) {
             this.offset = (page - 1) * size;
             this.count = size;
         }

@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class LabelFilter extends BaseFilter{
+public class LabelFilter extends BaseFilter {
     private String name;
     private String icon;
     private String title;

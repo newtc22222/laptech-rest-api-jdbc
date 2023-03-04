@@ -12,6 +12,7 @@ import java.util.Collection;
  */
 public interface UserDAO extends BaseDAO<User, UserFilter, Long> {
     int updateInformation(UserDTO userDTO);
+
     int updatePassword(User user);
 
     int enable(long userId, String updateBy);

@@ -26,7 +26,7 @@ public class RoleFilter extends BaseFilter {
         this.description = description;
     }
 
-    public RoleFilter(Map<String,String> params) {
+    public RoleFilter(Map<String, String> params) {
         super(params);
         this.name = params.get("name");
         this.description = params.get("description");

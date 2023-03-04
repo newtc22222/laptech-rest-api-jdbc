@@ -13,7 +13,8 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2023-02-24
  */
-@Getter @Setter
+@Getter
+@Setter
 public class FeedbackFilter extends BaseFilter {
     private String productId;
     private Long userId;

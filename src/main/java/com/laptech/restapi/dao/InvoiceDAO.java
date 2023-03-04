@@ -18,6 +18,7 @@ public interface InvoiceDAO extends BaseDAO<Invoice, InvoiceFilter, String> {
     int updatePaymentMethodAndPaidStatus(String invoiceId, String paymentType, boolean isPaid, String updateBy);
 
     Collection<Invoice> findInvoiceByUserId(long userId);
+
     Collection<Invoice> findInvoiceByOrderStatus(OrderStatus status);
 
     Collection<Invoice> findInvoiceByDate(LocalDate date);

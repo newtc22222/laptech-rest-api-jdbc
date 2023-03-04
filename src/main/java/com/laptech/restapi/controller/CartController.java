@@ -58,7 +58,7 @@ public class CartController {
     @DeleteMapping("/users/{userId}/cart")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseResponse> deleteCart(@PathVariable("userId") long userId,
-                                                   @RequestBody(required = false)Map<String, String> body) {
+                                                   @RequestBody(required = false) Map<String, String> body) {
         cartService.delete(userId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete cart");
     }

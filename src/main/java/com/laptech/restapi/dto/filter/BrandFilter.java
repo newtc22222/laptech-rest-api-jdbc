@@ -15,8 +15,9 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2023-02-24
  */
-@Getter @Setter
-public class BrandFilter extends BaseFilter{
+@Getter
+@Setter
+public class BrandFilter extends BaseFilter {
     private String name;
     private String country;
     private Year establishYear;

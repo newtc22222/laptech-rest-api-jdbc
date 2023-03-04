@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
  * @author Nhat Phi
  * @since 2023-02-23
  */
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogSystem {

@@ -6,7 +6,6 @@ import com.laptech.restapi.dto.response.ProductDetailDTO;
 import com.laptech.restapi.model.Product;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 /**

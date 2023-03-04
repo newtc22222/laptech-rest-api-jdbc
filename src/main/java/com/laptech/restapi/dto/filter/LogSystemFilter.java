@@ -8,7 +8,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public class LogSystemFilter extends SortOptionDTO {
         objects.add(Date.valueOf(this.actionDate));
         objects.add(this.actionBy);
         objects.add(this.actionName);
-        if(hasSort) {
+        if (hasSort) {
             objects.add(super.getSortBy());
             objects.add(super.getSortDir());
         }

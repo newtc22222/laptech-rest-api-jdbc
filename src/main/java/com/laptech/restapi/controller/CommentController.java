@@ -8,14 +8,11 @@ import com.laptech.restapi.service.CommentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,9 +30,9 @@ public class CommentController {
     @ApiOperation(value = "Get all comments", response = Comment.class)
     @GetMapping("/comments")
     public ResponseEntity<DataResponse> getAllComments(@RequestParam(required = false) String sortBy,
-                                                        @RequestParam(required = false) String sortDir,
-                                                        @RequestParam(required = false) Long page,
-                                                        @RequestParam(required = false) Long size) {
+                                                       @RequestParam(required = false) String sortDir,
+                                                       @RequestParam(required = false) Long page,
+                                                       @RequestParam(required = false) Long size) {
         return DataResponse.getCollectionSuccess(
                 "Get all comments",
                 commentService.count(),
@@ -105,7 +102,7 @@ public class CommentController {
     @DeleteMapping("/comments/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<BaseResponse> deleteComment(@PathVariable("id") String commentId,
-                                                      @RequestBody(required = false)Map<String, String> body) {
+                                                      @RequestBody(required = false) Map<String, String> body) {
         commentService.delete(commentId, (body != null) ? body.get("updateBy") : null);
         return DataResponse.success("Delete comment");
     }

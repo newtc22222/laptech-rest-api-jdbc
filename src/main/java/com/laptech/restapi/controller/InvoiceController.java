@@ -46,12 +46,12 @@ public class InvoiceController {
     @GetMapping("/invoices/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<DataResponse> getAllInvoices(@RequestParam(value = "address", required = false) String address,
-                                                              @RequestParam(value = "date", required = false) String date,
-                                                              @RequestParam(value = "startDate", required = false) String startDate,
-                                                              @RequestParam(value = "endDate", required = false) String endDate,
-                                                              @RequestParam(value = "paymentType", required = false) String paymentType,
-                                                              @RequestParam(value = "status", required = false) String status,
-                                                              @RequestParam(value = "isPaid", required = false) String isPaid) {
+                                                       @RequestParam(value = "date", required = false) String date,
+                                                       @RequestParam(value = "startDate", required = false) String startDate,
+                                                       @RequestParam(value = "endDate", required = false) String endDate,
+                                                       @RequestParam(value = "paymentType", required = false) String paymentType,
+                                                       @RequestParam(value = "status", required = false) String status,
+                                                       @RequestParam(value = "isPaid", required = false) String isPaid) {
         Map<String, Object> params = new HashMap<>();
         params.put("address", address);
         params.put("date", date);
