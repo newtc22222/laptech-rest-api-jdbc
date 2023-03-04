@@ -1,6 +1,6 @@
 ## Ecommerce Website for Laptop
 This project is a `Spring boot` web service with `REST API`.
-Version (Spring boot): 2.7.8
+- Version (Spring boot): 2.7.8
 ---
 
 ## INFORMATION
