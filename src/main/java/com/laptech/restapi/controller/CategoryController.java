@@ -1,5 +1,6 @@
 package com.laptech.restapi.controller;
 
+import com.laptech.restapi.dto.request.CategoryDTO;
 import com.laptech.restapi.dto.response.BaseResponse;
 import com.laptech.restapi.dto.response.DataResponse;
 import com.laptech.restapi.model.Category;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +43,27 @@ public class CategoryController {
 
     @ApiOperation(value = "Get categories with filter", response = Category.class)
     @GetMapping("filter")
-    public ResponseEntity<DataResponse> getCategoryWithFilter() {
+    public ResponseEntity<DataResponse> getCategoryWithFilter(@RequestParam(required = false) String name,
+                                                              @RequestParam(required = false) String image,
+                                                              @RequestParam(required = false) String description,
+                                                              @RequestParam(required = false) String createdDate,
+                                                              @RequestParam(required = false) String modifiedDate,
+                                                              @RequestParam(required = false) String deletedDate,
+                                                              @RequestParam(required = false) Boolean isDel,
+                                                              @RequestParam(required = false) String updateBy,
+                                                              @RequestParam(required = false) String sortBy,
+                                                              @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("image", image);
+        params.put("description", description);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
         return DataResponse.getCollectionSuccess(
                 "Get all categories",
                 categoryService.findWithFilter(params)
@@ -62,15 +83,19 @@ public class CategoryController {
     @ApiOperation(value = "Create a new category", response = DataResponse.class)
     @PostMapping("")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> createNewCategory(@RequestBody Category category) {
-        return DataResponse.success("Create new category", categoryService.insert(category));
+    public ResponseEntity<DataResponse> createNewCategory(@Valid @RequestBody CategoryDTO dto) {
+        return DataResponse.success(
+                "Create new category",
+                categoryService.insert(CategoryDTO.transform(dto))
+        );
     }
 
     @ApiOperation(value = "Update a category", response = BaseResponse.class)
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BaseResponse> updateCategory(@PathVariable("id") long categoryId, @RequestBody Category category) {
-        categoryService.update(category, categoryId);
+    public ResponseEntity<BaseResponse> updateCategory(@PathVariable("id") long categoryId,
+                                                       @Valid @RequestBody CategoryDTO dto) {
+        categoryService.update(CategoryDTO.transform(dto), categoryId);
         return DataResponse.success("Update category");
     }
 

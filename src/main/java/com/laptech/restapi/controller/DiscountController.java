@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,15 +43,37 @@ public class DiscountController {
 
     @ApiOperation(value = "Get discount with filter", response = Discount.class)
     @GetMapping("/discounts/filter")
-    public ResponseEntity<DataResponse> getDiscountWithFilter(@RequestParam(value = "code", required = false) String code,
-                                                              @RequestParam(value = "startDate", required = false) String startDate,
-                                                              @RequestParam(value = "endDate", required = false) String endDate,
-                                                              @RequestParam(value = "type", required = false) String type) {
+    public ResponseEntity<DataResponse> getDiscountWithFilter(@RequestParam(required = false) String code,
+                                                              @RequestParam(required = false) Float rate,
+                                                              @RequestParam(required = false) String appliedType,
+                                                              @RequestParam(required = false) BigDecimal maxAmount,
+                                                              @RequestParam(required = false) String appliedDate,
+                                                              @RequestParam(required = false) String endedDate,
+                                                              @RequestParam(required = false) String startDate,
+                                                              @RequestParam(required = false) String endDate,
+                                                              @RequestParam(required = false) String createdDate,
+                                                              @RequestParam(required = false) String modifiedDate,
+                                                              @RequestParam(required = false) String deletedDate,
+                                                              @RequestParam(required = false) Boolean isDel,
+                                                              @RequestParam(required = false) String updateBy,
+                                                              @RequestParam(required = false) String sortBy,
+                                                              @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
         params.put("code", code);
-        params.put("startDate", code);
-        params.put("endDate", code);
-        params.put("type", type);
+        params.put("rate", rate);
+        params.put("appliedType", appliedType);
+        params.put("maxAmount", maxAmount);
+        params.put("appliedDate", appliedDate);
+        params.put("endedDate", endedDate);
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
         return DataResponse.getCollectionSuccess(
                 "Get discount with filter",
                 discountService.findWithFilter(params)

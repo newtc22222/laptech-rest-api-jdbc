@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,21 +46,51 @@ public class InvoiceController {
     @ApiOperation(value = "Get invoice with filter", response = Invoice.class)
     @GetMapping("/invoices/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> getAllInvoices(@RequestParam(value = "address", required = false) String address,
-                                                       @RequestParam(value = "date", required = false) String date,
-                                                       @RequestParam(value = "startDate", required = false) String startDate,
-                                                       @RequestParam(value = "endDate", required = false) String endDate,
-                                                       @RequestParam(value = "paymentType", required = false) String paymentType,
-                                                       @RequestParam(value = "status", required = false) String status,
-                                                       @RequestParam(value = "isPaid", required = false) String isPaid) {
+    public ResponseEntity<DataResponse> getAllInvoices(@RequestParam(required = false) Long userId ,
+                                                       @RequestParam(required = false) String address,
+                                                       @RequestParam(required = false) String phone,
+                                                       @RequestParam(required = false) BigDecimal paymentAmount,
+                                                       @RequestParam(required = false) Double shipCost,
+                                                       @RequestParam(required = false) BigDecimal discountAmount,
+                                                       @RequestParam(required = false) BigDecimal tax,
+                                                       @RequestParam(required = false) BigDecimal paymentTotal,
+                                                       @RequestParam(required = false) String paymentType,
+                                                       @RequestParam(required = false) Boolean isPaid,
+                                                       @RequestParam(required = false) String orderStatus,
+                                                       @RequestParam(required = false) String note,
+                                                       @RequestParam(required = false) String date,
+                                                       @RequestParam(required = false) String startDate,
+                                                       @RequestParam(required = false) String endDate,
+                                                       @RequestParam(required = false) String createdDate,
+                                                       @RequestParam(required = false) String modifiedDate,
+                                                       @RequestParam(required = false) String deletedDate,
+                                                       @RequestParam(required = false) Boolean isDel,
+                                                       @RequestParam(required = false) String updateBy,
+                                                       @RequestParam(required = false) String sortBy,
+                                                       @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
         params.put("address", address);
+        params.put("phone", phone);
+        params.put("paymentAmount", paymentAmount);
+        params.put("shipCost", shipCost);
+        params.put("discountAmount", discountAmount);
+        params.put("tax", tax);
+        params.put("paymentTotal", paymentTotal);
+        params.put("paymentType", paymentType);
+        params.put("isPaid", isPaid);
+        params.put("orderStatus", orderStatus);
+        params.put("note", note);
         params.put("date", date);
         params.put("startDate", startDate);
         params.put("endDate", endDate);
-        params.put("paymentType", paymentType);
-        params.put("status", status);
-        params.put("isPaid", isPaid);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
         return DataResponse.getCollectionSuccess(
                 "Get invoice with filter",
                 invoiceService.findWithFilter(params)

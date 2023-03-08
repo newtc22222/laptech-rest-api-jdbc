@@ -1,5 +1,6 @@
 package com.laptech.restapi.controller;
 
+import com.laptech.restapi.dto.request.BrandDTO;
 import com.laptech.restapi.dto.response.BaseResponse;
 import com.laptech.restapi.dto.response.DataResponse;
 import com.laptech.restapi.model.Brand;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +43,29 @@ public class BrandController {
 
     @ApiOperation(value = "Get brand with filter", response = Brand.class)
     @GetMapping("filter")
-    public ResponseEntity<DataResponse> getBrandWithFilter() {
+    public ResponseEntity<DataResponse> getBrandWithFilter(@RequestParam(required = false) String name,
+                                                           @RequestParam(required = false) String country,
+                                                           @RequestParam(required = false) String establishYear,
+                                                           @RequestParam(required = false) String logo,
+                                                           @RequestParam(required = false) String createdDate,
+                                                           @RequestParam(required = false) String modifiedDate,
+                                                           @RequestParam(required = false) String deletedDate,
+                                                           @RequestParam(required = false) Boolean isDel,
+                                                           @RequestParam(required = false) String updateBy,
+                                                           @RequestParam(required = false) String sortBy,
+                                                           @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("country", country);
+        params.put("establishYear", establishYear);
+        params.put("logo", logo);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
         return DataResponse.getCollectionSuccess(
                 "Get brand with filter",
                 brandService.findWithFilter(params)
@@ -62,10 +85,10 @@ public class BrandController {
     @ApiOperation(value = "Create a new brand", response = DataResponse.class)
     @PostMapping("")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> createNewBrand(@RequestBody Brand brand) {
+    public ResponseEntity<DataResponse> createNewBrand(@Valid @RequestBody BrandDTO dto) {
         return DataResponse.success(
                 "Create new brand",
-                brandService.insert(brand)
+                brandService.insert(BrandDTO.transform(dto))
         );
     }
 
@@ -73,8 +96,8 @@ public class BrandController {
     @PutMapping("{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> updateBrand(@PathVariable("id") long brandId,
-                                                    @RequestBody Brand brand) {
-        brandService.update(brand, brandId);
+                                                    @Valid @RequestBody BrandDTO dto) {
+        brandService.update(BrandDTO.transform(dto), brandId);
         return DataResponse.success("Update brand");
     }
 

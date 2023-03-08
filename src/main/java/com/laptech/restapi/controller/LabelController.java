@@ -40,8 +40,27 @@ public class LabelController {
 
     @ApiOperation(value = "Get label with limit", response = Label.class)
     @GetMapping("filter")
-    public ResponseEntity<DataResponse> getLabelWithFilter() {
+    public ResponseEntity<DataResponse> getLabelWithFilter(@RequestParam(required = false) String name,
+                                                           @RequestParam(required = false) String icon,
+                                                           @RequestParam(required = false) String title,
+                                                           @RequestParam(required = false) String createdDate,
+                                                           @RequestParam(required = false) String modifiedDate,
+                                                           @RequestParam(required = false) String deletedDate,
+                                                           @RequestParam(required = false) Boolean isDel,
+                                                           @RequestParam(required = false) String updateBy,
+                                                           @RequestParam(required = false) String sortBy,
+                                                           @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("icon", icon);
+        params.put("title", title);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
         return DataResponse.getCollectionSuccess(
                 "Get all labels",
                 labelService.findWithFilter(params)

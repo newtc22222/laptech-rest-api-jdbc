@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,13 +45,35 @@ public class ImportProductController {
     @ApiOperation(value = "Get ticket with filter", response = ImportProduct.class)
     @GetMapping("/imported/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> getImportProductWithFilter(@RequestParam(value = "date", required = false) String date,
-                                                                   @RequestParam(value = "startDate", required = false) String startDate,
-                                                                   @RequestParam(value = "endDate", required = false) String endDate) {
+    public ResponseEntity<DataResponse> getImportProductWithFilter(@RequestParam(required = false) String productId,
+                                                                   @RequestParam(required = false) Long quantity,
+                                                                   @RequestParam(required = false) BigDecimal importedPrice,
+                                                                   @RequestParam(required = false) String importedDate,
+                                                                   @RequestParam(required = false) String date,
+                                                                   @RequestParam(required = false) String startDate,
+                                                                   @RequestParam(required = false) String endDate,
+                                                                   @RequestParam(required = false) String createdDate,
+                                                                   @RequestParam(required = false) String modifiedDate,
+                                                                   @RequestParam(required = false) String deletedDate,
+                                                                   @RequestParam(required = false) Boolean isDel,
+                                                                   @RequestParam(required = false) String updateBy,
+                                                                   @RequestParam(required = false) String sortBy,
+                                                                   @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
+        params.put("productId", productId);
+        params.put("quantity", quantity);
+        params.put("importedPrice", importedPrice);
+        params.put("importedDate", importedDate);
         params.put("date", date);
         params.put("startDate", startDate);
         params.put("endDate", endDate);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
 
         return DataResponse.getCollectionSuccess(
                 "Get ticket with filter",

@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,13 +45,34 @@ public class UserController {
     @ApiOperation(value = "Get user with filter", response = User.class)
     @GetMapping("/users/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> getUserWithFilter(@RequestParam(value = "name", required = false) String name,
-                                                          @RequestParam(value = "gender", required = false) String gender,
-                                                          @RequestParam(value = "role", required = false) String role) {
+    public ResponseEntity<DataResponse> getUserWithFilter(@RequestParam(required = false) String name,
+                                                          @RequestParam(required = false) String gender, // can upgrade
+                                                          @RequestParam(required = false) String dateOfBirth,
+                                                          @RequestParam(required = false) String email,
+                                                          @RequestParam(required = false) Boolean isActive,
+                                                          @RequestParam(required = false) String role, // can upgrade
+                                                          @RequestParam(required = false) String createdDate,
+                                                          @RequestParam(required = false) String modifiedDate,
+                                                          @RequestParam(required = false) String deletedDate,
+                                                          @RequestParam(required = false) Boolean isDel,
+                                                          @RequestParam(required = false) String updateBy,
+                                                          @RequestParam(required = false) String sortBy,
+                                                          @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("gender", gender);
+        params.put("dateOfBirth", dateOfBirth);
+        params.put("email", email);
+        params.put("isActive", isActive);
         params.put("role", role);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
+
         return DataResponse.getCollectionSuccess(
                 "Get user with filter",
                 userService.findWithFilter(params)
@@ -82,8 +104,8 @@ public class UserController {
     @PutMapping("/users/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<BaseResponse> updateAllForUser(@PathVariable("id") long userId,
-                                                         @RequestBody Map<String, String> userRequest) {
-        userService.update(UserDTO.transform(userRequest), userId);
+                                                         @Valid @RequestBody UserDTO dto) {
+        userService.update(UserDTO.transform(dto), userId);
         return DataResponse.success("Update user's detail");
     }
 

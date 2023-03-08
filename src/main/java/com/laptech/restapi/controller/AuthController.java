@@ -1,5 +1,6 @@
 package com.laptech.restapi.controller;
 
+import com.laptech.restapi.common.exception.TokenInvalidException;
 import com.laptech.restapi.dto.request.UserDTO;
 import com.laptech.restapi.dto.response.DataResponse;
 import com.laptech.restapi.jwt.dto.JwtRequest;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -31,11 +33,11 @@ public class AuthController {
     private JwtService jwtService;
 
     @ApiOperation(value = "Create new user (register)", response = DataResponse.class)
-    @PostMapping(value = {"/register", "/signIn", "/sign-in"})
-    public ResponseEntity<DataResponse> register(@RequestBody Map<String, String> userRequest) {
+    @PostMapping(value = {"/register", "/signUp", "/sign-up"})
+    public ResponseEntity<DataResponse> register(@Valid @RequestBody UserDTO dto) {
         return DataResponse.success(
                 "Register new user",
-                userService.insert(UserDTO.transform(userRequest))
+                userService.insert(UserDTO.transform(dto))
         );
     }
 

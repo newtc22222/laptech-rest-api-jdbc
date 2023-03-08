@@ -42,8 +42,31 @@ public class CommentController {
 
     @ApiOperation(value = "Get comments with filter", response = Comment.class)
     @GetMapping("/comments/filter")
-    public ResponseEntity<DataResponse> getCommentWithFilter() {
+    public ResponseEntity<DataResponse> getCommentWithFilter(@RequestParam(required = false) String rootCommentId,
+                                                             @RequestParam(required = false) String productId,
+                                                             @RequestParam(required = false) String username,
+                                                             @RequestParam(required = false) String phone,
+                                                             @RequestParam(required = false) String content, // can upgrade
+                                                             @RequestParam(required = false) String createdDate,
+                                                             @RequestParam(required = false) String modifiedDate,
+                                                             @RequestParam(required = false) String deletedDate,
+                                                             @RequestParam(required = false) Boolean isDel,
+                                                             @RequestParam(required = false) String updateBy,
+                                                             @RequestParam(required = false) String sortBy,
+                                                             @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
+        params.put("rootCommentId", rootCommentId);
+        params.put("productId", productId);
+        params.put("username", username);
+        params.put("phone", phone);
+        params.put("content", content);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
         return DataResponse.getCollectionSuccess(
                 "Get all comments",
                 commentService.findWithFilter(params)
@@ -60,9 +83,9 @@ public class CommentController {
     }
 
     @ApiOperation(value = "Get all comments of a user", response = Comment.class)
-    @GetMapping("/users/{phoneNumber}/comments")
+    @GetMapping("/users/{phone}/comments")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> getCommentsOfUser(@RequestParam("phoneNumber") String phone) {
+    public ResponseEntity<DataResponse> getCommentsOfUser(@PathVariable String phone) {
         return DataResponse.getCollectionSuccess(
                 "Get comments of user",
                 commentService.getAllCommentsOfUser(phone)

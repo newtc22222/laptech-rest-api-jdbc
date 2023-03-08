@@ -1,5 +1,6 @@
 package com.laptech.restapi.controller;
 
+import com.laptech.restapi.dto.request.FeedbackDTO;
 import com.laptech.restapi.dto.response.BaseResponse;
 import com.laptech.restapi.dto.response.DataResponse;
 import com.laptech.restapi.model.Feedback;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,9 +43,29 @@ public class FeedbackController {
 
     @ApiOperation(value = "Get feedback with filter", response = Feedback.class)
     @GetMapping("/feedbacks/filter")
-    public ResponseEntity<DataResponse> getFeedbackWithFilter() {
+    public ResponseEntity<DataResponse> getFeedbackWithFilter(@RequestParam(required = false) String productId,
+                                                              @RequestParam(required = false) Long userId,
+                                                              @RequestParam(required = false) String content,
+                                                              @RequestParam(required = false) Byte ratingPoint,
+                                                              @RequestParam(required = false) String createdDate,
+                                                              @RequestParam(required = false) String modifiedDate,
+                                                              @RequestParam(required = false) String deletedDate,
+                                                              @RequestParam(required = false) Boolean isDel,
+                                                              @RequestParam(required = false) String updateBy,
+                                                              @RequestParam(required = false) String sortBy,
+                                                              @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
-
+        params.put("productId", productId);
+        params.put("userId", userId);
+        params.put("content", content);
+        params.put("ratingPoint", ratingPoint);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
         return DataResponse.getCollectionSuccess(
                 "Get feedback with filter",
                 feedbackService.findWithFilter(params)
@@ -82,10 +104,10 @@ public class FeedbackController {
     @ApiOperation(value = "Create a new feedback", response = DataResponse.class)
     @PostMapping("/feedbacks")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<DataResponse> createNewFeedback(@RequestBody Feedback feedback) {
+    public ResponseEntity<DataResponse> createNewFeedback(@Valid @RequestBody FeedbackDTO dto) {
         return DataResponse.success(
                 "Create new feedback",
-                feedbackService.insert(feedback)
+                feedbackService.insert(FeedbackDTO.transform(dto))
         );
     }
 
@@ -93,8 +115,8 @@ public class FeedbackController {
     @PutMapping("/feedbacks/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseResponse> updateFeedback(@PathVariable("id") String feedbackId,
-                                                       @RequestBody Feedback feedback) {
-        feedbackService.update(feedback, feedbackId);
+                                                       @Valid @RequestBody FeedbackDTO dto) {
+        feedbackService.update(FeedbackDTO.transform(dto), feedbackId);
         return DataResponse.success("Update feedback");
     }
 

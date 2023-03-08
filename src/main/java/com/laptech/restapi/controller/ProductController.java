@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +33,11 @@ public class ProductController {
 
     @ApiOperation(value = "Get all products in system", response = Product.class)
     @GetMapping("/products")
-    public ResponseEntity<DataResponse> getAllProduct(@RequestParam(required = false) String sortBy,
+    public ResponseEntity<DataResponse> getAllProduct(@RequestParam(defaultValue = "false") boolean isCard,
+                                                      @RequestParam(required = false) String sortBy,
                                                       @RequestParam(required = false) String sortDir,
                                                       @RequestParam(required = false) Long page,
-                                                      @RequestParam(required = false) Long size,
-                                                      @RequestParam(defaultValue = "false") boolean isCard) {
+                                                      @RequestParam(required = false) Long size) {
         Collection<Product> products = productService.findAll(sortBy, sortDir, page, size);
         Collection<?> collection = (isCard) ? productService.getProductCardDTO(products) : products; // how?
         return DataResponse.getCollectionSuccess(
@@ -48,22 +49,40 @@ public class ProductController {
 
     @ApiOperation(value = "Get product with filter", response = Product.class)
     @GetMapping("/products/filter")
-    public ResponseEntity<DataResponse> getProductWithFilter(@RequestParam(value = "name", required = false) String name,
-                                                             @RequestParam(value = "brandId", required = false) List<String> brandId,
-                                                             @RequestParam(value = "categoryId", required = false) String categoryId,
-                                                             @RequestParam(value = "releasedYear", required = false) String releasedYear,
-                                                             @RequestParam(value = "startPrice", required = false) String startPrice,
-                                                             @RequestParam(value = "endPrice", required = false) String endPrice,
-                                                             @RequestParam(value = "label", required = false) List<String> labelId,
-                                                             @RequestParam(defaultValue = "false") boolean isCard) {
+    public ResponseEntity<DataResponse> getProductWithFilter(@RequestParam(defaultValue = "false") boolean isCard,
+                                                             @RequestParam(required = false) String name,
+                                                             @RequestParam(required = false) String[] brandId,
+                                                             @RequestParam(required = false) String[] categoryId,
+                                                             @RequestParam(required = false) String releasedDate,
+                                                             @RequestParam(required = false) Integer quantityInStock,
+                                                             @RequestParam(required = false) BigDecimal listedPrice,
+                                                             @RequestParam(required = false) String[] labelId,
+                                                             @RequestParam(required = false) String startPrice,
+                                                             @RequestParam(required = false) String endPrice,
+                                                             @RequestParam(required = false) String createdDate,
+                                                             @RequestParam(required = false) String modifiedDate,
+                                                             @RequestParam(required = false) String deletedDate,
+                                                             @RequestParam(required = false) Boolean isDel,
+                                                             @RequestParam(required = false) String updateBy,
+                                                             @RequestParam(required = false) String sortBy,
+                                                             @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("brandId", brandId);
         params.put("categoryId", categoryId);
-        params.put("releasedYear", releasedYear);
+        params.put("releasedDate", releasedDate);
+        params.put("quantityInStock", quantityInStock);
+        params.put("listedPrice", listedPrice);
+        params.put("labelId", labelId);
         params.put("startPrice", startPrice);
         params.put("endPrice", endPrice);
-        params.put("labelId", labelId);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
 
         Collection<Product> products = productService.findWithFilter(params);
         Collection<?> collection = (isCard) ? productService.getProductCardDTO(products) : products;

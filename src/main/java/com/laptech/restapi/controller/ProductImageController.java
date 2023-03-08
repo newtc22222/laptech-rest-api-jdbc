@@ -47,9 +47,29 @@ public class ProductImageController {
     @ApiOperation(value = "Get image with filter", response = ProductImage.class)
     @GetMapping("/images/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> getImageWithFilter() {
+    public ResponseEntity<DataResponse> getImageWithFilter(@RequestParam(required = false) String productId,
+                                                           @RequestParam(required = false) String feedbackId,
+                                                           @RequestParam(required = false) String url,
+                                                           @RequestParam(required = false) String type,
+                                                           @RequestParam(required = false) String createdDate,
+                                                           @RequestParam(required = false) String modifiedDate,
+                                                           @RequestParam(required = false) String deletedDate,
+                                                           @RequestParam(required = false) Boolean isDel,
+                                                           @RequestParam(required = false) String updateBy,
+                                                           @RequestParam(required = false) String sortBy,
+                                                           @RequestParam(required = false) String sortDir) {
         Map<String, Object> params = new HashMap<>();
-
+        params.put("productId", productId);
+        params.put("feedbackId", feedbackId);
+        params.put("url", url);
+        params.put("type", type);
+        params.put("createdDate", createdDate);
+        params.put("modifiedDate", modifiedDate);
+        params.put("deletedDate", deletedDate);
+        params.put("isDel", isDel);
+        params.put("updateBy", updateBy);
+        params.put("sortBy", sortBy);
+        params.put("sortDir", sortDir);
         return DataResponse.getCollectionSuccess(
                 "Get all images",
                 productImageService.findWithFilter(params)
