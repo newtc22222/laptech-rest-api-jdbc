@@ -1,33 +1,58 @@
 package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.model.Brand;
-import io.swagger.annotations.ApiOperation;
+import com.laptech.restapi.util.ConvertDate;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.Map;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 /**
  * @author Nhat Phi
  * @since 2022-11-25
  */
 @Getter
-@ApiOperation("")
+@Setter
 public class BrandDTO {
+    private Long id;
+    @ApiModelProperty(required = true, example = "ASUS")
+    @NotEmpty
+    @Size(min = 2, max = 100)
     private String name;
+    @ApiModelProperty(required = true, example = "Taiwan")
+    @NotEmpty
+    @Size(min = 2, max = 100)
     private String country;
+    @ApiModelProperty(example = "2000-01-01")
     private String establishDate;
+    @ApiModelProperty(required = true)
+    @NotEmpty
+    @Size(max = 255)
     private String logo;
+    @Size(max = 100)
+    private String updateBy;
 
-    public static Brand transform(Map<String, String> request) {
+    public BrandDTO() {}
+
+    public BrandDTO(Long id, String name, String country, String establishDate, String logo, String updateBy) {
+        this.id = (id == null) ? 0L : id;
+        this.name = name;
+        this.country = country;
+        this.establishDate = establishDate;
+        this.logo = logo;
+        this.updateBy = updateBy;
+    }
+
+    public static Brand transform(BrandDTO dto) {
         Brand brand = new Brand();
-        brand.setId(0L);
-        brand.setName(request.get("name"));
-        brand.setCountry(request.get("country"));
-        if (request.containsKey("establishDate")) {
-            brand.setEstablishDate(LocalDate.parse(request.get("establishDate")));
-        }
-        brand.setLogo(request.get("logo"));
+        brand.setId(dto.getId());
+        brand.setName(dto.getName());
+        brand.setCountry(dto.getCountry());
+        brand.setEstablishDate(ConvertDate.getLocalDateFromString(dto.getEstablishDate()));
+        brand.setLogo(dto.getLogo());
+        brand.setUpdateBy(dto.getUpdateBy());
         return brand;
     }
 }

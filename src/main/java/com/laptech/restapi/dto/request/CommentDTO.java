@@ -7,6 +7,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
 /**
@@ -17,31 +20,45 @@ import java.util.UUID;
 @Setter
 @ApiModel("Class representing a comment request body")
 public class CommentDTO {
+    private String id;    
     private String rootCommentId;
-    private String createdDate;
     @ApiModelProperty(required = true)
+    @NotEmpty
     private String productId;
     @ApiModelProperty(required = true)
+    @Size(min = 3, max = 100)
     private String username;
     @ApiModelProperty(required = true)
+    @NotNull
+    @Size(min = 13, max = 15)
     private String phone;
     @ApiModelProperty(required = true)
+    @Size(min = 10, max = 255)
     private String content;
+    @Size(max = 100)
+    private String updateBy;
 
-    public static Comment transform(CommentDTO commentDTO) {
+    public CommentDTO() {}
+
+    public CommentDTO(String id, String rootCommentId, String productId, String username, String phone, String content, String updateBy) {
+        this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
+        this.rootCommentId = rootCommentId;
+        this.productId = productId;
+        this.username = username;
+        this.phone = phone;
+        this.content = content;
+        this.updateBy = updateBy;
+    }
+
+    public static Comment transform(CommentDTO dto) {
         Comment comment = new Comment();
-        comment.setId(UUID.randomUUID().toString());
-        if (commentDTO.getRootCommentId() != null) {
-            comment.setRootCommentId(commentDTO.getRootCommentId());
-        }
-        comment.setProductId(commentDTO.getProductId());
-        comment.setUsername(commentDTO.getUsername());
-        comment.setPhone(commentDTO.getPhone());
-        comment.setContent(commentDTO.getContent());
-
-        if (commentDTO.getCreatedDate() != null) {
-            comment.setCreatedDate(ConvertDateTime.getDateTimeFromString(commentDTO.getCreatedDate()));
-        }
+        comment.setId(dto.getId());
+        comment.setRootCommentId(dto.getRootCommentId());
+        comment.setProductId(dto.getProductId());
+        comment.setUsername(dto.getUsername());
+        comment.setPhone(dto.getPhone());
+        comment.setContent(dto.getContent());
+        comment.setUpdateBy(dto.getUpdateBy());
         return comment;
     }
 }

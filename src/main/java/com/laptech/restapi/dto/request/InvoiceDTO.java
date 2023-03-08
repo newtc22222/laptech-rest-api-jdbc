@@ -2,11 +2,13 @@ package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.common.enums.OrderStatus;
 import com.laptech.restapi.model.Invoice;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -16,46 +18,81 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-@ApiModel("Class representing for invoice request body")
 public class InvoiceDTO {
+    private String id;
     @ApiModelProperty(required = true)
+    @NotNull
     private Long userId;
     @ApiModelProperty(required = true)
+    @NotEmpty
+    @Size(min = 20, max = 255)
     private String address;
     @ApiModelProperty(required = true)
+    @NotEmpty
+    @Size(min = 10, max = 15)
     private String phone;
     @ApiModelProperty(required = true)
+    @NotNull
     private BigDecimal paymentAmount;
 
     private Double shipCost;
     private BigDecimal discountAmount;
     private BigDecimal tax;
+    
     @ApiModelProperty(required = true)
+    @NotNull
     private BigDecimal paymentTotal;
-    @ApiModelProperty(required = true, example = "direct | momo | paypal | ...")
+    @ApiModelProperty(required = true, example = "cash | momo | paypal | ...")
+    @NotNull
+    @Size(max = 50)
     private String paymentType;
     @ApiModelProperty(required = true)
-    private boolean isPaid;
+    @NotNull
+    private Boolean isPaid;
     @ApiModelProperty(required = true)
+    @NotNull
     private String orderStatus;
     private String note;
+    @Size(max = 100)
+    private String updateBy;
 
+    public InvoiceDTO() {}
 
-    public static Invoice transform(InvoiceDTO invoiceDTO) {
+    public InvoiceDTO(String id, Long userId, String address, String phone, BigDecimal paymentAmount, Double shipCost,
+                      BigDecimal discountAmount, BigDecimal tax, BigDecimal paymentTotal, String paymentType,
+                      Boolean isPaid, String orderStatus, String note, String updateBy) {
+        this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
+        this.userId = userId;
+        this.address = address;
+        this.phone = phone;
+        this.paymentAmount = paymentAmount;
+        this.shipCost = shipCost;
+        this.discountAmount = discountAmount;
+        this.tax = tax;
+        this.paymentTotal = paymentTotal;
+        this.paymentType = paymentType;
+        this.isPaid = isPaid;
+        this.orderStatus = orderStatus;
+        this.note = note;
+        this.updateBy = updateBy;
+    }
+
+    public static Invoice transform(InvoiceDTO dto) {
         Invoice invoice = new Invoice();
-        invoice.setId(UUID.randomUUID().toString());
-        invoice.setUserId(invoiceDTO.getUserId());
-        invoice.setAddress(invoiceDTO.getAddress());
-        invoice.setPhone(invoiceDTO.getPhone());
-        invoice.setPaymentAmount(invoiceDTO.getPaymentAmount());
-        invoice.setShipCost(invoiceDTO.getShipCost());
-        invoice.setDiscountAmount(invoiceDTO.getDiscountAmount());
-        invoice.setTax(invoiceDTO.getTax());
-        invoice.setPaymentTotal(invoiceDTO.getPaymentTotal());
-        invoice.setPaymentType(invoiceDTO.getPaymentType());
-        invoice.setPaid(invoiceDTO.isPaid());
-        invoice.setOrderStatus(OrderStatus.valueOf(invoiceDTO.getOrderStatus().trim().toUpperCase()));
-        invoice.setNote(invoiceDTO.getNote());
+        invoice.setId(dto.getId());
+        invoice.setUserId(dto.getUserId());
+        invoice.setAddress(dto.getAddress());
+        invoice.setPhone(dto.getPhone());
+        invoice.setPaymentAmount(dto.getPaymentAmount());
+        invoice.setShipCost(dto.getShipCost());
+        invoice.setDiscountAmount(dto.getDiscountAmount());
+        invoice.setTax(dto.getTax());
+        invoice.setPaymentTotal(dto.getPaymentTotal());
+        invoice.setPaymentType(dto.getPaymentType());
+        invoice.setPaid(dto.getIsPaid());
+        invoice.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus().trim().toUpperCase()));
+        invoice.setNote(dto.getNote());
+        invoice.setUpdateBy(dto.getUpdateBy());
         return invoice;
     }
 }

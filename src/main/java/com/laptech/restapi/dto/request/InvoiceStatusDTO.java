@@ -1,10 +1,13 @@
 package com.laptech.restapi.dto.request;
 
-import com.laptech.restapi.common.enums.OrderStatus;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Nhat Phi
@@ -15,11 +18,21 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvoiceStatusDTO {
+    @ApiModelProperty(required = true)
+    @NotNull
     private String id;
-    private OrderStatus status;
+    @ApiModelProperty(required = true, example = "cash | momo | paypal | ...")
+    @NotNull
+    @Size(max = 50)
     private String paymentType;
-    private boolean isPaid;
+    @ApiModelProperty(required = true)
+    @NotNull
+    private Boolean isPaid;
+    @ApiModelProperty(required = true)
+    @NotNull
+    private String orderStatus;
     private String note;
-    private String troubleReason;
+    @Size(max = 100)
+    private String updateBy;
 }
 

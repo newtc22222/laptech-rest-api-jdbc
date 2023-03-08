@@ -2,11 +2,14 @@ package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.common.enums.Gender;
 import com.laptech.restapi.model.User;
+import com.laptech.restapi.util.ConvertDate;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Map;
 
 /**
@@ -15,33 +18,61 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@NoArgsConstructor
 public class UserDTO {
     private Long id;
+    @ApiModelProperty(required = true)
+    @NotEmpty
     private String name;
-    private Gender gender;
+    @ApiModelProperty(required = true, example = "MALE | FEMALE | OTHER")
+    @NotEmpty
+    private String gender;
+    @ApiModelProperty(required = true, example = "2000-01-01")
+    @NotEmpty
+    private String dateOfBirth;
+    @ApiModelProperty(required = true)
+    @NotEmpty
+    @Size(min = 10, max = 15)
+    private String phone;
+    @Email
     private String email;
-    private LocalDate dateOfBirth;
+    @ApiModelProperty(required = true, example = "Anh8^&^5d")
+    @NotEmpty
+    @Size(min = 8, max = 50)
+    private String password;
+    @Size(max = 100)
     private String updateBy;
+
+    public UserDTO() {}
+
+    public UserDTO(Long id, String name, String gender, String dateOfBirth, String phone,
+                   String email, String password, String updateBy) {
+        this.id = (id == null) ? 0L : id;
+        this.name = name;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.phone = phone;
+        this.email = email;
+        this.password = password;
+        this.updateBy = updateBy;
+    }
 
     /**
      * update All information of User
      */
-    public static User transform(Map<String, String> request) {
+    public static User transform(UserDTO dto) {
         User user = new User();
-        user.setId(0L);
-        user.setName(request.get("name"));
-        user.setGender(Gender.valueOf(request.get("gender")));
-        user.setDateOfBirth(LocalDate.parse(request.get("dateOfBirth")));
-        user.setPhone(request.get("phone"));
-        user.setEmail(request.get("email"));
-        user.setPassword(request.get("password"));
-        user.setUpdateBy(request.get("updateBy"));
-
-        if (request.containsKey("isActive"))
-            user.setActive(Boolean.parseBoolean(request.get("isActive")));
-        else
-            user.setActive(true);
+        user.setId(dto.getId());
+        user.setName(dto.getName());
+        try {
+            user.setGender(Gender.valueOf(dto.getGender()));
+        } catch (IllegalArgumentException err) {
+            user.setGender(Gender.MALE);
+        }
+        user.setDateOfBirth(ConvertDate.getLocalDateFromString(dto.getDateOfBirth()));
+        user.setPhone(dto.getPhone());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setUpdateBy(dto.getUpdateBy());
         return user;
     }
 
@@ -52,9 +83,13 @@ public class UserDTO {
     public static UserDTO getData(Map<String, String> request) {
         UserDTO user = new UserDTO();
         user.setName(request.get("name"));
-        user.setGender(Gender.valueOf(request.get("gender")));
+        try {
+            user.setGender(request.get("gender"));
+        } catch (IllegalArgumentException err) {
+            user.setGender(Gender.MALE.toString());
+        }
         user.setEmail(request.get("email"));
-        user.setDateOfBirth(LocalDate.parse(request.get("dateOfBirth")));
+        user.setDateOfBirth(request.get("dateOfBirth"));
         return user;
     }
 }

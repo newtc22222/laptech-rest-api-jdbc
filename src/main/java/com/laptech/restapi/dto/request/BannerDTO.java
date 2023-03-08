@@ -1,12 +1,14 @@
 package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.model.Banner;
-import io.swagger.annotations.ApiModel;
+import com.laptech.restapi.util.ConvertDate;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Nhat Phi
@@ -15,26 +17,55 @@ import java.time.LocalDate;
  */
 @Getter
 @Setter
-@ApiModel("Class representing for Banner request body")
 public class BannerDTO {
+    private Long id;
+    @ApiModelProperty(required = true)
+    @NotEmpty
+    @Size(max = 255, message = "Missing url of images!")
     private String path;
+    @ApiModelProperty(required = true)
+    @NotEmpty
+    @Size(min = 3, max = 100, message = "You need to import type of this banner!")
     private String type;
+    @ApiModelProperty(required = true)
+    @NotEmpty
+    @Size(max = 100)
     private String title;
+    @Size(max = 255)
     private String linkProduct;
-    @ApiModelProperty(example = "2022-12-22")
+    @ApiModelProperty(required = true, example = "2022-12-22")
+    @NotNull
     private String usedDate;
-    @ApiModelProperty(example = "2022-12-22")
+    @ApiModelProperty(required = true, example = "2022-12-22")
+    @NotNull
     private String endedDate;
+    @Size(max = 100)
+    private String updateBy;
 
-    public static Banner transform(BannerDTO bannerDTO) {
+    public BannerDTO() {}
+
+    public BannerDTO(Long id, String path, String type, String title, String linkProduct,
+                     String usedDate, String endedDate, String updateBy) {
+        this.id = (id == null) ? 0L : id;
+        this.path = path;
+        this.type = type;
+        this.title = title;
+        this.linkProduct = linkProduct;
+        this.usedDate = usedDate;
+        this.endedDate = endedDate;
+        this.updateBy = updateBy;
+    }
+
+    public static Banner transform(BannerDTO dto) {
         Banner banner = new Banner();
-        banner.setId(0L);
-        banner.setPath(bannerDTO.getPath());
-        banner.setType(bannerDTO.getType());
-        banner.setTitle(bannerDTO.getTitle());
-        banner.setLinkProduct(bannerDTO.getLinkProduct());
-        banner.setUsedDate(LocalDate.parse(bannerDTO.getUsedDate()));
-        banner.setEndedDate(LocalDate.parse(bannerDTO.getEndedDate()));
+        banner.setId(dto.getId());
+        banner.setPath(dto.getPath());
+        banner.setType(dto.getType());
+        banner.setTitle(dto.getTitle());
+        banner.setLinkProduct(dto.getLinkProduct());
+        banner.setUsedDate(ConvertDate.getLocalDateFromString(dto.getUsedDate()));
+        banner.setEndedDate(ConvertDate.getLocalDateFromString(dto.getEndedDate()));
+        banner.setUpdateBy(dto.getUpdateBy());
         return banner;
     }
 }

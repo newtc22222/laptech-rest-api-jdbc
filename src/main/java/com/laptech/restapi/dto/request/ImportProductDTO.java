@@ -2,9 +2,13 @@ package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.model.ImportProduct;
 import com.laptech.restapi.util.ConvertDateTime;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -12,57 +16,43 @@ import java.util.UUID;
  * @author Nhat Phi
  * @since 2022-11-25
  */
-@ApiModel("Class representing for ImportProduct request body")
+@Getter
+@Setter
 public class ImportProductDTO {
+    private String id;
     @ApiModelProperty(required = true)
+    @NotEmpty
     private String productId;
     @ApiModelProperty(required = true)
+    @NotNull
     private Long quantity;
     @ApiModelProperty(required = true)
+    @NotNull
     private BigDecimal importedPrice;
+    @ApiModelProperty(example = "2023-03-05T17:00:00:123")
     private String importedDate;
+    @Size(max = 100)
+    private String updateBy;
 
-    public String getProductId() {
-        return productId;
-    }
+    public ImportProductDTO() {}
 
-    public void setProductId(String productId) {
+    public ImportProductDTO(String id, String productId, Long quantity, BigDecimal importedPrice, String importedDate, String updateBy) {
+        this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
         this.productId = productId;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Long quantity) {
         this.quantity = quantity;
-    }
-
-    public BigDecimal getImportedPrice() {
-        return importedPrice;
-    }
-
-    public void setImportedPrice(BigDecimal importedPrice) {
         this.importedPrice = importedPrice;
-    }
-
-    public String getImportedDate() {
-        return importedDate;
-    }
-
-    public void setImportedDate(String importedDate) {
         this.importedDate = importedDate;
+        this.updateBy = updateBy;
     }
 
-    public static ImportProduct transform(ImportProductDTO importProductDTO) {
+    public static ImportProduct transform(ImportProductDTO dto) {
         ImportProduct ticket = new ImportProduct();
-        ticket.setId(UUID.randomUUID().toString());
-        ticket.setProductId(importProductDTO.getProductId());
-        ticket.setQuantity(importProductDTO.getQuantity());
-        ticket.setImportedPrice(importProductDTO.getImportedPrice());
-        if (importProductDTO.getImportedDate() != null) {
-            ticket.setImportedDate(ConvertDateTime.getDateTimeFromString(importProductDTO.getImportedDate()));
-        }
+        ticket.setId(dto.getId());
+        ticket.setProductId(dto.getProductId());
+        ticket.setQuantity(dto.getQuantity());
+        ticket.setImportedPrice(dto.getImportedPrice());
+        ticket.setImportedDate(ConvertDateTime.getDateTimeFromString(dto.getImportedDate()));
+        ticket.setUpdateBy(dto.getUpdateBy());
         return ticket;
     }
 }

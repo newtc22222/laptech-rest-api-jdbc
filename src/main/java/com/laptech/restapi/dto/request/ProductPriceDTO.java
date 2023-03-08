@@ -1,5 +1,13 @@
 package com.laptech.restapi.dto.request;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -8,48 +16,22 @@ import java.math.BigDecimal;
  * @author Nhat Phi
  * @since 2022-11-22
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductPriceDTO {
+    @ApiModelProperty(required = true)
+    @NotEmpty
     private String id;
-    private BigDecimal listed_price;
+    @ApiModelProperty(required = true)
+    @NotNull
+    private BigDecimal listedPrice;
+    @ApiModelProperty(required = true)
+    @NotNull
     private BigDecimal price;
+    @ApiModelProperty(required = true)
+    @NotNull
     private String updateBy;
 
-    public ProductPriceDTO(String id, BigDecimal listed_price, BigDecimal price, String updateBy) {
-        this.id = id;
-        this.listed_price = listed_price;
-        this.price = price;
-        this.updateBy = updateBy;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public BigDecimal getListed_price() {
-        return listed_price;
-    }
-
-    public void setListed_price(BigDecimal listed_price) {
-        this.listed_price = listed_price;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getUpdateBy() {
-        return updateBy;
-    }
-
-    public void setUpdateBy(String updateBy) {
-        this.updateBy = updateBy;
-    }
 }

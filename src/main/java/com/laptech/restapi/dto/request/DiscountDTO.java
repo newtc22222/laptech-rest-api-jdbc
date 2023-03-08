@@ -5,89 +5,75 @@ import com.laptech.restapi.model.Discount;
 import com.laptech.restapi.util.ConvertDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 /**
  * @author Nhat Phi
  * @since 2022-11-25
  */
+@Getter
+@Setter
 @ApiModel("Class representing for discount request body")
 public class DiscountDTO {
+    private Long id;
     @ApiModelProperty(required = true, example = "HASAGI")
+    @NotNull
+    @Size(min = 3, max = 20)
     private String code;
     @ApiModelProperty(required = true, example = "0.5", notes = "value in range 0 to 1")
+    @NotNull
     private Float rate;
     @ApiModelProperty(required = true, example = "PURCHASE | PRODUCT")
+    @NotEmpty
     private String appliedType;
     @ApiModelProperty(required = true)
+    @NotNull
     private BigDecimal maxAmount;
     @ApiModelProperty(required = true, example = "2023-02-07")
+    @NotNull
     private String appliedDate;
     @ApiModelProperty(required = true, example = "2023-02-07")
+    @NotNull
     private String endedDate;
+    @Size(max = 100)
+    private String updateBy;
 
-    public String getCode() {
-        return code;
-    }
+    public DiscountDTO() {}
 
-    public void setCode(String code) {
+    public DiscountDTO(Long id, String code, Float rate, String appliedType, BigDecimal maxAmount,
+                       String appliedDate, String endedDate, String updateBy) {
+        this.id = (id == null) ? 0L : id;
         this.code = code;
-    }
-
-    public Float getRate() {
-        return rate;
-    }
-
-    public void setRate(Float rate) {
         this.rate = rate;
-    }
-
-    public String getAppliedType() {
-        return appliedType;
-    }
-
-    public void setAppliedType(String appliedType) {
         this.appliedType = appliedType;
-    }
-
-    public BigDecimal getMaxAmount() {
-        return maxAmount;
-    }
-
-    public void setMaxAmount(BigDecimal maxAmount) {
         this.maxAmount = maxAmount;
-    }
-
-    public String getAppliedDate() {
-        return appliedDate;
-    }
-
-    public void setAppliedDate(String appliedDate) {
         this.appliedDate = appliedDate;
-    }
-
-    public String getEndedDate() {
-        return endedDate;
-    }
-
-    public void setEndedDate(String endedDate) {
         this.endedDate = endedDate;
+        this.updateBy = updateBy;
     }
 
-    public static Discount transform(DiscountDTO discountDTO) {
+    public static Discount transform(DiscountDTO dto) {
         Discount discount = new Discount();
-        discount.setId(0L);
-        discount.setCode(discountDTO.getCode());
-        discount.setRate(discountDTO.getRate());
+        discount.setId(dto.getId());
+        discount.setCode(dto.getCode());
+        discount.setRate(dto.getRate());
 
-        if (discountDTO.getAppliedType() != null) {
-            discount.setAppliedType(DiscountType.valueOf(discountDTO.getAppliedType()));
+        try {
+            discount.setAppliedType(DiscountType.valueOf(dto.getAppliedType()));
+        } catch (IllegalArgumentException err) {
+            discount.setAppliedType(DiscountType.PRODUCT);
         }
 
-        discount.setMaxAmount(discountDTO.getMaxAmount());
-        discount.setAppliedDate(ConvertDateTime.getDateTimeFromString(discountDTO.getAppliedDate()));
-        discount.setEndedDate(ConvertDateTime.getDateTimeFromString(discountDTO.getEndedDate()));
+        discount.setMaxAmount(dto.getMaxAmount());
+        discount.setAppliedDate(ConvertDateTime.getDateTimeFromString(dto.getAppliedDate()));
+        discount.setEndedDate(ConvertDateTime.getDateTimeFromString(dto.getEndedDate()));
+        discount.setUpdateBy(dto.getUpdateBy());
         return discount;
     }
 }
