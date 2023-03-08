@@ -94,6 +94,13 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    public void setDefaultAddress(String addressId, long userId, String updateBy) {
+        if (addressDAO.setDefaultAddress(addressId, userId, updateBy) == 0) {
+            throw new InternalServerErrorException("[Error] Fail to set default for this address!");
+        }
+    }
+
+    @Override
     public Collection<Address> findAddressByUserId(long userId) {
         if (userDAO.findById(userId) == null)
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
