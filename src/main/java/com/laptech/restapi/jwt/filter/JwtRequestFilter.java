@@ -13,14 +13,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Log4j2
 @Component
+@WebFilter(urlPatterns = "/*", dispatcherTypes = { DispatcherType.REQUEST, DispatcherType.FORWARD })
 public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
@@ -29,42 +32,46 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    @NotNull HttpServletResponse response,
+                                    @NotNull FilterChain filterChain)
             throws ServletException, IOException {
-        final String header = request.getHeader("Authorization");
-
-        String userPhone = null;
-        String jwtToken = null;
-        if (header != null && header.startsWith("Bearer ")) {
-            jwtToken = header.substring(7);
-            try {
-                userPhone = jwtUtil.getUserPhoneFromToken(jwtToken);
-            } catch (ExpiredJwtException err_ex) {
-                log.warn("[ERROR] Authorization error: {0}", err_ex);
-                request.setAttribute("expired", err_ex.getMessage());
-            } catch (SignatureException err_s) {
-                log.warn("[ERROR] Invalid token: {0}", err_s);
-                request.setAttribute("signature", err_s.getMessage());
-            } catch (IllegalArgumentException err_i) {
-                log.warn("[ERROR] {}", err_i.getMessage());
-                throw new IllegalArgumentException("[INFO] Your data is invalid!");
+        if(!request.getRequestURI().contains("/login")) {
+            final String header = request.getHeader("Authorization");
+            String userPhone = null;
+            String jwtToken = null;
+            if (header != null && header.startsWith("Bearer ")) {
+//                System.out.println(header);
+                jwtToken = header.substring(7);
+                try {
+                    userPhone = jwtUtil.getUserPhoneFromToken(jwtToken);
+                } catch (ExpiredJwtException err_ex) {
+                    log.warn("[ERROR] Authorization error: {0}", err_ex);
+                    request.setAttribute("expired", err_ex.getMessage());
+                } catch (SignatureException err_s) {
+                    log.warn("[ERROR] Invalid token: {0}", err_s);
+                    request.setAttribute("signature", err_s.getMessage());
+                } catch (IllegalArgumentException err_i) {
+                    log.warn("[ERROR] {}", err_i.getMessage());
+                    throw new IllegalArgumentException("[INFO] Your data is invalid!");
+                }
             }
-        }
 
-        if (userPhone != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = jwtService.loadUserByUsername(userPhone);
+            if (userPhone != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = jwtService.loadUserByUsername(userPhone);
 
-            if (jwtUtil.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities());
+                if (jwtUtil.validateToken(jwtToken, userDetails)) {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities());
 
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    usernamePasswordAuthenticationToken
+                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
             }
         }
 
