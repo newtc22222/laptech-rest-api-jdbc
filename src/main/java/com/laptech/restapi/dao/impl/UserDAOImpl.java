@@ -109,7 +109,7 @@ public class UserDAOImpl implements UserDAO {
                     UPDATE_INFORMATION,
                     userDTO.getId(),
                     userDTO.getName(),
-                    userDTO.getGender().toString(),
+                    userDTO.getGender(),
                     userDTO.getDateOfBirth(),
                     userDTO.getEmail(),
                     userDTO.getUpdateBy()
@@ -186,7 +186,7 @@ public class UserDAOImpl implements UserDAO {
     public long count() {
         try {
             Long count = jdbcTemplate.queryForObject(
-                    COUNT_WITH_CONDITION,
+                    COUNT_ALL,
                     Long.class
             );
             return Objects.requireNonNull(count);
@@ -235,7 +235,8 @@ public class UserDAOImpl implements UserDAO {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new UserMapper()
+                    new UserMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getMessage());
