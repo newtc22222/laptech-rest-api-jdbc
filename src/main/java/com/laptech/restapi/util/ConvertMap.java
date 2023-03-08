@@ -1,6 +1,7 @@
 package com.laptech.restapi.util;
 
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -10,9 +11,11 @@ import java.util.stream.Collectors;
  */
 public class ConvertMap {
     public static Map<String, String> changeAllValueFromObjectToString(Map<String, Object> params) {
-        return params.entrySet()
-                .stream()
-                .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().toString()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, String> newMap = new HashMap<>();
+        params.forEach((k,v) -> {
+            String newValue = (v != null) ? String.valueOf(v) : null;
+            newMap.put(k, newValue);
+        });
+        return newMap;
     }
 }
