@@ -45,8 +45,8 @@ public class DiscountFilter extends BaseFilter {
         this.rate = (params.get("rate") != null) ? Float.parseFloat(params.get("rate")) : null;
         this.appliedType = DiscountType.valueOf(params.get("appliedType"));
         this.maxAmount = (params.get("maxAmount") != null) ? new BigDecimal(params.get("maxAmount")) : null;
-        this.appliedDate = ConvertDate.getDateFromString(params.get("appliedDate"));
-        this.endedDate = ConvertDate.getDateFromString(params.get("endedDate"));
+        this.appliedDate = ConvertDate.getLocalDateFromString(params.get("appliedDate"));
+        this.endedDate = ConvertDate.getLocalDateFromString(params.get("endedDate"));
     }
 
     public Object[] getObject(boolean hasSort) {

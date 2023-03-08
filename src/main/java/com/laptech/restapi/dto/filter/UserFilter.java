@@ -40,7 +40,7 @@ public class UserFilter extends BaseFilter {
         super(params);
         this.name = params.get("name");
         this.gender = (params.get("gender") != null) ? Gender.valueOf(params.get("gender")) : null;
-        this.dateOfBirth = ConvertDate.getDateFromString(params.get("dateOfBirth"));
+        this.dateOfBirth = ConvertDate.getLocalDateFromString(params.get("dateOfBirth"));
         this.email = params.get("email");
         this.isActive = (params.get("isActive") != null) ? Boolean.parseBoolean(params.get("isActive")) : null;
     }

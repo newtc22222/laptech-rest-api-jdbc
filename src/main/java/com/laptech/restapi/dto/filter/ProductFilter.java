@@ -43,7 +43,7 @@ public class ProductFilter extends BaseFilter {
         this.brandId = (params.get("brandId") != null) ? Long.parseLong(params.get("brandId")) : null;
         this.categoryId = (params.get("categoryId") != null) ? Long.parseLong(params.get("categoryId")) : null;
         this.name = params.get("name");
-        this.releasedDate = ConvertDate.getDateFromString(params.get("releasedDate"));
+        this.releasedDate = ConvertDate.getLocalDateFromString(params.get("releasedDate"));
         this.quantityInStock = (params.get("quantityInStock") != null) ? Integer.parseInt(params.get("quantityInStock")) : null;
         this.listedPrice = (params.get("listedPrice") != null) ? new BigDecimal(params.get("listedPrice")) : null;
     }

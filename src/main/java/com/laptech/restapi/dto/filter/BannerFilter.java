@@ -43,8 +43,8 @@ public class BannerFilter extends BaseFilter {
         this.type = params.get("type");
         this.title = params.get("title");
         this.linkProduct = params.get("linkProduct");
-        this.usedDate = ConvertDate.getDateFromString(params.get("usedDate"));
-        this.endedDate = ConvertDate.getDateFromString(params.get("endedDate"));
+        this.usedDate = ConvertDate.getLocalDateFromString(params.get("usedDate"));
+        this.endedDate = ConvertDate.getLocalDateFromString(params.get("endedDate"));
     }
 
     public Object[] getObject(boolean hasSort) {

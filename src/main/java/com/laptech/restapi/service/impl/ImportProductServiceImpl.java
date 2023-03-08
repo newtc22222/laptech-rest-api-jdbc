@@ -97,7 +97,7 @@ public class ImportProductServiceImpl implements ImportProductService {
         }
         if (params.containsKey("date")) {
             Collection<ImportProduct> ticketList = importProductDAO.findImportProductByDate(
-                    ConvertDate.getDateFromString(params.get("date").toString()));
+                    ConvertDate.getLocalDateFromString(params.get("date").toString()));
             ticketSet.removeIf(item -> !ticketList.contains(item));
         }
         if (params.containsKey("startDate") && params.containsKey("endedDate")) {

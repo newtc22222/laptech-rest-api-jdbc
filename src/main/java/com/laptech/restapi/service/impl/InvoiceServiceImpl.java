@@ -103,7 +103,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (params.containsKey("date")) {
             Collection<Invoice> invoiceList = invoiceDAO.findInvoiceByDate(
-                    ConvertDate.getDateFromString(params.get("date").toString()));
+                    ConvertDate.getLocalDateFromString(params.get("date").toString()));
             invoiceSet.removeIf(item -> !invoiceList.contains(item));
         }
         if (params.containsKey("startDate") && params.containsKey("endDate")) {

@@ -39,7 +39,7 @@ public class ImportProductFilter extends BaseFilter {
         this.productId = params.get("productId");
         this.quantity = (params.get("quantity") != null) ? Long.parseLong(params.get("quantity")) : null;
         this.importedPrice = (params.get("importedPrice") != null) ? new BigDecimal(params.get("importedPrice")) : null;
-        this.importedDate = ConvertDate.getDateFromString(params.get("importedDate"));
+        this.importedDate = ConvertDate.getLocalDateFromString(params.get("importedDate"));
     }
 
     public Object[] getObject(boolean hasSort) {
