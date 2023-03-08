@@ -35,18 +35,18 @@ public abstract class BaseFilter extends SortOptionDTO {
 
     public BaseFilter(Map<String, String> baseParams) {
         super(baseParams.get("sortBy"), baseParams.get("sortDir"));
-        this.createdDate = ConvertDate.getDateFromString(baseParams.get("createdDate"));
-        this.modifiedDate = ConvertDate.getDateFromString(baseParams.get("modifiedDate"));
-        this.deletedDate = ConvertDate.getDateFromString(baseParams.get("deletedDate"));
+        this.createdDate = ConvertDate.getLocalDateFromString(baseParams.get("createdDate"));
+        this.modifiedDate = ConvertDate.getLocalDateFromString(baseParams.get("modifiedDate"));
+        this.deletedDate = ConvertDate.getLocalDateFromString(baseParams.get("deletedDate"));
         this.isDel = baseParams.get("idDel") != null ? Boolean.parseBoolean(baseParams.get("idDel")) : null;
         this.updateBy = baseParams.get("updateBy");
     }
 
     public Object[] getObject(boolean hasSort) {
         List<Object> objects = new ArrayList<>();
-        objects.add(Date.valueOf(this.createdDate));
-        objects.add(Date.valueOf(this.modifiedDate));
-        objects.add(Date.valueOf(this.deletedDate));
+        objects.add((this.createdDate != null) ? Date.valueOf(this.createdDate) : null);
+        objects.add((this.modifiedDate != null) ? Date.valueOf(this.modifiedDate) : null);
+        objects.add((this.deletedDate != null) ? Date.valueOf(this.deletedDate) : null);
         objects.add(this.isDel);
         objects.add(this.updateBy);
         if (hasSort) {
