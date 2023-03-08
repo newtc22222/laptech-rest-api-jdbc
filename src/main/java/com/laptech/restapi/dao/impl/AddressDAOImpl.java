@@ -34,6 +34,8 @@ public class AddressDAOImpl implements AddressDAO {
     private String INSERT;
     @Value("${sp_UpdateAddress}")
     private String UPDATE;
+    @Value("${sp_SetDefaultAddressOfUser}")
+    private String UPDATE_DEFAULT_ADDRESS;
     @Value("${sp_DeleteAddress}")
     private String DELETE;
 
@@ -184,6 +186,21 @@ public class AddressDAOImpl implements AddressDAO {
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
+        }
+    }
+
+    @Override
+    public int setDefaultAddress(String addressId, long userId, String updateBy) {
+        try {
+            return jdbcTemplate.update(
+                    UPDATE_DEFAULT_ADDRESS,
+                    addressId,
+                    userId,
+                    updateBy
+            );
+        } catch (DataAccessException err) {
+            log.error("[UPDATE DEFAULT] {}", err.getLocalizedMessage());
+            return 0;
         }
     }
 

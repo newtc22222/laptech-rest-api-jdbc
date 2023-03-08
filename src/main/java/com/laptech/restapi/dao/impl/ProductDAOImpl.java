@@ -118,7 +118,7 @@ public class ProductDAOImpl implements ProductDAO {
         try {
             return jdbcTemplate.update(
                     UPDATE_PRICE,
-                    productDTO.getListed_price(),
+                    productDTO.getListedPrice(),
                     productDTO.getId(),
                     updateBy
             );
