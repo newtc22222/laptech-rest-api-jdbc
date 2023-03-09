@@ -22,7 +22,7 @@ public class CategoryDTO {
     private String name;
     @ApiModelProperty(required = true)
     @NotEmpty
-    @Size(max = 50)
+    @Size(max = 255)
     private String image;
     @Size(max = 255)
     private String description;
