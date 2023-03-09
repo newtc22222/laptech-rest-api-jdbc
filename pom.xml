@@ -80,6 +80,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.mservice</groupId>
+            <artifactId>mservice</artifactId>
+            <systemPath>${basedir}/libs/momopayment-1.0.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
