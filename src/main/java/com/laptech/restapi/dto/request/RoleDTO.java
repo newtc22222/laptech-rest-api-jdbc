@@ -2,7 +2,6 @@ package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.model.Role;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,7 +35,7 @@ public class RoleDTO {
 
     public static Role transform(RoleDTO dto) {
         Role role = new Role();
-        role.setId(dto.getId());
+        role.setId((dto.getId() != null) ? dto.getId() : 0);
         role.setName(dto.getName());
         role.setDescription(dto.getDescription());
         role.setUpdateBy(dto.getUpdateBy());

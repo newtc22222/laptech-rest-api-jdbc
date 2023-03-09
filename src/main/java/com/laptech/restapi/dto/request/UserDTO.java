@@ -61,7 +61,7 @@ public class UserDTO {
      */
     public static User transform(UserDTO dto) {
         User user = new User();
-        user.setId(dto.getId());
+        user.setId((dto.getId() != null) ? dto.getId() : 0L);
         user.setName(dto.getName());
         try {
             user.setGender(Gender.valueOf(dto.getGender()));

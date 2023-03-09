@@ -1,7 +1,6 @@
 package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.model.Comment;
-import com.laptech.restapi.util.ConvertDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

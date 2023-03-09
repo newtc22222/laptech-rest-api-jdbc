@@ -51,7 +51,7 @@ public class ImportProductDTO {
         ticket.setProductId(dto.getProductId());
         ticket.setQuantity(dto.getQuantity());
         ticket.setImportedPrice(dto.getImportedPrice());
-        ticket.setImportedDate(ConvertDateTime.getDateTimeFromString(dto.getImportedDate()));
+        ticket.setImportedDate(ConvertDateTime.getLocalDateTimeFromString(dto.getImportedDate()));
         ticket.setUpdateBy(dto.getUpdateBy());
         return ticket;
     }

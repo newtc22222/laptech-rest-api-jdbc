@@ -58,7 +58,7 @@ public class BannerDTO {
 
     public static Banner transform(BannerDTO dto) {
         Banner banner = new Banner();
-        banner.setId(dto.getId());
+        banner.setId((dto.getId() != null) ? dto.getId() : 0L);
         banner.setPath(dto.getPath());
         banner.setType(dto.getType());
         banner.setTitle(dto.getTitle());

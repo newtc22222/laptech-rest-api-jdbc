@@ -2,7 +2,6 @@ package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.model.Label;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,7 +41,7 @@ public class LabelDTO {
 
     public static Label transform(LabelDTO dto) {
         Label label = new Label();
-        label.setId(dto.getId());
+        label.setId((dto.getId() != null) ? dto.getId() : 0L);
         label.setName(dto.getName());
         label.setIcon(dto.getIcon());
         label.setTitle(dto.getTitle());

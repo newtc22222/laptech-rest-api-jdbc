@@ -47,7 +47,7 @@ public class BrandDTO {
 
     public static Brand transform(BrandDTO dto) {
         Brand brand = new Brand();
-        brand.setId(dto.getId());
+        brand.setId((dto.getId() != null) ? dto.getId() : 0L);
         brand.setName(dto.getName());
         brand.setCountry(dto.getCountry());
         brand.setEstablishDate(ConvertDate.getLocalDateFromString(dto.getEstablishDate()));

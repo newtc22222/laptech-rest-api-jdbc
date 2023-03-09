@@ -41,7 +41,7 @@ public class CategoryDTO {
 
     public static Category transform(CategoryDTO dto) {
         Category category = new Category();
-        category.setId(dto.getId());
+        category.setId((dto.getId() != null) ? dto.getId() : 0L);
         category.setName(dto.getName());
         category.setImage(dto.getImage());
         category.setDescription(dto.getDescription());

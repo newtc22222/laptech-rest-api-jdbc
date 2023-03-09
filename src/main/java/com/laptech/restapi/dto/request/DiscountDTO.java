@@ -60,7 +60,7 @@ public class DiscountDTO {
 
     public static Discount transform(DiscountDTO dto) {
         Discount discount = new Discount();
-        discount.setId(dto.getId());
+        discount.setId((dto.getId() != null) ? dto.getId() : 0L);
         discount.setCode(dto.getCode());
         discount.setRate(dto.getRate());
 
@@ -71,8 +71,8 @@ public class DiscountDTO {
         }
 
         discount.setMaxAmount(dto.getMaxAmount());
-        discount.setAppliedDate(ConvertDateTime.getDateTimeFromString(dto.getAppliedDate()));
-        discount.setEndedDate(ConvertDateTime.getDateTimeFromString(dto.getEndedDate()));
+        discount.setAppliedDate(ConvertDateTime.getLocalDateTimeFromString(dto.getAppliedDate()));
+        discount.setEndedDate(ConvertDateTime.getLocalDateTimeFromString(dto.getEndedDate()));
         discount.setUpdateBy(dto.getUpdateBy());
         return discount;
     }
