@@ -94,8 +94,8 @@ public class DiscountServiceImpl implements DiscountService {
 
         if (params.containsKey("startDate") && params.containsKey("endDate")) {
             Collection<Discount> discountList = discountDAO.findDiscountByDateRange(
-                    ConvertDateTime.getDateTimeFromString(params.get("startDate").toString()),
-                    ConvertDateTime.getDateTimeFromString(params.get("endDate").toString())
+                    ConvertDateTime.getLocalDateTimeFromString(params.get("startDate").toString()),
+                    ConvertDateTime.getLocalDateTimeFromString(params.get("endDate").toString())
             );
             discountSet.removeIf(item -> !discountList.contains(item));
         }

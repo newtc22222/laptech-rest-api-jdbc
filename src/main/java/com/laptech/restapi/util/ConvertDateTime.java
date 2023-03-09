@@ -17,7 +17,7 @@ public class ConvertDateTime {
     private static final Logger logger = LoggerFactory.getLogger(ConvertDateTime.class);
     private static final DateTimeFormatter DATE_TIME_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static LocalDateTime getDateTimeFromString(String text) {
+    public static LocalDateTime getLocalDateTimeFromString(String text) {
         if (text == null || text.equals("")) return null;
         try {
             return LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);

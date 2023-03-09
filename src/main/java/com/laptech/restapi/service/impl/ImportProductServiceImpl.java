@@ -102,8 +102,8 @@ public class ImportProductServiceImpl implements ImportProductService {
         }
         if (params.containsKey("startDate") && params.containsKey("endedDate")) {
             Collection<ImportProduct> ticketList = importProductDAO.findImportProductByDateRange(
-                    ConvertDateTime.getDateTimeFromString(params.get("startDate").toString()),
-                    ConvertDateTime.getDateTimeFromString(params.get("endDate").toString())
+                    ConvertDateTime.getLocalDateTimeFromString(params.get("startDate").toString()),
+                    ConvertDateTime.getLocalDateTimeFromString(params.get("endDate").toString())
             );
             ticketSet.removeIf(item -> !ticketList.contains(item));
         }
