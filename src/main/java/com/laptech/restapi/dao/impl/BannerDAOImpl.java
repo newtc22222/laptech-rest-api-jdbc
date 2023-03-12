@@ -138,7 +138,7 @@ public class BannerDAOImpl implements BannerDAO {
     @Override
     public boolean isExists(Banner banner) {
         try {
-            Banner existBanner = jdbcTemplate.queryForObject(
+            Collection<Banner> existBanner = jdbcTemplate.query(
                     QUERY_CHECK_EXISTS,
                     new BannerMapper(),
                     banner.getPath(),
@@ -148,7 +148,7 @@ public class BannerDAOImpl implements BannerDAO {
                     banner.getUsedDate(),
                     banner.getEndedDate()
             );
-            return existBanner != null;
+            return existBanner.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

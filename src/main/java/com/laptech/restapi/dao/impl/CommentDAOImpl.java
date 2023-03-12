@@ -143,7 +143,7 @@ public class CommentDAOImpl implements CommentDAO {
     @Override
     public boolean isExists(Comment comment) {
         try {
-            Comment existsComment = jdbcTemplate.queryForObject(
+            Collection<Comment> existsComment = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new CommentMapper(),
                     comment.getRootCommentId(),
@@ -152,7 +152,7 @@ public class CommentDAOImpl implements CommentDAO {
                     comment.getPhone(),
                     comment.getContent()
             );
-            return existsComment != null;
+            return existsComment.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

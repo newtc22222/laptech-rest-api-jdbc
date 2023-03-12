@@ -198,7 +198,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
     @Override
     public boolean isExists(Invoice invoice) {
         try {
-            Invoice existsInvoice = jdbcTemplate.queryForObject(
+            Collection<Invoice> existsInvoice = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new InvoiceMapper(),
                     invoice.getUserId(),
@@ -214,7 +214,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     invoice.getOrderStatus().toString(),
                     invoice.getNote()
             );
-            return existsInvoice != null;
+            return existsInvoice.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

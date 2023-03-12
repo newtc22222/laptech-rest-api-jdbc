@@ -174,7 +174,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public boolean isExists(Product product) {
         try {
-            Product existsProduct = jdbcTemplate.queryForObject(
+            Collection<Product> existsProduct = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new ProductMapper(),
                     product.getBrandId(),
@@ -184,7 +184,7 @@ public class ProductDAOImpl implements ProductDAO {
                     product.getQuantityInStock(),
                     product.getListedPrice()
             );
-            return existsProduct != null;
+            return existsProduct.size() > 0;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

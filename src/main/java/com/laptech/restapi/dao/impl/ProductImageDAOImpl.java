@@ -156,7 +156,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
     @Override
     public boolean isExists(ProductImage image) {
         try {
-            ProductImage existsImage = jdbcTemplate.queryForObject(
+            Collection<ProductImage> existsImage = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new ProductImageMapper(),
                     image.getProductId(),
@@ -164,7 +164,7 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                     image.getUrl(),
                     image.getType().toString()
             );
-            return existsImage != null;
+            return existsImage.size() > 0;
         } catch (DataAccessException err) {
             log.error("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

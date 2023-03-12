@@ -143,7 +143,7 @@ public class DiscountDAOImpl implements DiscountDAO {
     @Override
     public boolean isExists(Discount discount) {
         try {
-            Discount existsDiscount = jdbcTemplate.queryForObject(
+            Collection<Discount> existsDiscount = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new DiscountMapper(),
                     discount.getCode(),
@@ -153,7 +153,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     Timestamp.valueOf(discount.getAppliedDate()),
                     Timestamp.valueOf(discount.getEndedDate())
             );
-            return existsDiscount != null;
+            return existsDiscount.size() > 0;
         } catch (DataAccessException err) {
             log.error("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

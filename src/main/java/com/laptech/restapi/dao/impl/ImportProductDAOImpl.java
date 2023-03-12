@@ -31,7 +31,7 @@ import java.util.Objects;
 @Log4j2
 @Component
 @PropertySource("classpath:query.properties")
-public class ImportProductDAOImpl implements ImportProductDAO {
+public class    ImportProductDAOImpl implements ImportProductDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -145,8 +145,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
     @Override
     public boolean isExists(ImportProduct ticket) {
         try {
-
-            ImportProduct existsImport = jdbcTemplate.queryForObject(
+            Collection<ImportProduct> existsImport = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new ImportProductMapper(),
                     ticket.getProductId(),
@@ -154,7 +153,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     ticket.getImportedPrice().doubleValue(),
                     Timestamp.valueOf(ticket.getImportedDate())
             );
-            return existsImport != null;
+            return existsImport.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

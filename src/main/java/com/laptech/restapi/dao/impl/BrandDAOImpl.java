@@ -133,15 +133,14 @@ public class BrandDAOImpl implements BrandDAO {
     @Override
     public boolean isExists(Brand brand) {
         try {
-            Brand existBrand = jdbcTemplate.queryForObject(
+            Collection<Brand> existBrand = jdbcTemplate.query(
                     QUERY_CHECK_EXISTS,
                     new BrandMapper(),
                     brand.getName(),
                     brand.getCountry(),
-                    brand.getEstablishDate(),
-                    brand.getLogo()
+                    brand.getEstablishDate()
             );
-            return existBrand != null;
+            return existBrand.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

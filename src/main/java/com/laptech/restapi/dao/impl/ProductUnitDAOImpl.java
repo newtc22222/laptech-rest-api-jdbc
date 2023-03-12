@@ -162,7 +162,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
     @Override
     public boolean isExists(ProductUnit unit) {
         try {
-            ProductUnit existsUnit = jdbcTemplate.queryForObject(
+            Collection<ProductUnit> existsUnit = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new ProductUnitMapper(),
                     unit.getProductId(),
@@ -172,7 +172,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     unit.getPrice().doubleValue(),
                     unit.getDiscountPrice().doubleValue()
             );
-            return existsUnit != null;
+            return existsUnit.size() > 0;
         } catch (DataAccessException err) {
             log.error(err);
             return false;

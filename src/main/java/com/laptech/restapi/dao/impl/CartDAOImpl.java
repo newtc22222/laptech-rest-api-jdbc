@@ -103,13 +103,13 @@ public class CartDAOImpl implements CartDAO {
     @Override
     public boolean isExists(Cart cart) {
         try {
-            Cart existsCart = jdbcTemplate.queryForObject(
+            Collection<Cart> existsCart = jdbcTemplate.query(
                     QUERY_CHECK_EXISTS,
                     new CartMapper(),
                     cart.getId(),
                     cart.getUserId()
             );
-            return existsCart != null;
+            return existsCart.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

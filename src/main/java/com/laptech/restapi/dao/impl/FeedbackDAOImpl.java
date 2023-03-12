@@ -167,7 +167,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
     @Override
     public boolean isExists(Feedback feedback) {
         try {
-            Feedback existsFeedback = jdbcTemplate.queryForObject(
+            Collection<Feedback> existsFeedback = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new FeedbackMapper(),
                     feedback.getContent(),
@@ -175,7 +175,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     feedback.getProductId(),
                     feedback.getUserId()
             );
-            return existsFeedback != null;
+            return existsFeedback.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;

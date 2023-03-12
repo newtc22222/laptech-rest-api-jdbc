@@ -142,19 +142,18 @@ public class AddressDAOImpl implements AddressDAO {
     @Override
     public boolean isExists(Address address) {
         try {
-            Address existAddress =
-                    jdbcTemplate.queryForObject(
-                            QUERY_CHECK_EXISTS,
-                            new AddressMapper(),
-                            address.getUserId(),
-                            address.getCountry(),
-                            address.getLine1(),
-                            address.getLine2(),
-                            address.getLine3(),
-                            address.getStreet(),
-                            address.isDefault()
-                    );
-            return existAddress != null;
+            Collection<Address> existAddress = jdbcTemplate.query(
+                    QUERY_CHECK_EXISTS,
+                    new AddressMapper(),
+                    address.getUserId(),
+                    address.getCountry(),
+                    address.getLine1(),
+                    address.getLine2(),
+                    address.getLine3(),
+                    address.getStreet(),
+                    address.isDefault()
+            );
+            return existAddress.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXITS] {}", err.getLocalizedMessage());
             return false;

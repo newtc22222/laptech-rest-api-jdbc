@@ -214,7 +214,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean isExists(User user) {
         try {
-            User existsUser = jdbcTemplate.queryForObject(
+            Collection<User> existsUser = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new UserMapper(),
                     user.getName(),
@@ -223,7 +223,7 @@ public class UserDAOImpl implements UserDAO {
                     user.getPhone(),
                     user.getEmail()
             );
-            return existsUser != null;
+            return existsUser.size() > 0;
         } catch (DataAccessException err) {
             log.info("[CHECK EXIST] {}", err.getMessage());
             return false;

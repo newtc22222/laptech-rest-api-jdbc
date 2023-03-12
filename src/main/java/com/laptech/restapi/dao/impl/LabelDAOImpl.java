@@ -133,7 +133,7 @@ public class LabelDAOImpl implements LabelDAO {
     @Override
     public boolean isExists(Label label) {
         try {
-            Label existsLabel = jdbcTemplate.queryForObject(
+            Collection<Label> existsLabel = jdbcTemplate.query(
                     QUERY_CHECK_EXITS,
                     new LabelMapper(),
                     label.getName(),
@@ -141,7 +141,7 @@ public class LabelDAOImpl implements LabelDAO {
                     label.getTitle(),
                     label.getDescription()
             );
-            return existsLabel != null;
+            return existsLabel.size() > 0;
         } catch (DataAccessException err) {
             log.warn("[CHECK EXIST] {}", err.getLocalizedMessage());
             return false;
