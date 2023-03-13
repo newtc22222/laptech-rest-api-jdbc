@@ -47,7 +47,6 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     public void update(Discount discount, Long discountId) {
         // check
-
         Discount oldDiscount = discountDAO.findById(discountId);
         if (oldDiscount == null) {
             throw new ResourceNotFoundException("[Info] Cannot find discount with id=" + discountId);
@@ -60,7 +59,7 @@ public class DiscountServiceImpl implements DiscountService {
             oldDiscount.setEndedDate(discount.getEndedDate());
             oldDiscount.setUpdateBy(discount.getUpdateBy());
 
-            if (discountDAO.update(discount) == 0) {
+            if (discountDAO.update(oldDiscount) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update this discount!");
             }
         }
