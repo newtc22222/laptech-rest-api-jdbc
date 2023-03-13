@@ -71,7 +71,8 @@ public class DiscountDAOImpl implements DiscountDAO {
                     discount.getAppliedType().toString(),
                     discount.getMaxAmount().doubleValue(),
                     Timestamp.valueOf(discount.getAppliedDate()),
-                    Timestamp.valueOf(discount.getEndedDate())
+                    Timestamp.valueOf(discount.getEndedDate()),
+                    discount.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
@@ -87,10 +88,11 @@ public class DiscountDAOImpl implements DiscountDAO {
                     discount.getId(),
                     discount.getCode(),
                     discount.getRate(),
-                    discount.getAppliedType().toString(),
+                    String.valueOf(discount.getAppliedType()),
                     discount.getMaxAmount().doubleValue(),
                     Timestamp.valueOf(discount.getAppliedDate()),
-                    Timestamp.valueOf(discount.getEndedDate())
+                    Timestamp.valueOf(discount.getEndedDate()),
+                    discount.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[DISCOUNT] {}", err.getLocalizedMessage());
@@ -103,7 +105,8 @@ public class DiscountDAOImpl implements DiscountDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    discountId
+                    discountId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
