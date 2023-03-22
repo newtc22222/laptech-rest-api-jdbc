@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Nhat Phi
@@ -74,7 +75,7 @@ public class UserDAOImpl implements UserDAO {
                     user.getPhone(),
                     user.getEmail(),
                     user.getPassword(),
-                    user.getUpdateBy()
+                    Optional.ofNullable(user.getUpdateBy()).orElse("system")
             );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getMessage());
