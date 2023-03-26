@@ -82,8 +82,9 @@
         <dependency>
             <groupId>com.mservice</groupId>
             <artifactId>mservice</artifactId>
-            <systemPath>${basedir}/libs/momopayment-1.0.jar</systemPath>
             <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${basedir}/libs/momopayment-1.0.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -107,6 +108,7 @@
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
+                <!--suppress MavenModelInspection -->
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
