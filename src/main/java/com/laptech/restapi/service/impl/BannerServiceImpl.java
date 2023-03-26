@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Nhat Phi
@@ -85,17 +83,19 @@ public class BannerServiceImpl implements BannerService {
     @Override
     public Collection<Banner> findWithFilter(Map<String, Object> params) {
         BannerFilter filter = new BannerFilter(ConvertMap.changeAllValueFromObjectToString(params));
-        Set<Banner> bannerSet = (Set<Banner>) bannerDAO.findWithFilter(filter);
+        Set<Banner> bannerSet = new HashSet<>(bannerDAO.findWithFilter(filter));
+        System.out.println(bannerSet);
 
-        if (params.containsKey("startDate") && params.containsKey("endDate")) {
+        if (params.get("startDate") != null && params.get("endDate") != null) {
             Date startDate = Date.valueOf(params.get("startDate").toString());
             Date endDate = Date.valueOf(params.get("endDate").toString());
             Collection<Banner> bannerList = bannerDAO.findBannerByDateRange(startDate, endDate);
             bannerSet.removeIf(item -> !bannerList.contains(item));
         }
-        if (params.containsKey("date")) {
+        if (params.get("date") != null) {
             Collection<Banner> bannerList = bannerDAO.findBannerByDate(Date.valueOf(params.get("date").toString()));
             bannerSet.removeIf(item -> !bannerList.contains(item));
+            System.out.println(bannerSet);
         }
         return bannerSet;
     }

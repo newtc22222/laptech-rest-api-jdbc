@@ -6,10 +6,7 @@ import lombok.Setter;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Nhat Phi
@@ -53,8 +50,8 @@ public class BannerFilter extends BaseFilter {
         objects.add(this.type);
         objects.add(this.title);
         objects.add(this.linkProduct);
-        objects.add(Date.valueOf(this.usedDate));
-        objects.add(Date.valueOf(this.endedDate));
+        objects.add(this.usedDate != null ? Date.valueOf(usedDate) : null);
+        objects.add(this.endedDate != null ? Date.valueOf(endedDate) : null);
         objects.addAll(Arrays.asList(super.getObject(hasSort)));
         return objects.toArray();
     }
