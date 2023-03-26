@@ -61,6 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "brands",
             "brands/*/products",
             "banners",
+            "banners/filter",
             "categories",
             "categories/*/products",
             "comments",
