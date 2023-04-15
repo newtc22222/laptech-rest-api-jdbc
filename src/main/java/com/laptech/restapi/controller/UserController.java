@@ -3,7 +3,11 @@ package com.laptech.restapi.controller;
 import com.laptech.restapi.dto.request.UserDTO;
 import com.laptech.restapi.dto.response.BaseResponse;
 import com.laptech.restapi.dto.response.DataResponse;
+import com.laptech.restapi.model.Cart;
+import com.laptech.restapi.model.Invoice;
 import com.laptech.restapi.model.User;
+import com.laptech.restapi.service.CartService;
+import com.laptech.restapi.service.InvoiceService;
 import com.laptech.restapi.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,7 +17,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +34,11 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CartService cartService;
+    @Autowired
+    private InvoiceService invoiceService;
 
     @ApiOperation(value = "Get all users in system", response = User.class)
     @GetMapping("/users")
@@ -76,6 +87,41 @@ public class UserController {
         return DataResponse.getCollectionSuccess(
                 "Get user with filter",
                 userService.findWithFilter(params)
+        );
+    }
+
+    /* For current user */
+    @ApiOperation(value = "Get current user in system!", response = User.class)
+    @GetMapping("getCurrentUser")
+    public ResponseEntity<DataResponse> getCurrentUser(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        return DataResponse.getObjectSuccess(
+                "Get current user",
+                userService.findUserByPhone(principal.getName())
+        );
+    }
+
+    @ApiOperation(value = "Get cart of current user", response = Cart.class)
+    @GetMapping("/myCart")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<DataResponse> getCartOfCurrentUser(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        User currentUser = userService.findUserByPhone(principal.getName());
+        return DataResponse.getObjectSuccess(
+                "Get cart of current user",
+                cartService.findById(currentUser.getId())
+        );
+    }
+
+    @ApiOperation(value = "Get all invoices of current user", response = Invoice.class)
+    @GetMapping("/myInvoices")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<DataResponse> getInvoicesOfCurrentUser(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        User currentUser = userService.findUserByPhone(principal.getName());
+        return DataResponse.getCollectionSuccess(
+                "Get invoices of current user",
+                invoiceService.getInvoicesOfUser(currentUser.getId())
         );
     }
 
