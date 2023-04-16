@@ -22,7 +22,7 @@ import java.util.Map;
 @Api(tags = "Comment of product", value = "Comment controller")
 @CrossOrigin(value = {"*"})
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class CommentController {
     @Autowired
     private CommentService commentService;
@@ -94,7 +94,6 @@ public class CommentController {
 
     @ApiOperation(value = "Get one comment with id", response = Comment.class)
     @GetMapping("/comments/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<DataResponse> findCommentById(@PathVariable("id") String commentId) {
         return DataResponse.getObjectSuccess(
                 "Get comment",
@@ -104,7 +103,6 @@ public class CommentController {
 
     @ApiOperation(value = "Create a new comment", response = DataResponse.class)
     @PostMapping("/comments")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<DataResponse> createNewComment(@RequestBody CommentDTO commentDTO) {
         return DataResponse.success(
                 "Create new comment",
@@ -114,7 +112,6 @@ public class CommentController {
 
     @ApiOperation(value = "Update a comment", response = BaseResponse.class)
     @PutMapping("/comments/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<BaseResponse> updateComment(@PathVariable("id") String commentId,
                                                       @RequestBody CommentDTO commentDTO) {
         commentService.update(CommentDTO.transform(commentDTO), commentId);
@@ -123,7 +120,7 @@ public class CommentController {
 
     @ApiOperation(value = "Remove a comment", response = BaseResponse.class)
     @DeleteMapping("/comments/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> deleteComment(@PathVariable("id") String commentId,
                                                       @RequestBody(required = false) Map<String, String> body) {
         commentService.delete(commentId, (body != null) ? body.get("updateBy") : null);

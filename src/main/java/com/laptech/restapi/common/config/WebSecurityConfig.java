@@ -45,6 +45,7 @@ public class WebSecurityConfig {
 
     private static final String[] WHITE_LIST = new String[]{
             "/api/v1/auth/*",
+            "/api/v1/comments",
             "/swagger-ui.html",
             "/swagger-ui.html*/**",
             "/swagger-resources/**",
@@ -59,7 +60,6 @@ public class WebSecurityConfig {
             "banners",
             "categories",
             "categories/*/products",
-            "comments",
             "discounts",
             "labels",
             "feedbacks",
