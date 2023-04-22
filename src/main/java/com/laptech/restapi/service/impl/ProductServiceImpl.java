@@ -1,6 +1,7 @@
 package com.laptech.restapi.service.impl;
 
 import com.laptech.restapi.common.dto.PagingOptionDTO;
+import com.laptech.restapi.common.enums.ImageType;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
@@ -274,8 +275,15 @@ public class ProductServiceImpl implements ProductService {
                     cardDTO.setId(product.getId());
                     cardDTO.setName(product.getName());
 
-                    Collection<ProductImage> imageList = productImageDAO.findWithFilter(null);
-                    cardDTO.setImagesRepresentUrl(imageList.stream().map(ProductImage::getUrl).collect(Collectors.toList()));
+                    // Get images
+                    Collection<ProductImage> imageList = productImageDAO.findProductImageByProductId(product.getId());
+                    cardDTO.setImagesRepresentUrl(
+                            imageList.stream()
+                                    .filter(image -> image.getType().equals(ImageType.ADVERTISE))
+                                    .map(ProductImage::getUrl)
+                                    .collect(Collectors.toList())
+                    );
+
                     cardDTO.setLabelList(new ArrayList<>(labelDAO.findLabelByProductId(product.getId())));
                     cardDTO.setPrice(product.getListedPrice());
 
