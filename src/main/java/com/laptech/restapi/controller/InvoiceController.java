@@ -109,7 +109,6 @@ public class InvoiceController {
 
     @ApiOperation(value = "Get all invoices of user", response = Invoice.class)
     @GetMapping("/users/{userId}/invoices")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<DataResponse> getInvoicesOfUser(@PathVariable("userId") long userId) {
         return DataResponse.getCollectionSuccess(
                 "Get invoices of user",
@@ -129,7 +128,6 @@ public class InvoiceController {
 
     @ApiOperation(value = "Update all information of Invoice", response = BaseResponse.class)
     @PutMapping("/invoices/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<BaseResponse> updateInvoice(@PathVariable("id") String invoiceId,
                                                       @RequestBody InvoiceDTO invoiceDTO) {
         invoiceService.update(InvoiceDTO.transform(invoiceDTO), invoiceId);
