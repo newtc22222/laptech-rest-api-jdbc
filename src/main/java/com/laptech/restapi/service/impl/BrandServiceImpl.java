@@ -63,7 +63,9 @@ public class BrandServiceImpl implements BrandService {
         if (brandDAO.findById(brandId) == null) {
             throw new ResourceNotFoundException("cannot find brand with id=" + brandId);
         } else {
-            brandDAO.delete(brandId, updateBy);
+            if (brandDAO.delete(brandId, updateBy) == 0) {
+                throw new InternalServerErrorException("Can not delete this brand!");
+            }
         }
     }
 
