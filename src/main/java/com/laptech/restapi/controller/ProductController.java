@@ -188,7 +188,7 @@ public class ProductController {
     }
 
     @ApiOperation(value = "Add a discount to product", response = BaseResponse.class)
-    @PostMapping("/products/{id}/discount")
+    @PostMapping("/products/{id}/discounts")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> addDiscountToProduct(@PathVariable("id") String productId,
                                                              @RequestBody Map<String, Long> body) {
@@ -197,7 +197,7 @@ public class ProductController {
     }
 
     @ApiOperation(value = "Remove a discount from product", response = BaseResponse.class)
-    @DeleteMapping("/products/{id}/discount")
+    @DeleteMapping("/products/{id}/discounts")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> removeDiscountToProduct(@PathVariable("id") String productId,
                                                                 @RequestBody Map<String, Long> body) {
