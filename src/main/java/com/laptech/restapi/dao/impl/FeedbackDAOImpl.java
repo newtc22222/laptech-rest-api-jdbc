@@ -187,7 +187,8 @@ public class FeedbackDAOImpl implements FeedbackDAO {
         try {
             return jdbcTemplate.query(
                     QUERY_ALL,
-                    new FeedbackMapper()
+                    new FeedbackMapper(),
+                    pagingOption.getObject()
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());

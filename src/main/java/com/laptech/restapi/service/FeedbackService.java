@@ -10,7 +10,7 @@ import java.util.Set;
  */
 
 public interface FeedbackService extends BaseService<Feedback, String> {
-    Set<Feedback> getAllFeedbacksOfProduct(String productId);
+    Set<?> getAllFeedbacksOfProduct(String productId);
 
     Set<Feedback> getAllFeedbacksOfUser(long userId);
 }

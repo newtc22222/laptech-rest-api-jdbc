@@ -9,15 +9,14 @@ import com.laptech.restapi.dao.ProductDAO;
 import com.laptech.restapi.dao.UserDAO;
 import com.laptech.restapi.dto.filter.FeedbackFilter;
 import com.laptech.restapi.model.Feedback;
+import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.FeedbackService;
 import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Nhat Phi
@@ -104,11 +103,26 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public Set<Feedback> getAllFeedbacksOfProduct(String productId) {
+    public Set<?> getAllFeedbacksOfProduct(String productId) {
         if (productDAO.findById(productId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
         }
-        return new HashSet<>(feedbackDAO.findFeedbackByProductId(productId));
+        Collection<Feedback> feedbackCollection = feedbackDAO.findFeedbackByProductId(productId);
+        return feedbackCollection.stream().map(feedback -> {
+            Map<String, Object> newFeedback = new HashMap<>();
+            newFeedback.put("id", feedback.getId());
+            newFeedback.put("productId", feedback.getProductId());
+            newFeedback.put("ratingPoint", feedback.getRatingPoint());
+            newFeedback.put("content", feedback.getContent());
+            newFeedback.put("createdDate", feedback.getCreatedDate());
+            newFeedback.put("modifiedDate", feedback.getModifiedDate());
+
+            User user = userDAO.findById(feedback.getUserId());
+            if(user != null) {
+                newFeedback.put("username", user.getName());
+            }
+            return newFeedback;
+        }).collect(Collectors.toSet());
     }
 
     @Override
