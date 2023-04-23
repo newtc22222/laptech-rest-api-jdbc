@@ -5,6 +5,7 @@ import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.LabelDAO;
+import com.laptech.restapi.dao.ProductDAO;
 import com.laptech.restapi.dto.filter.LabelFilter;
 import com.laptech.restapi.model.Label;
 import com.laptech.restapi.service.LabelService;
@@ -22,6 +23,9 @@ import java.util.Map;
 public class LabelServiceImpl implements LabelService {
     @Autowired
     private LabelDAO labelDAO;
+
+    @Autowired
+    private ProductDAO productDAO;
 
     @Override
     public Label insert(Label label) {
@@ -92,5 +96,13 @@ public class LabelServiceImpl implements LabelService {
             throw new ResourceNotFoundException("[Info] Cannot find label with id=" + labelId);
         }
         return label;
+    }
+
+    @Override
+    public Collection<Label> getLabelsOfProduct(String productId) {
+        if (productDAO.findById(productId) == null) {
+            throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
+        }
+        return labelDAO.findLabelByProductId(productId);
     }
 }

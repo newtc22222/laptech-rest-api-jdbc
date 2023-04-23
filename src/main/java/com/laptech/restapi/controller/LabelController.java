@@ -20,13 +20,13 @@ import java.util.Map;
 @Api(tags = "Label or tag of product's special accessories", value = "Label controller")
 @CrossOrigin(value = {"*"})
 @RestController
-@RequestMapping("/api/v1/labels")
+@RequestMapping("/api/v1")
 public class LabelController {
     @Autowired
     private LabelService labelService;
 
     @ApiOperation(value = "Get all label in system", response = Label.class)
-    @GetMapping("")
+    @GetMapping("labels")
     public ResponseEntity<DataResponse> getAllLabels(@RequestParam(required = false) String sortBy,
                                                      @RequestParam(required = false) String sortDir,
                                                      @RequestParam(required = false) Long page,
@@ -39,7 +39,7 @@ public class LabelController {
     }
 
     @ApiOperation(value = "Get label with limit", response = Label.class)
-    @GetMapping("filter")
+    @GetMapping("labels/filter")
     public ResponseEntity<DataResponse> getLabelWithFilter(@RequestParam(required = false) String name,
                                                            @RequestParam(required = false) String icon,
                                                            @RequestParam(required = false) String title,
@@ -68,7 +68,7 @@ public class LabelController {
     }
 
     @ApiOperation(value = "Get a label with id", response = Label.class)
-    @GetMapping("{id}")
+    @GetMapping("labels/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<DataResponse> getLabelById(@PathVariable(value = "id") long labelId) {
         return DataResponse.getObjectSuccess(
@@ -77,8 +77,17 @@ public class LabelController {
         );
     }
 
+    @ApiOperation(value = "Get labels of product", response = DataResponse.class)
+    @GetMapping("products/{productId}/labels")
+    public ResponseEntity<DataResponse> getLabelByProductId(@PathVariable(value = "productId") String productId) {
+        return DataResponse.getCollectionSuccess(
+                "Get all labels of product",
+                labelService.getLabelsOfProduct(productId)
+        );
+    }
+
     @ApiOperation(value = "Create new label", response = DataResponse.class)
-    @PostMapping("")
+    @PostMapping("labels")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<DataResponse> createNewLabel(@RequestBody Label label) {
         return DataResponse.success(
@@ -88,7 +97,7 @@ public class LabelController {
     }
 
     @ApiOperation(value = "Update label's detail", response = BaseResponse.class)
-    @PutMapping("{id}")
+    @PutMapping("labels/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> updateLabel(@PathVariable(value = "id") long labelId,
                                                     @RequestBody Label label) {
@@ -97,7 +106,7 @@ public class LabelController {
     }
 
     @ApiOperation(value = "Delete label in system", response = BaseResponse.class)
-    @DeleteMapping("{id}")
+    @DeleteMapping("labels/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> deleteLabel(@PathVariable(value = "id") long labelId,
                                                     @RequestBody(required = false) Map<String, String> body) {
