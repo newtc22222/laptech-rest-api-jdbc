@@ -68,7 +68,7 @@ public class RoleController {
     }
 
     @ApiOperation(value = "Get roles of user in system", response = Role.class)
-    @GetMapping("/users/{userId}/role")
+    @GetMapping("/users/{userId}/roles")
     public ResponseEntity<DataResponse> getRolesOfUser(@PathVariable(value = "userId") long userId) {
         return DataResponse.getCollectionSuccess(
                 "Get role of user",
