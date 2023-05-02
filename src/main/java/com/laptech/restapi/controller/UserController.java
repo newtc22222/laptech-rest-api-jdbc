@@ -146,6 +146,16 @@ public class UserController {
         );
     }
 
+    @ApiOperation(value = "Create new user with admin role", response = DataResponse.class)
+    @PostMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<DataResponse> createNewUser(@Valid @RequestBody UserDTO dto) {
+        return DataResponse.getObjectSuccess(
+                "Create new user",
+                userService.insert(UserDTO.transform(dto))
+        );
+    }
+
     @ApiOperation(value = "Update all information of user", response = BaseResponse.class)
     @PutMapping("/users/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
