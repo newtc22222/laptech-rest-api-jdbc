@@ -70,7 +70,7 @@ public class UserDTO {
         }
         user.setDateOfBirth(ConvertDate.getLocalDateFromString(dto.getDateOfBirth()));
         user.setPhone(dto.getPhone());
-        user.setEmail(dto.getEmail());
+        user.setEmail(dto.getEmail() == null ? null : dto.getEmail());
         user.setPassword(dto.getPassword());
         user.setUpdateBy(dto.getUpdateBy());
         return user;
@@ -88,7 +88,9 @@ public class UserDTO {
         } catch (IllegalArgumentException err) {
             user.setGender(Gender.MALE.toString());
         }
-        user.setEmail(request.get("email"));
+        if (request.containsKey("email")) {
+            user.setEmail(request.get("email").equals("") ? null : request.get("email"));
+        }
         user.setDateOfBirth(request.get("dateOfBirth"));
         return user;
     }
