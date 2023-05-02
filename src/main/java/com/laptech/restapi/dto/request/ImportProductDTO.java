@@ -34,7 +34,8 @@ public class ImportProductDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public ImportProductDTO() {}
+    public ImportProductDTO() {
+    }
 
     public ImportProductDTO(String id, String productId, Long quantity, BigDecimal importedPrice, String importedDate, String updateBy) {
         this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;

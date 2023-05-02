@@ -19,7 +19,7 @@ import java.util.UUID;
 @Setter
 @ApiModel("Class representing a comment request body")
 public class CommentDTO {
-    private String id;    
+    private String id;
     private String rootCommentId;
     @ApiModelProperty(required = true)
     @NotEmpty
@@ -37,7 +37,8 @@ public class CommentDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public CommentDTO() {}
+    public CommentDTO() {
+    }
 
     public CommentDTO(String id, String rootCommentId, String productId, String username, String phone, String content, String updateBy) {
         this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;

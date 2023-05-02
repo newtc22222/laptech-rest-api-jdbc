@@ -38,7 +38,7 @@ public class InvoiceDTO {
     private Double shipCost;
     private BigDecimal discountAmount;
     private BigDecimal tax;
-    
+
     @ApiModelProperty(required = true)
     @NotNull
     private BigDecimal paymentTotal;
@@ -56,7 +56,8 @@ public class InvoiceDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public InvoiceDTO() {}
+    public InvoiceDTO() {
+    }
 
     public InvoiceDTO(String id, Long userId, String address, String phone, BigDecimal paymentAmount, Double shipCost,
                       BigDecimal discountAmount, BigDecimal tax, BigDecimal paymentTotal, String paymentType,

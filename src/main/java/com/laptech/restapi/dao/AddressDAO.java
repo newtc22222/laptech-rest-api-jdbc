@@ -11,5 +11,6 @@ import java.util.Collection;
  */
 public interface AddressDAO extends BaseDAO<Address, AddressFilter, String> {
     int setDefaultAddress(String addressId, long userId, String updateBy);
+
     Collection<Address> findAddressByUserId(long userId);
 }

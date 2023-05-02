@@ -22,7 +22,7 @@ public class PaymentController {
     private MomoPaymentService paymentService;
 
     @PostMapping("/momo")
-    public ResponseEntity<DataResponse> createMomoPayment(@RequestBody MomoPaymentDTO dto) throws Exception{
+    public ResponseEntity<DataResponse> createMomoPayment(@RequestBody MomoPaymentDTO dto) throws Exception {
         return DataResponse.success(
                 "Create Momo payment",
                 paymentService.createPayment(dto)

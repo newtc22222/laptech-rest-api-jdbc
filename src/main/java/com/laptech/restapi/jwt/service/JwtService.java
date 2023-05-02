@@ -97,7 +97,6 @@ public class JwtService implements UserDetailsService {
         } else {
             log.info("[FIND USER] {} is not existed in system!", userPhone);
             throw new ResourceNotFoundException("[Info] Your account has incorrect field! Please check your input again!");
-//            throw new UsernameNotFoundException("User phone are not valid");
         }
     }
 

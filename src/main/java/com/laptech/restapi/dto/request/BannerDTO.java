@@ -42,7 +42,8 @@ public class BannerDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public BannerDTO() {}
+    public BannerDTO() {
+    }
 
     public BannerDTO(Long id, String path, String type, String title, String linkProduct,
                      String usedDate, String endedDate, String updateBy) {

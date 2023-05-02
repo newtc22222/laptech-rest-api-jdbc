@@ -34,7 +34,8 @@ public class BrandDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public BrandDTO() {}
+    public BrandDTO() {
+    }
 
     public BrandDTO(Long id, String name, String country, String establishDate, String logo, String updateBy) {
         this.id = (id == null) ? 0L : id;

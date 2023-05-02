@@ -44,7 +44,8 @@ public class DiscountDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public DiscountDTO() {}
+    public DiscountDTO() {
+    }
 
     public DiscountDTO(Long id, String code, Float rate, String appliedType, BigDecimal maxAmount,
                        String appliedDate, String endedDate, String updateBy) {

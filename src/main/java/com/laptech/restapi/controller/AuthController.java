@@ -51,7 +51,7 @@ public class AuthController {
 
     @ApiOperation(value = "Use refresh token to get new accessToken", response = TokenRefreshResponse.class)
     @PostMapping(value = {"/refreshToken", "/refresh-token"})
-    public ResponseEntity<DataResponse> refreshToken(@RequestBody Map<String, String>   body) {
+    public ResponseEntity<DataResponse> refreshToken(@RequestBody Map<String, String> body) {
         return DataResponse.getObjectSuccess(
                 "Refresh Token",
                 jwtService.refreshJwtToken(body.get("refreshToken"))

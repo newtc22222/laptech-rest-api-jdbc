@@ -29,7 +29,8 @@ public class CategoryDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public CategoryDTO() {}
+    public CategoryDTO() {
+    }
 
     public CategoryDTO(Long id, String name, String image, String description, String updateBy) {
         this.id = (id == null) ? 0L : id;

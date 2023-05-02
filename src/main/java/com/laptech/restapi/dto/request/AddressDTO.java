@@ -44,7 +44,8 @@ public class AddressDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public AddressDTO() {}
+    public AddressDTO() {
+    }
 
     public AddressDTO(String id, long userId, String country, String line1, String line2, String line3,
                       String street, Boolean isDefault, String updateBy) {

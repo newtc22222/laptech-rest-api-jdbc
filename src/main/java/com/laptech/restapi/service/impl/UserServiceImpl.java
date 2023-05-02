@@ -123,8 +123,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateInformation(UserDTO user, long userId) {
-        // check
-
         if (userDAO.findById(userId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         } else {

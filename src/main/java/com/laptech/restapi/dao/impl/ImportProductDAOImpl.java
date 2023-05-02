@@ -31,7 +31,7 @@ import java.util.Objects;
 @Log4j2
 @Component
 @PropertySource("classpath:query.properties")
-public class    ImportProductDAOImpl implements ImportProductDAO {
+public class ImportProductDAOImpl implements ImportProductDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

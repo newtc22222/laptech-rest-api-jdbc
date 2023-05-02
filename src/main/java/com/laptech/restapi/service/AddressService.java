@@ -11,5 +11,6 @@ import java.util.Collection;
 
 public interface AddressService extends BaseService<Address, String> {
     void setDefaultAddress(String addressId, long userId, String updateBy);
+
     Collection<Address> findAddressByUserId(long userId);
 }

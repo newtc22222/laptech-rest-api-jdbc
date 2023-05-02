@@ -71,17 +71,17 @@ public class SampleList {
     };
 
     private static Product getRandomProduct() {
-        String name = colors[(int)(Math.random() * colors.length)] + " " +  products[(int)(Math.random() * products.length)];
+        String name = colors[(int) (Math.random() * colors.length)] + " " + products[(int) (Math.random() * products.length)];
         String id = name.trim().toLowerCase().replace(" ", "-");
         BigDecimal price = BigDecimal.valueOf(Math.random() * 1_000_000);
         BigDecimal discountPrice = BigDecimal.valueOf(price.doubleValue() - Math.random() * price.doubleValue());
-        String[] images = { imagesURL[(int)(Math.random() * imagesURL.length)], imagesURL[(int)(Math.random() * imagesURL.length)] };
+        String[] images = {imagesURL[(int) (Math.random() * imagesURL.length)], imagesURL[(int) (Math.random() * imagesURL.length)]};
         return new Product(id, name, price, discountPrice, images);
     }
 
     private static void getRandomProductList() {
         int seedsLoop = 100;
-        while(seedsLoop > 0) {
+        while (seedsLoop > 0) {
             productList.add(getRandomProduct());
             seedsLoop--;
         }

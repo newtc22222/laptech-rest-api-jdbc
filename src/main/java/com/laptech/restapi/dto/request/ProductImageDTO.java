@@ -35,7 +35,8 @@ public class ProductImageDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public ProductImageDTO() {}
+    public ProductImageDTO() {
+    }
 
     public ProductImageDTO(String id, String productId, String feedbackId, String url, String type, String updateBy) {
         this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;

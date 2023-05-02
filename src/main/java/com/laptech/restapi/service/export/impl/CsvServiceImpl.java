@@ -19,13 +19,12 @@ public class CsvServiceImpl implements CsvService {
             // header
             printer.printRecord("ID", "Name", "Price", "Discount price");
             // data
-            for(Product p : SampleList.productList) {
+            for (Product p : SampleList.productList) {
                 printer.printRecord(p.getId(), p.getName(), p.getPrice(), p.getDiscountPrice());
             }
             printer.flush();
             printer.close();
-        }
-        catch (IOException err) {
+        } catch (IOException err) {
             System.out.println(err);
         }
     }

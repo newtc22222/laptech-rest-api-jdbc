@@ -40,9 +40,10 @@ public class ProductUnitDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public ProductUnitDTO() {}
+    public ProductUnitDTO() {
+    }
 
-    public ProductUnitDTO(String id, String cartId, String invoiceId, String productId, Integer quantity, 
+    public ProductUnitDTO(String id, String cartId, String invoiceId, String productId, Integer quantity,
                           BigDecimal price, BigDecimal discountPrice, String updateBy) {
         this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
         this.cartId = cartId;

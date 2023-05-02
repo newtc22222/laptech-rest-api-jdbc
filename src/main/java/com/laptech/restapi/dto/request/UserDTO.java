@@ -42,7 +42,8 @@ public class UserDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public UserDTO() {}
+    public UserDTO() {
+    }
 
     public UserDTO(Long id, String name, String gender, String dateOfBirth, String phone,
                    String email, String password, String updateBy) {

@@ -23,7 +23,8 @@ public class MomoPaymentDTO {
     private String notifyUrl;
     private String extraData;
 
-    public MomoPaymentDTO() {}
+    public MomoPaymentDTO() {
+    }
 
     public MomoPaymentDTO(String orderId, String requestId, Long amount, String orderInfo, String returnUrl,
                           String notifyUrl, String extraData) {

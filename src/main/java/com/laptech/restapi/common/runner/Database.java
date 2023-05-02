@@ -18,6 +18,7 @@ public class Database implements CommandLineRunner {
     @Autowired
     private UserService userService;
 
+
     @Override
     public void run(String... args) {
         User user = new User();

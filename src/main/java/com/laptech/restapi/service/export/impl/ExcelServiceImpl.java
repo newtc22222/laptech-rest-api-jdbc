@@ -34,7 +34,7 @@ public class ExcelServiceImpl implements ExcelService {
         font.setBold(true);
         headerStyle.setFont(font);
 
-        String[] headerText = { "ID", "Name", "Price", "Discount price" };
+        String[] headerText = {"ID", "Name", "Price", "Discount price"};
         for (int i = 0; i < headerText.length; i++) {
             Cell headerCell = header.createCell(i);
             headerCell.setCellValue(headerText[i]);

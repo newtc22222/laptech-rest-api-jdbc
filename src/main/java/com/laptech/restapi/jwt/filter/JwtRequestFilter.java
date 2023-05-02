@@ -23,7 +23,7 @@ import java.io.IOException;
 
 @Log4j2
 @Component
-@WebFilter(urlPatterns = "/*", dispatcherTypes = { DispatcherType.REQUEST, DispatcherType.FORWARD })
+@WebFilter(urlPatterns = "/*", dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD})
 public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
@@ -36,7 +36,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        if(!request.getRequestURI().contains("/login")) {
+        if (!request.getRequestURI().contains("/login")) {
             final String header = request.getHeader("Authorization");
             String userPhone = null;
             String jwtToken = null;

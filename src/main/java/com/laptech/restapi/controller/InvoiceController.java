@@ -46,7 +46,7 @@ public class InvoiceController {
     @ApiOperation(value = "Get invoice with filter", response = Invoice.class)
     @GetMapping("/invoices/filter")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> getAllInvoices(@RequestParam(required = false) Long userId ,
+    public ResponseEntity<DataResponse> getAllInvoices(@RequestParam(required = false) Long userId,
                                                        @RequestParam(required = false) String address,
                                                        @RequestParam(required = false) String phone,
                                                        @RequestParam(required = false) BigDecimal paymentAmount,

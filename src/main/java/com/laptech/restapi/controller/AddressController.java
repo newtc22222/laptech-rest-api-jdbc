@@ -55,7 +55,7 @@ public class AddressController {
         params.put("line3", line3);
         params.put("street", street);
         params.put("isDefault", isDefault);
-        if(!params.containsValue(null)){
+        if (!params.containsValue(null)) {
             params.put("userId", userId);
             return DataResponse.getCollectionSuccess(
                     "Get address of user with filter",

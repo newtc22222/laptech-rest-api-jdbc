@@ -118,7 +118,7 @@ public class FeedbackServiceImpl implements FeedbackService {
             newFeedback.put("modifiedDate", feedback.getModifiedDate());
 
             User user = userDAO.findById(feedback.getUserId());
-            if(user != null) {
+            if (user != null) {
                 newFeedback.put("username", user.getName());
             }
             return newFeedback;

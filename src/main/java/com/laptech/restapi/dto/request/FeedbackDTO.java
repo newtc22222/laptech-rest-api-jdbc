@@ -28,13 +28,14 @@ public class FeedbackDTO {
     @NotEmpty
     @Size(min = 20, max = 255)
     private String content;
-    @ApiModelProperty(example = "5",  notes = "value in range 1 to 5")
+    @ApiModelProperty(example = "5", notes = "value in range 1 to 5")
     @NotNull
     private Byte ratingPoint;
     @Size(max = 100)
     private String updateBy;
 
-    public FeedbackDTO() {}
+    public FeedbackDTO() {
+    }
 
     public FeedbackDTO(String id, String productId, Long userId, String content, Byte ratingPoint, String updateBy) {
         this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
