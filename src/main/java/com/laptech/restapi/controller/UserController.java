@@ -156,7 +156,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Update some information", response = BaseResponse.class)
-    @PatchMapping(value = "{id}", consumes = "application/json")
+    @PatchMapping(value = "/users/{id}", consumes = "application/json")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<BaseResponse> updateUserInformation(@PathVariable("id") long userId,
                                                               @RequestBody Map<String, String> userRequest) {
