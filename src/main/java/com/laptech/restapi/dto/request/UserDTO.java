@@ -6,6 +6,7 @@ import com.laptech.restapi.util.ConvertDate;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -18,6 +19,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@ToString
 public class UserDTO {
     private Long id;
     @ApiModelProperty(required = true)
@@ -90,9 +92,10 @@ public class UserDTO {
             user.setGender(Gender.MALE.toString());
         }
         if (request.containsKey("email")) {
-            user.setEmail(request.get("email").equals("") ? null : request.get("email"));
+            user.setEmail(request.get("email") == null ? null : request.get("email"));
         }
         user.setDateOfBirth(request.get("dateOfBirth"));
+        user.setUpdateBy(request.get("updateBy"));
         return user;
     }
 }
