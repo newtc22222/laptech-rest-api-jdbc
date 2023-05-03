@@ -55,8 +55,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User user, Long userId) {
-        // check
-
         User oldUser = userDAO.findById(userId);
         if (oldUser == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
@@ -66,7 +64,7 @@ public class UserServiceImpl implements UserService {
             oldUser.setDateOfBirth(user.getDateOfBirth());
             oldUser.setPhone(user.getPhone());
             oldUser.setEmail(user.getEmail());
-            oldUser.setPassword(user.getPassword());
+            oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
             oldUser.setUpdateBy(user.getUpdateBy());
 
             if (userDAO.update(oldUser) == 0) {
@@ -126,6 +124,7 @@ public class UserServiceImpl implements UserService {
         if (userDAO.findById(userId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         } else {
+            user.setId(userId);
             if (userDAO.updateInformation(user) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to update user's information!");
             }
