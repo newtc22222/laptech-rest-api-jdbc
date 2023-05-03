@@ -3,6 +3,8 @@
 This project is a `Spring boot` web service with `REST API`.
 
 - Version (Spring boot): 2.7.8
+- Build: `mvn clean install`
+- Run project: `mvn spring-boot:run`
 
 ---
 
@@ -49,7 +51,7 @@ This project is a `Spring boot` web service with `REST API`.
 - **controller**: __main module__ include `@SpringbootApplication` (subclass was built base on service).
   This package contains **annotation** of `Springfox Swagger`, `Spring Boot` and `Spring Security` pre-author
 
-#### resource
+#### resources
 
 - **scripts**: file sql of database (structure and sample data)
 - `application.yaml`: config file of server and application
