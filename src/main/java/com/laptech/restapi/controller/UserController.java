@@ -101,6 +101,16 @@ public class UserController {
         );
     }
 
+    @ApiOperation(value = "Change current user data in system!", response = BaseResponse.class)
+    @PatchMapping("changeMyInformation")
+    public ResponseEntity<BaseResponse> currentUserChange(HttpServletRequest request,
+                                                          @RequestBody Map<String, String> userRequest) {
+        Principal principal = request.getUserPrincipal();
+        User user = userService.findUserByPhone(principal.getName());
+        userService.updateInformation(UserDTO.getData(userRequest), user.getId());
+        return DataResponse.success("Update current user");
+    }
+
     @ApiOperation(value = "Get cart of current user", response = Cart.class)
     @GetMapping("/myCart")
     @PreAuthorize("hasRole('USER')")
@@ -175,7 +185,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Activate user (if block)", response = BaseResponse.class)
-    @GetMapping("/users/{id}/activate")
+    @PostMapping("/users/{id}/activate")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> enableUser(@PathVariable("id") long userId,
                                                    @RequestBody(required = false) Map<String, String> body) {
@@ -184,7 +194,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Block user", response = BaseResponse.class)
-    @GetMapping("/users/{id}/block")
+    @PostMapping("/users/{id}/block")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> disableUser(@PathVariable("id") long userId,
                                                     @RequestBody(required = false) Map<String, String> body) {
