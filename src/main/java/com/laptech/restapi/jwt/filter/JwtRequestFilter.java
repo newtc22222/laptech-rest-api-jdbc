@@ -4,7 +4,7 @@ import com.laptech.restapi.jwt.service.JwtService;
 import com.laptech.restapi.jwt.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,9 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Log4j2
 @Component
 @WebFilter(urlPatterns = "/*", dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD})
+@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
@@ -41,7 +41,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String userPhone = null;
             String jwtToken = null;
             if (header != null && header.startsWith("Bearer ")) {
-//                System.out.println(header);
                 jwtToken = header.substring(7);
                 try {
                     userPhone = jwtUtil.getUserPhoneFromToken(jwtToken);
@@ -75,6 +74,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
+        // log url in terminal
+        if (request.getParameterMap().size() > 0)
+            log.info("{} - {} {}", request.getMethod(), request.getRequestURI(), request.getParameterMap());
+        else
+            log.info("{} - {}", request.getMethod(), request.getRequestURI());
         filterChain.doFilter(request, response);
     }
 }
