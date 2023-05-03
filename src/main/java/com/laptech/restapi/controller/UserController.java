@@ -203,7 +203,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Grant role for user", response = BaseResponse.class)
-    @PostMapping("/users/{id}/role")
+    @PostMapping("/users/{id}/roles")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> addRoleForUser(@PathVariable("id") long userId,
                                                        @RequestBody Map<String, Integer> roleRequest) {
@@ -212,7 +212,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Revoke role of user", response = BaseResponse.class)
-    @DeleteMapping("/users/{id}/role")
+    @DeleteMapping("/users/{id}/roles")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> removeRoleOfUser(@PathVariable("id") long userId,
                                                          @RequestBody Map<String, Integer> roleRequest) {
