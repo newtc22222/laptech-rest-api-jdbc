@@ -41,7 +41,7 @@ public class CommentDTO {
     }
 
     public CommentDTO(String id, String rootCommentId, String productId, String username, String phone, String content, String updateBy) {
-        this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
+        this.id = id;
         this.rootCommentId = rootCommentId;
         this.productId = productId;
         this.username = username;
@@ -51,8 +51,12 @@ public class CommentDTO {
     }
 
     public static Comment transform(CommentDTO dto) {
+        String newCommentId = dto.getId() != null
+                ? dto.getId()
+                : UUID.randomUUID().toString().replace("-", "").substring(0, 15);
+
         Comment comment = new Comment();
-        comment.setId(dto.getId());
+        comment.setId(newCommentId);
         comment.setRootCommentId(dto.getRootCommentId());
         comment.setProductId(dto.getProductId());
         comment.setUsername(dto.getUsername());
