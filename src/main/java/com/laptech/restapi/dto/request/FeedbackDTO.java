@@ -22,7 +22,6 @@ public class FeedbackDTO {
     @NotEmpty
     private String productId;
     @ApiModelProperty(required = true)
-    @NotEmpty
     private Long userId;
     @ApiModelProperty(required = true)
     @NotEmpty
@@ -47,8 +46,12 @@ public class FeedbackDTO {
     }
 
     public static Feedback transform(FeedbackDTO dto) {
+        String newFeedbackId = dto.getId() != null
+                ? dto.getId()
+                : UUID.randomUUID().toString().replace("-", "").substring(0, 15);
+
         Feedback feedback = new Feedback();
-        feedback.setId(dto.getId());
+        feedback.setId(newFeedbackId);
         feedback.setProductId(dto.getProductId());
         feedback.setUserId(dto.getUserId());
         feedback.setContent(dto.getContent());

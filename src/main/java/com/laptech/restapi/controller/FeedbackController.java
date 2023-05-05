@@ -1,10 +1,13 @@
 package com.laptech.restapi.controller;
 
+import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.dto.request.FeedbackDTO;
 import com.laptech.restapi.dto.response.BaseResponse;
 import com.laptech.restapi.dto.response.DataResponse;
 import com.laptech.restapi.model.Feedback;
+import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.FeedbackService;
+import com.laptech.restapi.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.Principal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Nhat Phi
@@ -27,6 +32,8 @@ import java.util.Map;
 public class FeedbackController {
     @Autowired
     private FeedbackService feedbackService;
+    @Autowired
+    private UserService userService;
 
     @ApiOperation(value = "Get all feedbacks", response = Feedback.class)
     @GetMapping("/feedbacks")
@@ -104,7 +111,24 @@ public class FeedbackController {
     @ApiOperation(value = "Create a new feedback", response = DataResponse.class)
     @PostMapping("/feedbacks")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<DataResponse> createNewFeedback(@Valid @RequestBody FeedbackDTO dto) {
+    public ResponseEntity<DataResponse> createNewFeedback(HttpServletRequest request, @Valid @RequestBody FeedbackDTO dto) {
+        Principal principal = request.getUserPrincipal();
+        User user = userService.findUserByPhone(principal.getName());
+        if (user.getId() != dto.getUserId()) {
+            dto.setUserId(user.getId()); // trick remove feedback has wrong user id
+        }
+
+        Collection<Feedback> oldFeedbackOfUser = feedbackService.getAllFeedbacksOfUser(dto.getUserId());
+        Collection<Feedback> listFeedbackDuplicate = oldFeedbackOfUser
+                .stream()
+                .filter(feedback -> feedback.getProductId().equals(dto.getProductId()))
+                .collect(Collectors.toList());
+        if(listFeedbackDuplicate.size() > 0) {
+            Feedback duplicateFeedback = (Feedback) listFeedbackDuplicate.toArray()[0];
+            throw new ResourceAlreadyExistsException(
+                    "This user has created another feedback in " + duplicateFeedback.getCreatedDate()
+            );
+        }
         return DataResponse.success(
                 "Create new feedback",
                 feedbackService.insert(FeedbackDTO.transform(dto))
@@ -114,8 +138,14 @@ public class FeedbackController {
     @ApiOperation(value = "Update a feedback", response = BaseResponse.class)
     @PutMapping("/feedbacks/{id}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseResponse> updateFeedback(@PathVariable("id") String feedbackId,
+    public ResponseEntity<BaseResponse> updateFeedback(HttpServletRequest request,
+                                                       @PathVariable("id") String feedbackId,
                                                        @Valid @RequestBody FeedbackDTO dto) {
+        Principal principal = request.getUserPrincipal();
+        User user = userService.findUserByPhone(principal.getName());
+        if (user.getId() != dto.getUserId()) {
+            dto.setUserId(user.getId()); // trick remove feedback has wrong user id
+        }
         feedbackService.update(FeedbackDTO.transform(dto), feedbackId);
         return DataResponse.success("Update feedback");
     }

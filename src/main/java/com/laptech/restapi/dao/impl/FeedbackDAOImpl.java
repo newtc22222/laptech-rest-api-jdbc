@@ -218,7 +218,7 @@ public class FeedbackDAOImpl implements FeedbackDAO {
                     new FeedbackMapper(),
                     feedbackId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }

@@ -8,9 +8,9 @@ public class AuditUtil {
                     .append("Invalid phone: length")
                     .append((phone.length() < 9) ? " minimum is 9" : " maximum is 15");
         }
-        if (!phone.matches("^[/d+]{9,15}")) {
-            error.append("Invalid phone: Phone must be included + in first and number only!");
-        }
+//        if (!phone.matches("^[/d+]{9,15}")) {
+//            error.append("Invalid phone: Phone must be included + in first and number only!");
+//        } // remove phone locale -> just Vietnamese
         return error.toString();
     }
 
