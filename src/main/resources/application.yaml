@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://103.200.23.139:3306/youtube2_laptech?sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false
-    username: youtube2_fi
-    password: qwerty!23456
+    url: jdbc:mysql://45.32.124.86:13306/
+    username: root
+    password: 123456
   mvc:
     pathmatch:
       matching-strategy: ant-path-matcher
