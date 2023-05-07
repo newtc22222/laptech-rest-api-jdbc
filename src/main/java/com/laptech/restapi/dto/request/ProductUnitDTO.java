@@ -45,7 +45,7 @@ public class ProductUnitDTO {
 
     public ProductUnitDTO(String id, String cartId, String invoiceId, String productId, Integer quantity,
                           BigDecimal price, BigDecimal discountPrice, String updateBy) {
-        this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
+        this.id = id;
         this.cartId = cartId;
         this.invoiceId = invoiceId;
         this.productId = productId;
@@ -56,8 +56,12 @@ public class ProductUnitDTO {
     }
 
     public static ProductUnit transform(ProductUnitDTO dto) {
+        String newProductUnitId = dto.getId() != null
+                ? dto.getId()
+                : UUID.randomUUID().toString().replace("-", "").substring(0, 15);
+
         ProductUnit unit = new ProductUnit();
-        unit.setId(unit.getId());
+        unit.setId(newProductUnitId);
         if (dto.getCartId() != null) {
             unit.setCartId(dto.getCartId());
         }

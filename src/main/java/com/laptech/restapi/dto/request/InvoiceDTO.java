@@ -62,7 +62,7 @@ public class InvoiceDTO {
     public InvoiceDTO(String id, Long userId, String address, String phone, BigDecimal paymentAmount, Double shipCost,
                       BigDecimal discountAmount, BigDecimal tax, BigDecimal paymentTotal, String paymentType,
                       Boolean isPaid, String orderStatus, String note, String updateBy) {
-        this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
+        this.id = id;
         this.userId = userId;
         this.address = address;
         this.phone = phone;
@@ -79,8 +79,12 @@ public class InvoiceDTO {
     }
 
     public static Invoice transform(InvoiceDTO dto) {
+        String newInvoiceId = dto.getId() != null
+                ? dto.getId()
+                : UUID.randomUUID().toString().replace("-", "").substring(0, 15);
+
         Invoice invoice = new Invoice();
-        invoice.setId(dto.getId());
+        invoice.setId(newInvoiceId);
         invoice.setUserId(dto.getUserId());
         invoice.setAddress(dto.getAddress());
         invoice.setPhone(dto.getPhone());
