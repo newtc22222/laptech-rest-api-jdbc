@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class ProductUnitController {
     @ApiOperation(value = "Add an unit to cart", response = DataResponse.class)
     @PostMapping("/units")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<DataResponse> insertNewUnitToCart(@RequestBody ProductUnitDTO unitDTO) {
+    public ResponseEntity<DataResponse> insertNewUnitToCart(@Valid @RequestBody ProductUnitDTO unitDTO) {
         return DataResponse.success(
                 "Create new unit",
                 productUnitService.insert(ProductUnitDTO.transform(unitDTO))
@@ -84,7 +85,7 @@ public class ProductUnitController {
     @PutMapping("/units/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseResponse> updateProductUnit(@PathVariable("id") String unitId,
-                                                          @RequestBody ProductUnitDTO unitDTO) {
+                                                          @Valid @RequestBody ProductUnitDTO unitDTO) {
         productUnitService.update(ProductUnitDTO.transform(unitDTO), unitId);
         return DataResponse.success("Update unit's information");
     }

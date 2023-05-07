@@ -16,7 +16,7 @@ public class ProductUnitMapper implements RowMapper<ProductUnit> {
     public ProductUnit mapRow(ResultSet rs, int rowNum) throws SQLException {
         ProductUnit unit = new ProductUnit();
         unit.setId(rs.getString("id"));
-        unit.setCartId(rs.getString("card_id"));
+        unit.setCartId(rs.getString("cart_id"));
         unit.setInvoiceId(rs.getString("invoice_id"));
         unit.setProductId(rs.getString("product_id"));
         unit.setQuantity(rs.getInt("quantity"));

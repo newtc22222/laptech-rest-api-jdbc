@@ -212,7 +212,8 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
         try {
             return jdbcTemplate.queryForObject(
                     QUERY_ONE_BY_ID,
-                    new ProductUnitMapper()
+                    new ProductUnitMapper(),
+                    itemId
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn(err);

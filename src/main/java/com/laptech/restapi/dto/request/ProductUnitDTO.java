@@ -56,9 +56,9 @@ public class ProductUnitDTO {
     }
 
     public static ProductUnit transform(ProductUnitDTO dto) {
-        String newProductUnitId = dto.getId() != null
-                ? dto.getId()
-                : UUID.randomUUID().toString().replace("-", "").substring(0, 15);
+        String newProductUnitId = dto.getId() == null
+                ? UUID.randomUUID().toString().replace("-", "").substring(0, 15)
+                : dto.getId();
 
         ProductUnit unit = new ProductUnit();
         unit.setId(newProductUnitId);
