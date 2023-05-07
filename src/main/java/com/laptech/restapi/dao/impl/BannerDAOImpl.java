@@ -67,7 +67,8 @@ public class BannerDAOImpl implements BannerDAO {
                     banner.getTitle(),
                     banner.getLinkProduct(),
                     banner.getUsedDate(),
-                    banner.getEndedDate()
+                    banner.getEndedDate(),
+                    banner.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
@@ -86,7 +87,8 @@ public class BannerDAOImpl implements BannerDAO {
                     banner.getTitle(),
                     banner.getLinkProduct(),
                     banner.getUsedDate(),
-                    banner.getEndedDate()
+                    banner.getEndedDate(),
+                    banner.getUpdateBy()
             );
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
@@ -99,7 +101,8 @@ public class BannerDAOImpl implements BannerDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    bannerId
+                    bannerId,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
