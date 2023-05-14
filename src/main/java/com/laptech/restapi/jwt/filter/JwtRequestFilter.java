@@ -45,10 +45,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 try {
                     userPhone = jwtUtil.getUserPhoneFromToken(jwtToken);
                 } catch (ExpiredJwtException err_ex) {
-                    log.warn("[ERROR] Authorization error: {0}", err_ex);
+                    log.warn("[ERROR] Authorization error: {}", err_ex.getMessage());
                     request.setAttribute("expired", err_ex.getMessage());
                 } catch (SignatureException err_s) {
-                    log.warn("[ERROR] Invalid token: {0}", err_s);
+                    log.warn("[ERROR] Invalid token: {}", err_s.getMessage());
                     request.setAttribute("signature", err_s.getMessage());
                 } catch (IllegalArgumentException err_i) {
                     log.warn("[ERROR] {}", err_i.getMessage());
