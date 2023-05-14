@@ -193,7 +193,8 @@ public class ImportProductDAOImpl implements ImportProductDAO {
         try {
             return jdbcTemplate.queryForObject(
                     QUERY_ONE_BY_ID,
-                    new ImportProductMapper()
+                    new ImportProductMapper(),
+                    ticketId
             );
         } catch (EmptyResultDataAccessException err) {
             log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
