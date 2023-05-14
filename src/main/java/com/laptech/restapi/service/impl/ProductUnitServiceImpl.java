@@ -148,6 +148,8 @@ public class ProductUnitServiceImpl implements ProductUnitService {
             dto.setId(item.getId());
             dto.setCartId(item.getCartId());
             dto.setInvoiceId(item.getInvoiceId());
+            dto.setQuantity(item.getQuantity());
+            dto.setPrice(item.getPrice());
             dto.setDiscountPrice(item.getDiscountPrice());
             dto.setDiscounts(discountDAO.findDiscountByProductId(item.getProductId()));
             dto.setProduct(productDAO.findById(item.getProductId()));
@@ -157,7 +159,7 @@ public class ProductUnitServiceImpl implements ProductUnitService {
                     .stream()
                     .filter(image -> image.getType() == ImageType.ADVERTISE)
                     .collect(Collectors.toList());
-            dto.setImageRepresent(images.get(0));
+            dto.setImageRepresent(images.get(0).getUrl());
 
             return dto;
         }).collect(Collectors.toList());
