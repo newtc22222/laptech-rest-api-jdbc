@@ -24,7 +24,9 @@ public class ProductUnitCardDTO {
     private String cartId;
     private String invoiceId;
     private Product product;
-    private ProductImage imageRepresent;
+    private String imageRepresent;
     private Collection<Discount> discounts;
+    private int quantity;
+    private BigDecimal price;
     private BigDecimal discountPrice;
 }
