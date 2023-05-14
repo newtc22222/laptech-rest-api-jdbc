@@ -38,7 +38,7 @@ public class ImportProductDTO {
     }
 
     public ImportProductDTO(String id, String productId, Long quantity, BigDecimal importedPrice, String importedDate, String updateBy) {
-        this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
+        this.id = id;
         this.productId = productId;
         this.quantity = quantity;
         this.importedPrice = importedPrice;
@@ -47,8 +47,11 @@ public class ImportProductDTO {
     }
 
     public static ImportProduct transform(ImportProductDTO dto) {
+        String newTicketId = dto.getId() != null
+                ? dto.getId()
+                : UUID.randomUUID().toString().replace("-", "").substring(0, 15);
         ImportProduct ticket = new ImportProduct();
-        ticket.setId(dto.getId());
+        ticket.setId(newTicketId);
         ticket.setProductId(dto.getProductId());
         ticket.setQuantity(dto.getQuantity());
         ticket.setImportedPrice(dto.getImportedPrice());
