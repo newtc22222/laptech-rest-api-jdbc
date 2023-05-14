@@ -46,7 +46,7 @@ public class ProductUnitController {
     }
 
     @ApiOperation(value = "Get all units in receipt", response = ProductUnit.class)
-    @GetMapping("/invoice/{invoiceId}/units")
+    @GetMapping("/invoices/{invoiceId}/units")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<DataResponse> getProductUnitsByInvoiceId(@PathVariable("invoiceId") String invoiceId,
                                                                    @RequestParam(defaultValue = "false") boolean isCard) {
