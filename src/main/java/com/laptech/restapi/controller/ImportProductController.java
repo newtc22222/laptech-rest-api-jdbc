@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,7 +105,7 @@ public class ImportProductController {
     @ApiOperation(value = "Create a new ticket", response = DataResponse.class)
     @PostMapping("/imported")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> createNewImportProductTicket(@RequestBody ImportProductDTO importProductDTO) {
+    public ResponseEntity<DataResponse> createNewImportProductTicket(@Valid @RequestBody ImportProductDTO importProductDTO) {
         return DataResponse.success(
                 "Create new import product ticket",
                 importProductService.insert(ImportProductDTO.transform(importProductDTO))
@@ -115,7 +116,7 @@ public class ImportProductController {
     @PutMapping("/imported/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<BaseResponse> updateImportProductTicker(@PathVariable("id") String ticketId,
-                                                                  @RequestBody ImportProductDTO importProductDTO) {
+                                                                  @Valid @RequestBody ImportProductDTO importProductDTO) {
         importProductService.update(ImportProductDTO.transform(importProductDTO), ticketId);
         return DataResponse.success("Update import product ticket");
     }
