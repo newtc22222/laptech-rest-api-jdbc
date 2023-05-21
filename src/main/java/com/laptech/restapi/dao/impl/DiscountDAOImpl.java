@@ -5,7 +5,7 @@ import com.laptech.restapi.dao.DiscountDAO;
 import com.laptech.restapi.dto.filter.DiscountFilter;
 import com.laptech.restapi.mapper.DiscountMapper;
 import com.laptech.restapi.model.Discount;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -27,7 +27,7 @@ import java.util.Objects;
  * @since 2022-11-21
  */
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class DiscountDAOImpl implements DiscountDAO {
@@ -214,7 +214,7 @@ public class DiscountDAOImpl implements DiscountDAO {
                     productId,
                     Date.valueOf(LocalDate.now())
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[FIND BY PRODUCT USE IN DATE] {}", err.getLocalizedMessage());
             return null;
         }

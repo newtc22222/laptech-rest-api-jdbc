@@ -5,12 +5,11 @@ import com.laptech.restapi.dao.CartDAO;
 import com.laptech.restapi.dto.filter.BaseFilter;
 import com.laptech.restapi.mapper.CartMapper;
 import com.laptech.restapi.model.Cart;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,7 @@ import java.util.Collection;
  * @since 2022-11-21
  */
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class CartDAOImpl implements CartDAO {
@@ -134,7 +133,7 @@ public class CartDAOImpl implements CartDAO {
                     new CartMapper(),
                     cartId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
@@ -148,7 +147,7 @@ public class CartDAOImpl implements CartDAO {
                     new CartMapper(),
                     userId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY USER ID] {}", err.getLocalizedMessage());
             return null;
         }

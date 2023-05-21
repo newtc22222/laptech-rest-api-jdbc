@@ -5,12 +5,11 @@ import com.laptech.restapi.dao.RoleDAO;
 import com.laptech.restapi.dto.filter.RoleFilter;
 import com.laptech.restapi.mapper.RoleMapper;
 import com.laptech.restapi.model.Role;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,7 @@ import java.util.Objects;
  * @since 2023-02-02
  */
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class RoleDAOImpl implements RoleDAO {
@@ -154,7 +153,7 @@ public class RoleDAOImpl implements RoleDAO {
                     new RoleMapper(),
                     pagingOption.getObject()
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
@@ -168,7 +167,7 @@ public class RoleDAOImpl implements RoleDAO {
                     new RoleMapper(),
                     filter.getObject(true)
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
@@ -182,7 +181,7 @@ public class RoleDAOImpl implements RoleDAO {
                     new RoleMapper(),
                     roleId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
@@ -196,7 +195,7 @@ public class RoleDAOImpl implements RoleDAO {
                     new RoleMapper(),
                     name
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY NAME] {}", err.getLocalizedMessage());
             return null;
         }
@@ -210,7 +209,7 @@ public class RoleDAOImpl implements RoleDAO {
                     new RoleMapper(),
                     userId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[FIND BY USER ID] {}", err.getLocalizedMessage());
             return null;
         }

@@ -6,12 +6,11 @@ import com.laptech.restapi.dto.filter.ProductFilter;
 import com.laptech.restapi.dto.request.ProductPriceDTO;
 import com.laptech.restapi.mapper.ProductMapper;
 import com.laptech.restapi.model.Product;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,7 @@ import java.util.Objects;
  * @since 2022-11-22
  */
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class ProductDAOImpl implements ProductDAO {
@@ -86,7 +85,7 @@ public class ProductDAOImpl implements ProductDAO {
             );
             return product.getId();
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT NEW PRODUCT]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -108,7 +107,7 @@ public class ProductDAOImpl implements ProductDAO {
                     product.getUpdateBy()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE PRODUCT]: {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -123,7 +122,7 @@ public class ProductDAOImpl implements ProductDAO {
                     updateBy
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE PRICE]: {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -137,7 +136,7 @@ public class ProductDAOImpl implements ProductDAO {
                     updateBy
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[DELETE PRODUCT]: {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -186,7 +185,7 @@ public class ProductDAOImpl implements ProductDAO {
             );
             return existsProduct.size() > 0;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[CHECK EXISTED]: {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -199,8 +198,8 @@ public class ProductDAOImpl implements ProductDAO {
                     new ProductMapper(),
                     pagingOption.getObject()
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND ALL]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -213,8 +212,8 @@ public class ProductDAOImpl implements ProductDAO {
                     new ProductMapper(),
                     filter.getObject(true)
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND WITH FILTER]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -227,8 +226,8 @@ public class ProductDAOImpl implements ProductDAO {
                     new ProductMapper(),
                     productId
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND BY ID]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -242,8 +241,8 @@ public class ProductDAOImpl implements ProductDAO {
                     new ProductMapper(),
                     productId
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND ACCESSORIES OF PRODUCT]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -256,8 +255,8 @@ public class ProductDAOImpl implements ProductDAO {
                     new ProductMapper(),
                     brandId
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND PRODUCT BY BRAND ID]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -270,8 +269,8 @@ public class ProductDAOImpl implements ProductDAO {
                     new ProductMapper(),
                     categoryId
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND PRODUCT BY CATEGORY ID]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -284,8 +283,8 @@ public class ProductDAOImpl implements ProductDAO {
                     new ProductMapper(),
                     year
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND PRODUCT BY RELEASED YEAR]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -299,8 +298,8 @@ public class ProductDAOImpl implements ProductDAO {
                     startPrice.doubleValue(),
                     endPrice.doubleValue()
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND PRODUCT BY PRICE RANGE]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -313,8 +312,8 @@ public class ProductDAOImpl implements ProductDAO {
                     new ProductMapper(),
                     labelId
             );
-        } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+        } catch (DataAccessException err) {
+            log.warn("[FIND PRODUCT BY LABEL ID]: {}", err.getLocalizedMessage());
             return null;
         }
     }

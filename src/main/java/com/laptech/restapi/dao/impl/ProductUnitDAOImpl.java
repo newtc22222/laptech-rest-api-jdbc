@@ -5,7 +5,7 @@ import com.laptech.restapi.dao.ProductUnitDAO;
 import com.laptech.restapi.dto.filter.ProductUnitFilter;
 import com.laptech.restapi.mapper.ProductUnitMapper;
 import com.laptech.restapi.model.ProductUnit;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -24,7 +24,7 @@ import java.util.Objects;
  * @since 2022-11-22
  */
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class ProductUnitDAOImpl implements ProductUnitDAO {
@@ -74,7 +74,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
             );
             return unit.getId();
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[INSERT NEW PRODUCT UNIT]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -94,7 +94,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     unit.getUpdateBy()
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE PRODUCT UNIT]: {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -111,7 +111,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     updateBy
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[UPDATE PRODUCT UNIT PROPERTIES]: {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -125,7 +125,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     updateBy
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[REMOVE PRODUCT UNIT]: {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -174,7 +174,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
             );
             return existsUnit.size() > 0;
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[CHECK EXISTED]: {}", err.getLocalizedMessage());
             return false;
         }
     }
@@ -216,7 +216,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     itemId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[FIND BY ID]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -230,7 +230,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     cartId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[GET CART'S PRODUCT UNIT]: {}", err.getLocalizedMessage());
             return null;
         }
     }
@@ -244,7 +244,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     invoiceId
             );
         } catch (EmptyResultDataAccessException err) {
-            log.warn(err);
+            log.warn("[GET INVOICE'S PRODUCT UNIT]: {}", err.getLocalizedMessage());
             return null;
         }
     }

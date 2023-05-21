@@ -1,7 +1,7 @@
 package com.laptech.restapi.dao.impl;
 
 import com.laptech.restapi.dao.ProductDiscountDAO;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 2022-11-22
  */
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class ProductDiscountDAOImpl implements ProductDiscountDAO {

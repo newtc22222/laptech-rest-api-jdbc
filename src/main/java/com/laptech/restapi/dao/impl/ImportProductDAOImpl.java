@@ -5,12 +5,11 @@ import com.laptech.restapi.dao.ImportProductDAO;
 import com.laptech.restapi.dto.filter.ImportProductFilter;
 import com.laptech.restapi.mapper.ImportProductMapper;
 import com.laptech.restapi.model.ImportProduct;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +27,7 @@ import java.util.Objects;
  */
 
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class ImportProductDAOImpl implements ImportProductDAO {
@@ -168,7 +167,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     new ImportProductMapper(),
                     pagingOption.getObject()
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
@@ -182,7 +181,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     new ImportProductMapper(),
                     filter.getObject(true)
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
@@ -196,7 +195,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     new ImportProductMapper(),
                     ticketId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
@@ -210,7 +209,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     new ImportProductMapper(),
                     productId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY PRODUCT ID] {}", err.getLocalizedMessage());
             return null;
         }
@@ -224,7 +223,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     new ImportProductMapper(),
                     Date.valueOf(date)
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY DATE] {}", err.getLocalizedMessage());
             return null;
         }
@@ -239,7 +238,7 @@ public class ImportProductDAOImpl implements ImportProductDAO {
                     startDate,
                     endDate
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY DATE RANGE] {}", err.getLocalizedMessage());
             return null;
         }

@@ -5,12 +5,11 @@ import com.laptech.restapi.dao.AddressDAO;
 import com.laptech.restapi.dto.filter.AddressFilter;
 import com.laptech.restapi.mapper.AddressMapper;
 import com.laptech.restapi.model.Address;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,7 @@ import java.util.Objects;
  * @since 2022-11-20
  */
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class AddressDAOImpl implements AddressDAO {
@@ -168,7 +167,7 @@ public class AddressDAOImpl implements AddressDAO {
                     new AddressMapper(),
                     pagingOption.getObject()
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
@@ -182,7 +181,7 @@ public class AddressDAOImpl implements AddressDAO {
                     new AddressMapper(),
                     filter.getObject(true)
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
@@ -214,7 +213,7 @@ public class AddressDAOImpl implements AddressDAO {
                     new AddressMapper(),
                     userId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY USER ID] {}", err.getLocalizedMessage());
             return null;
         }
@@ -228,7 +227,7 @@ public class AddressDAOImpl implements AddressDAO {
                     new AddressMapper(),
                     addressId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }

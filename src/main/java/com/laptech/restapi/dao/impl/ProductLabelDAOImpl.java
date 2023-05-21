@@ -1,7 +1,7 @@
 package com.laptech.restapi.dao.impl;
 
 import com.laptech.restapi.dao.ProductLabelDAO;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 2023-02-04
  */
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class ProductLabelDAOImpl implements ProductLabelDAO {
@@ -35,7 +35,7 @@ public class ProductLabelDAOImpl implements ProductLabelDAO {
                     labelId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[ADD LABEL INTO PRODUCT]: {}", err.getLocalizedMessage());
             return 0;
         }
     }
@@ -49,7 +49,7 @@ public class ProductLabelDAOImpl implements ProductLabelDAO {
                     labelId
             );
         } catch (DataAccessException err) {
-            log.error(err);
+            log.error("[REMOVE LABEL FORM PRODUCT]: {}", err.getLocalizedMessage());
             return 0;
         }
     }

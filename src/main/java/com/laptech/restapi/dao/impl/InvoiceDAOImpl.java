@@ -6,12 +6,11 @@ import com.laptech.restapi.dao.InvoiceDAO;
 import com.laptech.restapi.dto.filter.InvoiceFilter;
 import com.laptech.restapi.mapper.InvoiceMapper;
 import com.laptech.restapi.model.Invoice;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +27,7 @@ import java.util.Objects;
  */
 
 @Transactional
-@Log4j2
+@Slf4j
 @Component
 @PropertySource("classpath:query.properties")
 public class InvoiceDAOImpl implements InvoiceDAO {
@@ -229,7 +228,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     new InvoiceMapper(),
                     pagingOption.getObject()
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
@@ -243,7 +242,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     new InvoiceMapper(),
                     filter.getObject(true)
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND LIMIT] {}", err.getLocalizedMessage());
             return null;
         }
@@ -257,7 +256,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     new InvoiceMapper(),
                     invoiceId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY ID] {}", err.getLocalizedMessage());
             return null;
         }
@@ -271,7 +270,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     new InvoiceMapper(),
                     userId
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY USER ID] {}", err.getLocalizedMessage());
             return null;
         }
@@ -285,7 +284,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     new InvoiceMapper(),
                     Date.valueOf(date)
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY DATE] {}", err.getLocalizedMessage());
             return null;
         }
@@ -300,7 +299,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     startDate,
                     endDate
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY DATE RANGE] {}", err.getLocalizedMessage());
             return null;
         }
@@ -314,7 +313,7 @@ public class InvoiceDAOImpl implements InvoiceDAO {
                     new InvoiceMapper(),
                     status.toString()
             );
-        } catch (EmptyResultDataAccessException err) {
+        } catch (DataAccessException err) {
             log.warn("[FIND BY ORDER STATUS] {}", err.getLocalizedMessage());
             return null;
         }
