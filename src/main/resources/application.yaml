@@ -10,5 +10,3 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant-path-matcher
-  main:
-    allow-circular-references: true

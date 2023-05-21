@@ -13,8 +13,9 @@ import com.laptech.restapi.jwt.util.JwtUtil;
 import com.laptech.restapi.model.RefreshToken;
 import com.laptech.restapi.model.Role;
 import com.laptech.restapi.model.User;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -35,7 +36,7 @@ import java.util.UUID;
 /**
  * @since 2023-01-04
  */
-@Log4j2
+@Slf4j
 @Service
 public class JwtService implements UserDetailsService {
     @Autowired
@@ -47,8 +48,11 @@ public class JwtService implements UserDetailsService {
 
     @Autowired
     private JwtUtil jwtUtil;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+
+    public JwtService(@Lazy AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     public JwtResponse createJwtToken(JwtRequest jwtRequest) {
         String phone = jwtRequest.getPhone();
