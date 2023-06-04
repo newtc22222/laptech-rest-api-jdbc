@@ -7,7 +7,7 @@ import com.laptech.restapi.model.Product;
 import com.laptech.restapi.service.ProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,12 +24,12 @@ import java.util.Map;
  * @since 2022-11-22 (update 2023-02-07
  */
 @Api(tags = "Product CRUD apis", value = "Product controller")
-@CrossOrigin(value = {"*"})
+@CrossOrigin
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
 public class ProductController {
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
     @ApiOperation(value = "Get all products in system", response = Product.class)
     @GetMapping("/products")
@@ -195,6 +196,17 @@ public class ProductController {
         return DataResponse.success("Add discount into product");
     }
 
+    @ApiOperation(value = "Update discounts of product", response = BaseResponse.class)
+    @PutMapping("/products/{id}/discounts")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<BaseResponse> updateMultipleDiscountsOfProduct(@PathVariable("id") String productId,
+                                                                         @RequestBody Map<String, List<Long>> body) {
+        List<Long> discountIdAddList = body.get("addList");
+        List<Long> discountIdRemoveList = body.get("removeList");
+        productService.updateMultipleDiscounts(productId, discountIdAddList, discountIdRemoveList);
+        return DataResponse.success("Update discounts of product");
+    }
+
     @ApiOperation(value = "Remove a discount from product", response = BaseResponse.class)
     @DeleteMapping("/products/{id}/discounts")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -214,6 +226,17 @@ public class ProductController {
         return DataResponse.success("Add accessory into product");
     }
 
+    @ApiOperation(value = "Update accessories of product", response = BaseResponse.class)
+    @PutMapping("/products/{id}/accessories")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<BaseResponse> updateMultipleAccessoriesOfProduct(@PathVariable("id") String productId,
+                                                                           @RequestBody Map<String, List<String>> body) {
+        List<String> accessoryIdAddList = body.get("addList");
+        List<String> accessoryIdRemoveList = body.get("removeList");
+        productService.updateMultipleAccessories(productId, accessoryIdAddList, accessoryIdRemoveList);
+        return DataResponse.success("Update accessories of product");
+    }
+
     @ApiOperation(value = "Remove a graphic card from product", response = BaseResponse.class)
     @DeleteMapping("/products/{id}/accessories")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -230,6 +253,17 @@ public class ProductController {
                                                           @RequestBody Map<String, Long> body) {
         productService.insertLabel(productId, body.get("labelId"));
         return DataResponse.success("Add label into product");
+    }
+
+    @ApiOperation(value = "Update labels of product", response = BaseResponse.class)
+    @PutMapping("/products/{id}/labels")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<BaseResponse> updateMultipleLabelsOfProduct(@PathVariable("id") String productId,
+                                                                      @RequestBody Map<String, List<Long>> body) {
+        List<Long> labelIdAddList = body.get("addList");
+        List<Long> labelIdRemoveList = body.get("removeList");
+        productService.updateMultipleLabels(productId, labelIdAddList, labelIdRemoveList);
+        return DataResponse.success("Update labels of product");
     }
 
     @ApiOperation(value = "Remove a label from product", response = BaseResponse.class)

@@ -11,7 +11,7 @@ import com.laptech.restapi.service.InvoiceService;
 import com.laptech.restapi.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,16 +30,13 @@ import java.util.Map;
  */
 @Api(tags = "User information in system", value = "User controller")
 @CrossOrigin
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private CartService cartService;
-    @Autowired
-    private InvoiceService invoiceService;
+    private final UserService userService;
+    private final CartService cartService;
+    private final InvoiceService invoiceService;
 
     @ApiOperation(value = "Get all users in system", response = User.class)
     @GetMapping("/users")
@@ -219,6 +217,17 @@ public class UserController {
                                                        @RequestBody Map<String, Integer> roleRequest) {
         userService.insertRole(userId, roleRequest.get("roleId"));
         return DataResponse.success("Add role for user");
+    }
+
+    @ApiOperation(value = "Update roles of user", response = BaseResponse.class)
+    @PutMapping(value = "/users/{id}/roles", consumes = "application/json")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
+    public ResponseEntity<BaseResponse> updateUserRoles(@PathVariable("id") long userId,
+                                                        @RequestBody Map<String, List<Integer>> body) {
+        List<Integer> roleIdAddList = body.get("addList");
+        List<Integer> roleIdRemoveList = body.get("removeList");
+        userService.updateMultipleRoles(userId, roleIdAddList, roleIdRemoveList);
+        return DataResponse.success("Update roles of user");
     }
 
     @ApiOperation(value = "Revoke role of user", response = BaseResponse.class)
