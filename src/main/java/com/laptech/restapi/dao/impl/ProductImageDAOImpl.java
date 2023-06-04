@@ -15,8 +15,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Nhat Phi
@@ -90,6 +93,53 @@ public class ProductImageDAOImpl implements ProductImageDAO {
         } catch (DataAccessException err) {
             log.error("[UPDATE] {}", err.getLocalizedMessage());
             return 0;
+        }
+    }
+
+    @Override
+    public Collection<String> updateMultipleImages(List<ProductImage> imageIdAddList,
+                                    List<ProductImage> imageUpdateList,
+                                    List<String> imageIdRemoveList) {
+        try {
+            List<String> newProductImageIdList = imageIdAddList
+                    .stream()
+                    .parallel()
+                    .map(image -> {
+                        jdbcTemplate.update(
+                                INSERT,
+                                image.getId(),
+                                image.getProductId(),
+                                image.getFeedbackId(),
+                                image.getUrl(),
+                                image.getType().toString(),
+                                image.getUpdateBy()
+                        );
+                        return image.getId();
+                    }).collect(Collectors.toList());
+            imageUpdateList
+                    .stream()
+                    .parallel()
+                    .forEach(image -> jdbcTemplate.update(
+                            UPDATE,
+                            image.getId(),
+                            image.getProductId(),
+                            image.getFeedbackId(),
+                            image.getUrl(),
+                            image.getType().toString(),
+                            image.getUpdateBy()
+                    ));
+            imageIdRemoveList
+                    .stream()
+                    .parallel()
+                    .forEach(imageId -> jdbcTemplate.update(
+                            DELETE,
+                            imageId,
+                            "SYSTEM"
+                    ));
+            return newProductImageIdList;
+        } catch (DataAccessException err) {
+            log.error("[UPDATE MULTIPLE IMAGES] {}", err.getLocalizedMessage());
+            return null;
         }
     }
 

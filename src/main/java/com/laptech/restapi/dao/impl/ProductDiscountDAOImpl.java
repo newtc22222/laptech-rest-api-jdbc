@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Nhat Phi
  * @since 2022-11-22
@@ -37,6 +39,32 @@ public class ProductDiscountDAOImpl implements ProductDiscountDAO {
             );
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
+            return 0;
+        }
+    }
+
+    @Override
+    public int updateMultiple(String productId, List<Long> discountIdAddList, List<Long> discountIdRemoveList) {
+        try {
+            discountIdAddList
+                    .stream()
+                    .parallel()
+                    .forEach(discountId -> jdbcTemplate.update(
+                            INSERT,
+                            productId,
+                            discountId
+                    ));
+            discountIdRemoveList
+                    .stream()
+                    .parallel()
+                    .forEach(discountId -> jdbcTemplate.update(
+                            REMOVE,
+                            productId,
+                            discountId
+                    ));
+            return 1;
+        } catch (DataAccessException err) {
+            log.error("[UPDATE MULTIPLE DISCOUNTS] {}", err.getLocalizedMessage());
             return 0;
         }
     }
