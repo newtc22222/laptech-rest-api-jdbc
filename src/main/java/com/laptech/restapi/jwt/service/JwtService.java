@@ -14,7 +14,6 @@ import com.laptech.restapi.model.RefreshToken;
 import com.laptech.restapi.model.Role;
 import com.laptech.restapi.model.User;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,19 +38,20 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class JwtService implements UserDetailsService {
-    @Autowired
-    private UserDAO userDAO;
-    @Autowired
-    private RoleDAO roleDAO;
-    @Autowired
-    private RefreshTokenDAO refreshTokenDAO;
+    private final UserDAO userDAO;
+    private final RoleDAO roleDAO;
+    private final RefreshTokenDAO refreshTokenDAO;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public JwtService(@Lazy AuthenticationManager authenticationManager) {
+    public JwtService(@Lazy AuthenticationManager authenticationManager, UserDAO userDAO, RoleDAO roleDAO,
+                      RefreshTokenDAO refreshTokenDAO, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
+        this.userDAO = userDAO;
+        this.roleDAO = roleDAO;
+        this.refreshTokenDAO = refreshTokenDAO;
+        this.jwtUtil = jwtUtil;
     }
 
     public JwtResponse createJwtToken(JwtRequest jwtRequest) {
