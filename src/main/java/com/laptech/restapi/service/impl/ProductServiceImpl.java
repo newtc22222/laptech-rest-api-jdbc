@@ -16,7 +16,7 @@ import com.laptech.restapi.model.Product;
 import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.service.ProductService;
 import com.laptech.restapi.util.ConvertMap;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,34 +27,23 @@ import java.util.stream.Collectors;
  * @author Nhat Phi
  * @since 2022-11-22
  */
+@RequiredArgsConstructor
 @Service
 public class ProductServiceImpl implements ProductService {
-    @Autowired
-    private ProductDAO productDAO;
+    private final ProductDAO productDAO;
 
-    @Autowired
-    private BrandDAO brandDAO;
-    @Autowired
-    private CategoryDAO categoryDAO;
+    private final BrandDAO brandDAO;
+    private final CategoryDAO categoryDAO;
+    private final DiscountDAO discountDAO;
+    private final LabelDAO labelDAO;
+    private final ProductImageDAO productImageDAO;
 
-    @Autowired
-    private DiscountDAO discountDAO;
-    @Autowired
-    private LabelDAO labelDAO;
-    @Autowired
-    private ProductImageDAO productImageDAO;
-
-    @Autowired
-    private ProductAccessoryDAO productAccessoryDAO;
-    @Autowired
-    private ProductDiscountDAO productDiscountDAO;
-    @Autowired
-    private ProductLabelDAO productLabelDAO;
+    private final ProductAccessoryDAO productAccessoryDAO;
+    private final ProductDiscountDAO productDiscountDAO;
+    private final ProductLabelDAO productLabelDAO;
 
     @Override
     public Product insert(Product product) {
-        // check
-
         if (productDAO.isExists(product)) {
             throw new ResourceAlreadyExistsException("[Info] This product has already existed in system!");
         }
@@ -191,6 +180,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public void updateMultipleAccessories(String productId, List<String> accessoryIdAddList, List<String> accessoryRemoveList) {
+        if (productDAO.findById(productId) == null) {
+            throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
+        }
+        for (List<String> strings : Arrays.asList(accessoryIdAddList, accessoryRemoveList)) {
+            strings.forEach(accessoryId -> {
+                if(productDAO.findById(accessoryId) == null)
+                    throw new ResourceNotFoundException("[Info] Cannot find accessory with id=" + productId);
+            });
+        }
+        if (productAccessoryDAO.updateMultiple(productId, accessoryIdAddList, accessoryRemoveList) == 0) {
+            throw new InternalServerErrorException("[Error] Failed to update accessories of product!");
+        }
+    }
+
+    @Override
     public void removeAccessory(String productId, String accessoryId) {
         if (productDAO.findById(productId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
@@ -217,6 +222,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public void updateMultipleDiscounts(String productId, List<Long> discountIdAddList, List<Long> discountIdRemoveList) {
+        if (productDAO.findById(productId) == null) {
+            throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
+        }
+        for (List<Long> discountIds : Arrays.asList(discountIdAddList, discountIdRemoveList)) {
+            discountIds.forEach(discountId -> {
+                if(discountDAO.findById(discountId) == null)
+                    throw new ResourceNotFoundException("[Info] Cannot find discount with id=" + discountId);
+            });
+        }
+        if (productDiscountDAO.updateMultiple(productId, discountIdAddList, discountIdRemoveList) == 0) {
+            throw new InternalServerErrorException("[Error] Failed to update discounts of product!");
+        }
+    }
+
+    @Override
     public void removeDiscount(String productId, long discountId) {
         if (productDAO.findById(productId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
@@ -239,6 +260,22 @@ public class ProductServiceImpl implements ProductService {
         }
         if (productLabelDAO.insert(productId, labelId) == 0) {
             throw new InternalServerErrorException("[Error] Failed to insert label into product!");
+        }
+    }
+
+    @Override
+    public void updateMultipleLabels(String productId, List<Long> labelIdAddList, List<Long> labelIdRemoveList) {
+        if (productDAO.findById(productId) == null) {
+            throw new ResourceNotFoundException("[Info] Cannot find product with id=" + productId);
+        }
+        for (List<Long> labelIds : Arrays.asList(labelIdAddList, labelIdRemoveList)) {
+            labelIds.forEach(labelId -> {
+                if(labelDAO.findById(labelId) == null)
+                    throw new ResourceNotFoundException("[Info] Cannot find label with id=" + labelId);
+            });
+        }
+        if (productLabelDAO.updateMultiple(productId, labelIdAddList, labelIdRemoveList) == 0) {
+            throw new InternalServerErrorException("[Error] Failed to update labels of product!");
         }
     }
 

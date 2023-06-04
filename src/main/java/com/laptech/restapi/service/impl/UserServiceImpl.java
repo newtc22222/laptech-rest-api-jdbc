@@ -12,29 +12,24 @@ import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.UserService;
 import com.laptech.restapi.util.AuditUtil;
 import com.laptech.restapi.util.ConvertMap;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Nhat Phi
  * @since 2022-11-22
  */
+@RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserDAO userDAO;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserDAO userDAO;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleDAO roleDAO;
-    @Autowired
-    private UserRoleDAO userRoleDAO;
+    private final RoleDAO roleDAO;
+    private final UserRoleDAO userRoleDAO;
 
     @Override
     public User insert(User user) {
@@ -163,6 +158,22 @@ public class UserServiceImpl implements UserService {
         }
         if (userRoleDAO.insert(userId, roleId) == 0) {
             throw new InternalServerErrorException("[Error] Failed to insert role into user!");
+        }
+    }
+
+    @Override
+    public void updateMultipleRoles(long userId, List<Integer> roleIdAddList, List<Integer> roleIdRemoveList) {
+        if (userDAO.findById(userId) == null) {
+            throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
+        }
+        for(List<Integer> roleIds: Arrays.asList(roleIdAddList, roleIdRemoveList)) {
+            roleIds.forEach(roleId -> {
+                if(roleDAO.findById(roleId) == null)
+                    throw new ResourceNotFoundException("[Info] Cannot find role with id=" + roleId);
+            });
+        }
+        if (userRoleDAO.updateMultiple(userId, roleIdRemoveList, roleIdRemoveList) == 0) {
+            throw new InternalServerErrorException("[Error] Failed to update roles of user!");
         }
     }
 

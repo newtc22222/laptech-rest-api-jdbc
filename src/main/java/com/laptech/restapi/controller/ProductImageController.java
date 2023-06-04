@@ -9,6 +9,7 @@ import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.service.ProductImageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,19 +17,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Nhat Phi
  * @since 2022-11-24
  */
 @Api(tags = "Image of product", value = "ProductImage controller")
-@CrossOrigin(value = {"*"})
+@CrossOrigin
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/")
 public class ProductImageController {
-    @Autowired
-    private ProductImageService productImageService;
+    private final ProductImageService productImageService;
 
     @ApiOperation(value = "Get all images in system", response = ProductImage.class)
     @GetMapping("/images")
@@ -97,6 +100,17 @@ public class ProductImageController {
                 "Get image of product",
                 collection
         );
+    }
+
+    @ApiOperation(value = "Update images of product", response = BaseResponse.class)
+    @PutMapping("/products/{productId}/images")
+    public ResponseEntity<BaseResponse> updateMultipleProductImages(@PathVariable("productId") String productId,
+                                                                    @RequestBody Map<String, List<Object>> body) {
+        List<ProductImage> imageAddList = body.get("addList").stream().map(image -> (ProductImage) image).collect(Collectors.toList());
+        List<ProductImage> imageUpdateList = body.get("updateList").stream().map(image -> (ProductImage) image).collect(Collectors.toList());
+        List<String> imageIdRemoveList = body.get("removeList").stream().map(Object::toString).collect(Collectors.toList());
+        productImageService.updateMultipleProductImages(imageAddList, imageUpdateList, imageIdRemoveList);
+        return DataResponse.success("Update multiple images of product");
     }
 
     @ApiOperation(value = "Import a new image (link)", response = DataResponse.class)

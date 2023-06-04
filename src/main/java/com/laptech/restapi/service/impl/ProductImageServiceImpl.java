@@ -11,29 +11,24 @@ import com.laptech.restapi.dto.filter.ProductImageFilter;
 import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.service.ProductImageService;
 import com.laptech.restapi.util.ConvertMap;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Nhat Phi
  * @since 2022-11-22
  */
+@RequiredArgsConstructor
 @Service
 public class ProductImageServiceImpl implements ProductImageService {
-    @Autowired
-    private ProductImageDAO productImageDAO;
-
-    @Autowired
-    private ProductDAO productDAO;
+    private final ProductImageDAO productImageDAO;
+    private final ProductDAO productDAO;
 
     @Override
     public ProductImage insert(ProductImage productImage) {
-        // check
-
         if (productImageDAO.isExists(productImage)) {
             throw new ResourceAlreadyExistsException("[Info] This image has already existed in system!");
         }
@@ -102,8 +97,6 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     @Override
     public void updateUrlAndType(String imageId, String url, ImageType type, String updateBy) {
-        // check
-
         if (productImageDAO.findById(imageId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find image with id=" + imageId);
         } else {
@@ -111,6 +104,21 @@ public class ProductImageServiceImpl implements ProductImageService {
                 throw new InternalServerErrorException("[Error] Failed to update this image!");
             }
         }
+    }
+
+    @Override
+    public void updateMultipleProductImages(List<ProductImage> imageAddList,
+                                            List<ProductImage> imageUpdateList,
+                                            List<String> imageIdRemoveList) {
+        for(List<String> strings : Arrays.asList(
+                imageUpdateList.stream().map(ProductImage::getId).collect(Collectors.toList()),
+                imageIdRemoveList)) {
+            strings.forEach(imageId -> {
+                if (productImageDAO.findById(imageId) == null)
+                    throw new ResourceNotFoundException("[Info] Cannot find image with id=" + imageId);
+            });
+        }
+        productImageDAO.updateMultipleImages(imageAddList, imageUpdateList, imageIdRemoveList);
     }
 
     @Override
