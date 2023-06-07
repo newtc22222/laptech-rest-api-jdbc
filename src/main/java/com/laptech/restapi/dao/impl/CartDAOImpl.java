@@ -81,7 +81,8 @@ public class CartDAOImpl implements CartDAO {
         try {
             return jdbcTemplate.update(
                     DELETE,
-                    id
+                    id,
+                    updateBy
             );
         } catch (DataAccessException err) {
             log.error("[DELETE] {}", err.getLocalizedMessage());
