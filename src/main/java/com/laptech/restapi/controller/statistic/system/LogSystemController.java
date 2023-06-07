@@ -5,7 +5,7 @@ import com.laptech.restapi.model.LogSystem;
 import com.laptech.restapi.service.LogSystemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +18,13 @@ import java.util.Map;
  * @since 2023-03-02
  */
 @Api(tags = "Show log of system", value = "LogSystem Controller")
-@CrossOrigin("*")
+@CrossOrigin
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/log-system")
 @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
 public class LogSystemController {
-    @Autowired
-    private LogSystemService service;
+    private final LogSystemService service;
 
     @ApiOperation(value = "Get all log in system", response = LogSystem.class)
     @GetMapping("")

@@ -7,7 +7,7 @@ import com.laptech.restapi.model.Banner;
 import com.laptech.restapi.service.BannerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +22,12 @@ import java.util.Set;
  * @since 2022-11-22
  */
 @Api(tags = "Big image for advertise", value = "Banner Controller")
-@CrossOrigin(value = {"*"})
+@CrossOrigin
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/banners")
 public class BannerController {
-    @Autowired
-    private BannerService bannerService;
+    private final BannerService bannerService;
 
     @ApiOperation(value = "Get all banners in system", response = Banner.class)
     @GetMapping("")

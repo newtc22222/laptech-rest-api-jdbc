@@ -12,7 +12,7 @@ import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.model.ProductUnit;
 import com.laptech.restapi.service.ProductUnitService;
 import com.laptech.restapi.util.ConvertMap;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,20 +25,15 @@ import java.util.stream.Collectors;
  * @author Nhat Phi
  * @since 2022-11-22
  */
+@RequiredArgsConstructor
 @Service
 public class ProductUnitServiceImpl implements ProductUnitService {
-    @Autowired
-    private ProductUnitDAO productUnitDAO;
-    @Autowired
-    private CartDAO cartDAO;
-    @Autowired
-    private InvoiceDAO invoiceDAO;
-    @Autowired
-    private DiscountDAO discountDAO;
-    @Autowired
-    private ProductDAO productDAO;
-    @Autowired
-    private ProductImageDAO productImageDAO;
+    private final ProductUnitDAO productUnitDAO;
+    private final CartDAO cartDAO;
+    private final InvoiceDAO invoiceDAO;
+    private final DiscountDAO discountDAO;
+    private final ProductDAO productDAO;
+    private final ProductImageDAO productImageDAO;
 
     @Override
     public ProductUnit insert(ProductUnit productUnit) {
