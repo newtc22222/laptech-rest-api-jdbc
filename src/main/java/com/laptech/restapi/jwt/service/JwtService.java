@@ -78,7 +78,7 @@ public class JwtService implements UserDetailsService {
         RefreshToken token = refreshTokenDAO.findRefreshTokenByCode(refreshToken);
         if (token == null) {
             throw new TokenInvalidException("Refresh token isn't exited in system!");
-        } else if (token.getExpiredDate().isAfter(LocalDateTime.now())) { // rf expired
+        } else if (token.getExpiredDate().isBefore(LocalDateTime.now())) { // rf expired
             throw new TokenInvalidException("Refresh token was expired! Please login again!");
         }
 
