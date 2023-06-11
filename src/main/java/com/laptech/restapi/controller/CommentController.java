@@ -7,11 +7,12 @@ import com.laptech.restapi.model.Comment;
 import com.laptech.restapi.service.CommentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,12 +21,12 @@ import java.util.Map;
  * @since 2022-11-24
  */
 @Api(tags = "Comment of product", value = "Comment controller")
-@CrossOrigin(value = {"*"})
+@CrossOrigin
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
 public class CommentController {
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
 
     @ApiOperation(value = "Get all comments", response = Comment.class)
     @GetMapping("/comments")
@@ -103,7 +104,7 @@ public class CommentController {
 
     @ApiOperation(value = "Create a new comment", response = DataResponse.class)
     @PostMapping("/comments")
-    public ResponseEntity<DataResponse> createNewComment(@RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<DataResponse> createNewComment(@Valid @RequestBody CommentDTO commentDTO) {
         return DataResponse.success(
                 "Create new comment",
                 commentService.insert(CommentDTO.transform(commentDTO))
@@ -113,7 +114,7 @@ public class CommentController {
     @ApiOperation(value = "Update a comment", response = BaseResponse.class)
     @PutMapping("/comments/{id}")
     public ResponseEntity<BaseResponse> updateComment(@PathVariable("id") String commentId,
-                                                      @RequestBody CommentDTO commentDTO) {
+                                                      @Valid @RequestBody CommentDTO commentDTO) {
         commentService.update(CommentDTO.transform(commentDTO), commentId);
         return DataResponse.success("Update comment");
     }

@@ -29,7 +29,7 @@ public class CommentDTO {
     private String username;
     @ApiModelProperty(required = true)
     @NotNull
-    @Size(min = 13, max = 15)
+    @Size(min = 10, max = 15)
     private String phone;
     @ApiModelProperty(required = true)
     @Size(min = 10, max = 255)
