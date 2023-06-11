@@ -105,10 +105,10 @@ public class ProductImageController {
     @ApiOperation(value = "Update images of product", response = BaseResponse.class)
     @PutMapping("/products/{productId}/images")
     public ResponseEntity<BaseResponse> updateMultipleProductImages(@PathVariable("productId") String productId,
-                                                                    @RequestBody Map<String, List<Object>> body) {
-        List<ProductImage> imageAddList = body.get("addList").stream().map(image -> (ProductImage) image).collect(Collectors.toList());
-        List<ProductImage> imageUpdateList = body.get("updateList").stream().map(image -> (ProductImage) image).collect(Collectors.toList());
-        List<String> imageIdRemoveList = body.get("removeList").stream().map(Object::toString).collect(Collectors.toList());
+                                                                    @RequestBody Map<String, List<ProductImage>> body) {
+        List<ProductImage> imageAddList = body.get("addList").stream().peek(image -> image.setProductId(productId)).collect(Collectors.toList());
+        List<ProductImage> imageUpdateList = body.get("updateList");
+        List<String> imageIdRemoveList = body.get("removeList").stream().map(ProductImage::getId).collect(Collectors.toList());
         productImageService.updateMultipleProductImages(imageAddList, imageUpdateList, imageIdRemoveList);
         return DataResponse.success("Update multiple images of product");
     }

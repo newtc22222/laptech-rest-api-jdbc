@@ -116,18 +116,20 @@ public class ProductImageDAOImpl implements ProductImageDAO {
                         );
                         return image.getId();
                     }).collect(Collectors.toList());
-            imageUpdateList
-                    .stream()
-                    .parallel()
-                    .forEach(image -> jdbcTemplate.update(
-                            UPDATE,
-                            image.getId(),
-                            image.getProductId(),
-                            image.getFeedbackId(),
-                            image.getUrl(),
-                            image.getType().toString(),
-                            image.getUpdateBy()
-                    ));
+            if (imageUpdateList != null) {
+                imageUpdateList
+                        .stream()
+                        .parallel()
+                        .forEach(image -> jdbcTemplate.update(
+                                UPDATE,
+                                image.getId(),
+                                image.getProductId(),
+                                image.getFeedbackId(),
+                                image.getUrl(),
+                                image.getType().toString(),
+                                image.getUpdateBy()
+                        ));
+            }
             imageIdRemoveList
                     .stream()
                     .parallel()

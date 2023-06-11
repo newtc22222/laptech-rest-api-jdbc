@@ -110,8 +110,12 @@ public class ProductImageServiceImpl implements ProductImageService {
     public void updateMultipleProductImages(List<ProductImage> imageAddList,
                                             List<ProductImage> imageUpdateList,
                                             List<String> imageIdRemoveList) {
+        List<String> imageIdUpdateList = (imageUpdateList != null)
+                ? imageUpdateList.stream().map(ProductImage::getId).collect(Collectors.toList())
+                : new ArrayList<>();
+
         for(List<String> strings : Arrays.asList(
-                imageUpdateList.stream().map(ProductImage::getId).collect(Collectors.toList()),
+                imageIdUpdateList,
                 imageIdRemoveList)) {
             strings.forEach(imageId -> {
                 if (productImageDAO.findById(imageId) == null)
