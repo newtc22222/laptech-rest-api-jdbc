@@ -13,6 +13,10 @@ public interface RefreshTokenService {
 
     Collection<RefreshToken> findAll(Long page, Long size);
 
+    default Collection<RefreshToken> findAll() {
+        return this.findAll(null, null);
+    }
+
     RefreshToken findRefreshTokenByCode(String code);
 
     Collection<RefreshToken> findRefreshTokenByUserId(long userId);

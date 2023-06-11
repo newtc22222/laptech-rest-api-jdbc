@@ -6,21 +6,21 @@ import com.laptech.restapi.dao.RefreshTokenDAO;
 import com.laptech.restapi.dao.UserDAO;
 import com.laptech.restapi.model.RefreshToken;
 import com.laptech.restapi.service.RefreshTokenService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @since 2023-02-08
  */
+@RequiredArgsConstructor
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
-    @Autowired
-    private RefreshTokenDAO refreshTokenDAO;
-
-    @Autowired
-    private UserDAO userDAO;
+    private final RefreshTokenDAO refreshTokenDAO;
+    private final UserDAO userDAO;
 
     @Override
     public void insert(RefreshToken token) {
@@ -43,7 +43,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public Collection<RefreshToken> findAll(Long page, Long size) {
-        return refreshTokenDAO.findAll(size, (page - 1) * size);
+        if(page == null && size == null) {
+            return refreshTokenDAO.findAll();
+        }
+        return refreshTokenDAO.findAll(size, (Objects.requireNonNull(page) - 1) * size);
     }
 
     @Override
