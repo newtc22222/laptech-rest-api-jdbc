@@ -113,7 +113,7 @@ public class JwtService implements UserDetailsService {
         return grantedAuthorities;
     }
 
-    private void authenticate(String phone, String password) {
+    public void authenticate(String phone, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(phone, password));
         } catch (DisabledException | BadCredentialsException err) {
