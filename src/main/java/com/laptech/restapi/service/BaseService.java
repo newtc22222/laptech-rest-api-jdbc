@@ -27,6 +27,10 @@ public interface BaseService<T, ID> {
 
     Collection<T> findAll(String sortBy, String sortDir, Long page, Long size);
 
+    default Collection<T> findAll() {
+        return this.findAll(null, null, null, null);
+    };
+
     Collection<T> findWithFilter(Map<String, Object> params);
 
     T findById(ID id);
