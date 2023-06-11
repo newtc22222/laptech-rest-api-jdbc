@@ -337,6 +337,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductDetailDTO getProductDetail(Product product) {
         ProductDetailDTO dto = new ProductDetailDTO();
         dto.setProduct(product);
+        dto.setBrandName(brandDAO.findById(product.getBrandId()).getName());
+        dto.setCategoryName(categoryDAO.findById(product.getCategoryId()).getName());
         dto.setLabelList((List<Label>) labelDAO.findLabelByProductId(product.getId()));
         dto.setImageList((List<ProductImage>) productImageDAO.findProductImageByProductId(product.getId()));
         dto.setAccessories((List<Product>) productDAO.findAccessoryByProductId(product.getId()));

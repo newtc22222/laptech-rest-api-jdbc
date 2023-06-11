@@ -18,6 +18,8 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductDetailDTO {
     private Product product;
+    private String brandName;
+    private String categoryName;
     private BigDecimal discountPrice;
     private List<Label> labelList;
     private List<ProductImage> imageList;
