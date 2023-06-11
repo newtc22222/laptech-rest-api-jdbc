@@ -172,7 +172,7 @@ public class UserServiceImpl implements UserService {
                     throw new ResourceNotFoundException("[Info] Cannot find role with id=" + roleId);
             });
         }
-        if (userRoleDAO.updateMultiple(userId, roleIdRemoveList, roleIdRemoveList) == 0) {
+        if (userRoleDAO.updateMultiple(userId, roleIdAddList, roleIdRemoveList) == 0) {
             throw new InternalServerErrorException("[Error] Failed to update roles of user!");
         }
     }
