@@ -64,8 +64,11 @@ public class AuthController {
     public ResponseEntity<BaseResponse> changePassword(HttpServletRequest request,
                                                        @RequestBody Map<String, String> body) {
         Principal principal = request.getUserPrincipal();
+        // check
+        jwtService.authenticate(principal.getName(), body.get("oldPassword"));
+        // change
         User user = userService.findUserByPhone(principal.getName());
-        user.setPassword(body.get("password"));
+        user.setPassword(body.get("newPassword"));
         userService.update(user, user.getId());
         return DataResponse.success("Change password");
     }
