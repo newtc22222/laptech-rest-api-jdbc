@@ -24,7 +24,7 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
 
     @ApiOperation(value = "Check out with all units", response = BaseResponse.class)
-    @GetMapping("")
+    @PostMapping("")
     public ResponseEntity<BaseResponse> checkout(@Valid @RequestBody CheckoutDTO checkoutDTO) {
         checkoutService.checkout(checkoutDTO);
         return DataResponse.success("Checkout");
