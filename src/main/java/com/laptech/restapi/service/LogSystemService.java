@@ -12,6 +12,10 @@ import java.util.Map;
 public interface LogSystemService {
     Collection<LogSystem> findAll(String sortBy, String sortDir, Long page, Long size);
 
+    default Collection<LogSystem> findAll() {
+        return this.findAll(null,null,null,null);
+    }
+
     Collection<LogSystem> findByFilter(Map<String, Object> params);
 
     long count();
