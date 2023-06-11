@@ -8,6 +8,7 @@ import com.laptech.restapi.model.Invoice;
 import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.CartService;
 import com.laptech.restapi.service.InvoiceService;
+import com.laptech.restapi.service.RoleService;
 import com.laptech.restapi.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +35,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
+    private final RoleService roleService;
     private final UserService userService;
     private final CartService cartService;
     private final InvoiceService invoiceService;
@@ -93,9 +95,13 @@ public class UserController {
     @GetMapping("getCurrentUser")
     public ResponseEntity<DataResponse> getCurrentUser(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
+        Map<String, Object> response = new HashMap<>();
+        User user = userService.findUserByPhone(principal.getName());
+        response.put("user", user);
+        response.put("role", roleService.findRoleByUserId(user.getId()));
         return DataResponse.getObjectSuccess(
                 "Get current user",
-                userService.findUserByPhone(principal.getName())
+                response
         );
     }
 
@@ -220,7 +226,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Update roles of user", response = BaseResponse.class)
-    @PutMapping(value = "/users/{id}/roles", consumes = "application/json")
+    @PutMapping(value = "/users/{id}/roles")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<BaseResponse> updateUserRoles(@PathVariable("id") long userId,
                                                         @RequestBody Map<String, List<Integer>> body) {
