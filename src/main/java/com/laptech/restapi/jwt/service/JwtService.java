@@ -27,6 +27,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,7 +73,9 @@ public class JwtService implements UserDetailsService {
         if (refreshTokenDAO.insert(refreshToken) == 0) {
             throw new InternalServerErrorException("[Error] Cannot insert refresh token to database!");
         }
-        return new JwtResponse(user, roleList, generateNewToken, refreshToken.getCode());
+        RefreshToken newToken = refreshTokenDAO.findRefreshTokenByCode(refreshToken.getCode());
+        ZonedDateTime zdt = newToken.getExpiredDate().atZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        return new JwtResponse(user, roleList, generateNewToken, refreshToken.getCode(), zdt.toInstant().toEpochMilli());
     }
 
     public TokenRefreshResponse refreshJwtToken(String refreshToken) {

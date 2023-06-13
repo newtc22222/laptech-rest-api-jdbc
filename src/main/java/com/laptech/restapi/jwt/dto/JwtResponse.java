@@ -19,11 +19,13 @@ public class JwtResponse {
     private final String type = "Bearer";
     private String accessToken;
     private String refreshToken;
+    private long maxAgeToken;
 
-    public JwtResponse(User user, List<Role> roleList, String accessToken, String refreshToken) {
+    public JwtResponse(User user, List<Role> roleList, String accessToken, String refreshToken, long maxAgeToken) {
         this.user = user;
         this.roleList = roleList;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.maxAgeToken = maxAgeToken;
     }
 }
