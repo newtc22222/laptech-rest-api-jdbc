@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-public class CheckoutServiceImpl implements CheckoutService{
+public class CheckoutServiceImpl implements CheckoutService {
     private final CartDAO cartDAO;
     private final InvoiceDAO invoiceDAO;
     private final ProductUnitDAO productUnitDAO;

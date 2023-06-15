@@ -1,7 +1,8 @@
 package com.laptech.restapi.service.export;
 
-import java.io.Writer;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 public interface CsvService {
-    void writeDataToCsv(Writer writer);
+    void writeDataToCsv(HttpServletResponse response, Object[] headers, List<Object[]> records);
 }

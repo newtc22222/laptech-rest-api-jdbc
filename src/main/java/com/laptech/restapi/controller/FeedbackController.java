@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -123,7 +125,7 @@ public class FeedbackController {
                 .stream()
                 .filter(feedback -> feedback.getProductId().equals(dto.getProductId()))
                 .collect(Collectors.toList());
-        if(listFeedbackDuplicate.size() > 0) {
+        if (listFeedbackDuplicate.size() > 0) {
             Feedback duplicateFeedback = (Feedback) listFeedbackDuplicate.toArray()[0];
             throw new ResourceAlreadyExistsException(
                     "This user has created another feedback in " + duplicateFeedback.getCreatedDate()

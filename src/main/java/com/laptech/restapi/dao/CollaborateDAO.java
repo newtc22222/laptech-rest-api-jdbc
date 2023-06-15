@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface CollaborateDAO<T1, T2> {
     int insert(T1 item_root_id, T2 item_add_id);
+
     int remove(T1 item_root_id, T2 item_remove_id);
+
     int updateMultiple(T1 item_root_id, List<T2> item_add_ids, List<T2> item_remove_ids);
 }

@@ -1,31 +1,40 @@
 package com.laptech.restapi.service.export.impl;
 
-import com.laptech.restapi.samples.SampleList;
-import com.laptech.restapi.samples.products.Product;
 import com.laptech.restapi.service.export.CsvService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
+import java.time.LocalDateTime;
+import java.util.List;
 
+@Slf4j
 @Service
 public class CsvServiceImpl implements CsvService {
     @Override
-    public void writeDataToCsv(Writer writer) {
+    public void writeDataToCsv(HttpServletResponse response, Object[] headers, List<Object[]> objects) {
         try {
-            CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+            response.setContentType("text/csv");
+            response.addHeader("Content-Disposition", "attachment; filename=brand_" + LocalDateTime.now() + ".csv");
+            CSVPrinter printer = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT);
             // header
-            printer.printRecord("ID", "Name", "Price", "Discount price");
+            printer.printRecord(headers);
+            printer.printRecord();
             // data
-            for (Product p : SampleList.productList) {
-                printer.printRecord(p.getId(), p.getName(), p.getPrice(), p.getDiscountPrice());
-            }
+            objects.forEach(o -> {
+                try {
+                    printer.printRecord(o);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             printer.flush();
             printer.close();
         } catch (IOException err) {
-            System.out.println(err);
+            log.error("[WRITE CSV FILE] {}", err.getMessage());
         }
     }
 }

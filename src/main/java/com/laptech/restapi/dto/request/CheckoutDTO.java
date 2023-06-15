@@ -11,7 +11,8 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 public class CheckoutDTO {
     private String cartId;
     private String invoiceId;

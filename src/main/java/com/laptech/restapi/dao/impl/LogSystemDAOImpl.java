@@ -47,8 +47,7 @@ public class LogSystemDAOImpl implements LogSystemDAO {
                     new LogSystemMapper(),
                     pagingOption.getObject()
             );
-        }
-        catch (DataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[FIND ALL] {}", err.getLocalizedMessage());
             return null;
         }
@@ -62,8 +61,7 @@ public class LogSystemDAOImpl implements LogSystemDAO {
                     new LogSystemMapper(),
                     filter.getObject(true)
             );
-        }
-        catch (DataAccessException err) {
+        } catch (DataAccessException err) {
             log.error("[FIND FILTER] {}", err.getLocalizedMessage());
             return null;
         }
@@ -77,8 +75,7 @@ public class LogSystemDAOImpl implements LogSystemDAO {
                     Long.class
             );
             return Objects.requireNonNull(count);
-        }
-        catch (NullPointerException | DataAccessException err) {
+        } catch (NullPointerException | DataAccessException err) {
             log.error("[COUNT ALL] {}", err.getLocalizedMessage());
             return 0;
         }
@@ -93,8 +90,7 @@ public class LogSystemDAOImpl implements LogSystemDAO {
                     filter.getObject(false)
             );
             return Objects.requireNonNull(count);
-        }
-        catch (NullPointerException | DataAccessException err) {
+        } catch (NullPointerException | DataAccessException err) {
             log.error("[COUNT ALL] {}", err.getLocalizedMessage());
             return 0;
         }

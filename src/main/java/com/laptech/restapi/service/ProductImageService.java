@@ -14,6 +14,7 @@ import java.util.Set;
 
 public interface ProductImageService extends BaseService<ProductImage, String> {
     void updateUrlAndType(String imageId, String url, ImageType type, String updateBy);
+
     void updateMultipleProductImages(List<ProductImage> imageAddList,
                                      List<ProductImage> imageUpdateList,
                                      List<String> imageIdRemoveList);

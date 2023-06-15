@@ -7,7 +7,6 @@ import com.laptech.restapi.dao.UserDAO;
 import com.laptech.restapi.model.RefreshToken;
 import com.laptech.restapi.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -43,7 +42,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public Collection<RefreshToken> findAll(Long page, Long size) {
-        if(page == null && size == null) {
+        if (page == null && size == null) {
             return refreshTokenDAO.findAll();
         }
         return refreshTokenDAO.findAll(size, (Objects.requireNonNull(page) - 1) * size);

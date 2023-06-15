@@ -186,7 +186,7 @@ public class ProductServiceImpl implements ProductService {
         }
         for (List<String> strings : Arrays.asList(accessoryIdAddList, accessoryRemoveList)) {
             strings.forEach(accessoryId -> {
-                if(productDAO.findById(accessoryId) == null)
+                if (productDAO.findById(accessoryId) == null)
                     throw new ResourceNotFoundException("[Info] Cannot find accessory with id=" + productId);
             });
         }
@@ -228,7 +228,7 @@ public class ProductServiceImpl implements ProductService {
         }
         for (List<Long> discountIds : Arrays.asList(discountIdAddList, discountIdRemoveList)) {
             discountIds.forEach(discountId -> {
-                if(discountDAO.findById(discountId) == null)
+                if (discountDAO.findById(discountId) == null)
                     throw new ResourceNotFoundException("[Info] Cannot find discount with id=" + discountId);
             });
         }
@@ -270,7 +270,7 @@ public class ProductServiceImpl implements ProductService {
         }
         for (List<Long> labelIds : Arrays.asList(labelIdAddList, labelIdRemoveList)) {
             labelIds.forEach(labelId -> {
-                if(labelDAO.findById(labelId) == null)
+                if (labelDAO.findById(labelId) == null)
                     throw new ResourceNotFoundException("[Info] Cannot find label with id=" + labelId);
             });
         }

@@ -166,9 +166,9 @@ public class UserServiceImpl implements UserService {
         if (userDAO.findById(userId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find user with id=" + userId);
         }
-        for(List<Integer> roleIds: Arrays.asList(roleIdAddList, roleIdRemoveList)) {
+        for (List<Integer> roleIds : Arrays.asList(roleIdAddList, roleIdRemoveList)) {
             roleIds.forEach(roleId -> {
-                if(roleDAO.findById(roleId) == null)
+                if (roleDAO.findById(roleId) == null)
                     throw new ResourceNotFoundException("[Info] Cannot find role with id=" + roleId);
             });
         }

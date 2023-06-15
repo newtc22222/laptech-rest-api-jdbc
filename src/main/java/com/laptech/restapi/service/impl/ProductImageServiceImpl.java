@@ -114,7 +114,7 @@ public class ProductImageServiceImpl implements ProductImageService {
                 ? imageUpdateList.stream().map(ProductImage::getId).collect(Collectors.toList())
                 : new ArrayList<>();
 
-        for(List<String> strings : Arrays.asList(
+        for (List<String> strings : Arrays.asList(
                 imageIdUpdateList,
                 imageIdRemoveList)) {
             strings.forEach(imageId -> {

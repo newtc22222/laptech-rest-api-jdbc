@@ -2,7 +2,6 @@ package com.laptech.restapi.dto.response;
 
 import com.laptech.restapi.model.Discount;
 import com.laptech.restapi.model.Product;
-import com.laptech.restapi.model.ProductImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

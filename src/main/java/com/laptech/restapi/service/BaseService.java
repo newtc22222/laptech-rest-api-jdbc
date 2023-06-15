@@ -29,7 +29,7 @@ public interface BaseService<T, ID> {
 
     default Collection<T> findAll() {
         return this.findAll(null, null, null, null);
-    };
+    }
 
     Collection<T> findWithFilter(Map<String, Object> params);
 

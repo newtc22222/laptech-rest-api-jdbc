@@ -60,7 +60,7 @@ public class AuthController {
         );
     }
 
-    @PostMapping(value="changePassword")
+    @PostMapping(value = "changePassword")
     public ResponseEntity<BaseResponse> changePassword(HttpServletRequest request,
                                                        @RequestBody Map<String, String> body) {
         Principal principal = request.getUserPrincipal();
@@ -73,13 +73,13 @@ public class AuthController {
         return DataResponse.success("Change password");
     }
 
-    @PostMapping(value="forgotPassword")
+    @PostMapping(value = "forgotPassword")
     public ResponseEntity<BaseResponse> forgotPassword(@RequestBody Map<String, String> body) {
         // some security questions here!
         return DataResponse.success("Change password");
     }
 
-    @PostMapping(value="resetPassword")
+    @PostMapping(value = "resetPassword")
     public ResponseEntity<BaseResponse> resetPassword(@RequestBody Map<String, String> body) {
         return DataResponse.success("Change password");
     }

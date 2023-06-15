@@ -15,7 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -98,8 +97,8 @@ public class ProductImageDAOImpl implements ProductImageDAO {
 
     @Override
     public Collection<String> updateMultipleImages(List<ProductImage> imageIdAddList,
-                                    List<ProductImage> imageUpdateList,
-                                    List<String> imageIdRemoveList) {
+                                                   List<ProductImage> imageUpdateList,
+                                                   List<String> imageIdRemoveList) {
         try {
             List<String> newProductImageIdList = imageIdAddList
                     .stream()
