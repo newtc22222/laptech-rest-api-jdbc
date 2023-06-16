@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Create sample data for User table
@@ -21,17 +23,33 @@ public class Database implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User user = new User();
+        List<User> userList = new ArrayList<>();
 
-        user.setId(0L);
-        user.setName("Võ Nhật Phi");
-        user.setGender(Gender.MALE);
-        user.setDateOfBirth(LocalDate.parse("2001-04-17"));
-        user.setPhone("+84947679570");
-        user.setPassword("123456");
-        user.setActive(true);
+        User user1 = new User(0L,
+                "Võ Nhật Phi",
+                Gender.MALE,
+                LocalDate.parse("2001-04-17"),
+                "+84947679570",
+                null,
+                "123456",
+                true
+        );
+        userList.add(user1);
 
-        User newUser = userService.insert(user);
-        System.out.println(newUser.toString());
+        User user2 = new User(0L,
+                "Nguyễn Quang Sang",
+                Gender.MALE,
+                LocalDate.parse("2001-08-21"),
+                "+84345290616",
+                null,
+                "123456",
+                true
+        );
+        userList.add(user2);
+
+        userList.forEach(user -> {
+            User newUser = userService.insert(user);
+            System.out.println(newUser.toString());
+        });
     }
 }
