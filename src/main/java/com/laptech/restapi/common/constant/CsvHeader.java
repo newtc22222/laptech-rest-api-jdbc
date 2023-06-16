@@ -1,16 +1,16 @@
 package com.laptech.restapi.common.constant;
 
 public class CsvHeader {
-    public final static String[] bannerHeader = {"ID", "Đường dẫn ảnh", "Loại hình ảnh", "Tiêu đề (hiển thị)", "Link sản phẩm (click)", "Ngày sử dụng", "Ngày kết thúc", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] brandHeader = {"ID", "Tên thương hiệu", "Quốc gia", "Ngày thành lập", "Link logo", "Ngày tạo", "Ngày cập nhật", "Sản phẩm"};
-    public final static String[] categoryHeader = {"ID", "Tên danh mục", "Link hình ảnh mô tả", "Mô tả danh mục", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] commentHeader = {"ID", "ID phản hồi", "ID sản phẩm", "Tên người dùng", "Số điện thoại", "Nội dung", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] discountHeader = {"ID", "Code", "Mức giảm", "Kiểu áp dụng", "Giá giảm tối đa", "Ngày áp dụng", "Ngày kết thúc", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] feedbackHeader = {"ID", "ID sản phẩm", "ID người dùng", "Tên người dùng", "Nội dung", "Điểm đánh giá", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] importProductHeader = {"ID", "ID sản phẩm", "Số lượng hàng hóa", "Giá nhập", "Ngày nhập", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] invoiceHeader = {"ID", "ID người dùng", "Tên người dùng", "Địa chỉ", "Số điện thoại", "Số lượng hàng hóa", "Phí vận chuyển", "Giá giảm", "Thuế", "Giá tổng", "Kiểu thanh toán", "Trạng thái thanh toán", "Trạng thái đơn hàng", "Ghi chú (bổ sung)", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] labelHeader = {"ID", "Tiêu đề", "Mô tả chung", "Mô tả chi tiết", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] productHeader = {"ID", "Thương hiệu", "Danh mục", "Tên sản phẩm", "Ngày ra mắt", "Số lượng kho", "Giá niêm yết", "Ngày tạo", "Ngày cập nhật"};
-    public final static String[] roleHeader = {"ID", "Tên phân quyền", "Mô tả chức năng", "Ngày tạo", "Ngày cập nhật", "Danh sách người dùng"};
-    public final static String[] userHeader = {"ID", "Tên đầy đủ", "Giới tính", "Ngày sinh", "Số điện thoại", "Email", "Trạng thái tài khoản", "Ngày tạo", "Ngày cập nhật", "Phân quyền"};
+    public final static String[] bannerHeader = {"ID", "Image's path", "Image type", "Title (show)", "Link product (click)", "Use date", "End date", "Created date", "Last updated date"};
+    public final static String[] brandHeader = {"ID", "Brand's name", "Country", "Establish date", "Link logo", "Created date", "Last updated date", "Products"};
+    public final static String[] categoryHeader = {"ID", "Name", "Image's link", "Description", "Created date", "Last updated date"};
+    public final static String[] commentHeader = {"ID", "ID Reply", "ID Product", "User name", "Phone", "Content", "Created date", "Last updated date"};
+    public final static String[] discountHeader = {"ID", "Code", "Rate sale", "Applied type", "Max price discount", "Applied date", "End date", "Created date", "Last updated date"};
+    public final static String[] feedbackHeader = {"ID", "ID product", "ID user", "User name", "Content", "Rating point", "Created date", "Last updated date"};
+    public final static String[] importProductHeader = {"ID", "ID product", "Quantity amount", "Import price", "Import date", "Created date", "Last updated date"};
+    public final static String[] invoiceHeader = {"ID", "ID user", "User name", "Address", "Phone", "Product amount", "Ship cost", "Extract price", "Tax", "Last price", "Payment type", "Payment status", "Order status", "Note", "Created date", "Last updated date"};
+    public final static String[] labelHeader = {"ID", "Name", "Title", "Description (clear)", "Created date", "Last updated date"};
+    public final static String[] productHeader = {"ID", "Brand name", "Category", "Product name", "Released date", "Quantity in stock", "Listed price", "Created date", "Last updated date"};
+    public final static String[] roleHeader = {"ID", "Name", "Description", "Created date", "Last updated date", "User list"};
+    public final static String[] userHeader = {"ID", "Full name", "Gender", "Date of birth", "Phone", "Email", "Account status", "Created date", "Last updated date", "Roles"};
 }

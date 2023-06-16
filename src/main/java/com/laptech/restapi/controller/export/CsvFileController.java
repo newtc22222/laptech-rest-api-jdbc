@@ -199,7 +199,7 @@ public class CsvFileController {
                     invoice.getTax(),
                     invoice.getPaymentTotal(),
                     invoice.getPaymentType(),
-                    invoice.isPaid() ? "Đã thanh toán" : "Chờ thanh toán",
+                    invoice.isPaid() ? "Was paid" : "Waiting ...",
                     invoice.getOrderStatus().toString(),
                     invoice.getNote(),
                     invoice.getCreatedDate(),
@@ -278,7 +278,7 @@ public class CsvFileController {
                     user.getDateOfBirth(),
                     user.getPhone(),
                     user.getEmail(),
-                    user.isActive() ? "Đang hoạt động" : "Đã khóa",
+                    user.isActive() ? "Active" : "Inactive",
                     user.getCreatedDate(),
                     user.getModifiedDate(),
                     roleService

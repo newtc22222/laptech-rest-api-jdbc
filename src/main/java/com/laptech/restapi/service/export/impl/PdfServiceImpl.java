@@ -14,6 +14,8 @@ import java.util.Date;
 public class PdfServiceImpl implements PdfService {
     @Override
     public void writeDataToPDF(HttpServletResponse response) {
+        response.setContentType("application/pdf");
+
         Document document = new Document(PageSize.A4);
         try {
             PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());

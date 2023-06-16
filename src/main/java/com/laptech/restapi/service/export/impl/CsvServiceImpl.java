@@ -18,7 +18,7 @@ public class CsvServiceImpl implements CsvService {
     public void writeDataToCsv(HttpServletResponse response, Object[] headers, List<Object[]> objects) {
         try {
             response.setContentType("text/csv");
-            response.addHeader("Content-Disposition", "attachment; filename=brand_" + LocalDateTime.now() + ".csv");
+            response.addHeader("Content-Disposition", "attachment; filename=data_" + LocalDateTime.now() + ".csv");
             CSVPrinter printer = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT);
             // header
             printer.printRecord(headers);

@@ -6,6 +6,7 @@ import com.laptech.restapi.model.ProductUnit;
 import com.laptech.restapi.service.InvoiceService;
 import com.laptech.restapi.service.ProductService;
 import com.laptech.restapi.service.ProductUnitService;
+import com.laptech.restapi.service.export.PdfService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +27,9 @@ public class PdfFileController {
     private final ProductService productService;
     private final ProductUnitService productUnitService;
 
-    @PostMapping("invoices/{id}/export")
+    private final PdfService pdfService;
+
+    @PostMapping("invoices/{id}/export-pdf")
     public void exportInvoice(@PathVariable("id") String invoiceId,
                               HttpServletResponse response) {
         Invoice invoice = invoiceService.findById(invoiceId);
@@ -37,5 +40,6 @@ public class PdfFileController {
         });
 
         System.out.println(products);
+        pdfService.writeDataToPDF(response);
     }
 }
