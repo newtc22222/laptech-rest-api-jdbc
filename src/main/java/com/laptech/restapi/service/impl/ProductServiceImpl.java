@@ -101,9 +101,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Collection<Product> findWithFilter(Map<String, Object> params) {
-        Set<Product> productSet = (Set<Product>) productDAO.findAll();
-
-        if (params.containsKey("brandId")) {
+        Set<Product> productSet = new HashSet<>(productDAO.findAll());
+        
+        if (params.get("brandId") != null) {
             String[] brandIdList = (String[]) params.get("brandId");
             Set<Product> products = new HashSet<>();
             Arrays.asList(brandIdList).forEach(brandId ->
@@ -112,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
             productSet.removeIf(item -> !products.contains(item));
             params.remove("brandId");
         }
-        if (params.containsKey("categoryId")) {
+        if (params.get("categoryId") != null) {
             String[] categoryIdList = (String[]) params.get("categoryId");
             Set<Product> products = new HashSet<>();
             Arrays.asList(categoryIdList).forEach(categoryId ->
@@ -121,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
             productSet.removeIf(item -> !products.contains(item));
             params.remove("categoryId");
         }
-        if (params.containsKey("labelId")) {
+        if (params.get("labelId") != null) {
             String[] labelIdList = (String[]) params.get("label");
             Set<Product> products = new HashSet<>();
             Arrays.asList(labelIdList).forEach(labelId ->
@@ -130,7 +130,7 @@ public class ProductServiceImpl implements ProductService {
             productSet.removeIf(item -> !products.contains(item));
             params.remove("labelId");
         }
-        if (params.containsKey("startPrice") && params.containsKey("endPrice")) {
+        if (params.get("startPrice") != null && params.get("endPrice") != null) {
             Collection<Product> productList = productDAO.findProductByPriceRange(
                     new BigDecimal(String.valueOf(params.get("startPrice"))),
                     new BigDecimal(String.valueOf(params.get("endPrice")))

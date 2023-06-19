@@ -53,7 +53,7 @@ public class ProductFilter extends BaseFilter {
         objects.add(this.brandId);
         objects.add(this.categoryId);
         objects.add(this.name);
-        objects.add(Date.valueOf(this.releasedDate));
+        objects.add(this.releasedDate != null ? Date.valueOf(this.releasedDate) : null);
         objects.add(this.quantityInStock);
         objects.add(this.listedPrice);
         objects.addAll(Arrays.asList(super.getObject(hasSort)));
