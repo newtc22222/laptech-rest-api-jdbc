@@ -12,7 +12,7 @@ import com.laptech.restapi.model.Feedback;
 import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.FeedbackService;
 import com.laptech.restapi.util.ConvertMap;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,24 +22,18 @@ import java.util.stream.Collectors;
  * @author Nhat Phi
  * @since 2022-11-22
  */
+@RequiredArgsConstructor
 @Service
 public class FeedbackServiceImpl implements FeedbackService {
-    @Autowired
-    private FeedbackDAO feedbackDAO;
-
-    @Autowired
-    private ProductDAO productDAO;
-    @Autowired
-    private UserDAO userDAO;
+    private final FeedbackDAO feedbackDAO;
+    private final ProductDAO productDAO;
+    private final UserDAO userDAO;
 
     @Override
     public Feedback insert(Feedback feedback) {
-        // check
-
         if (feedbackDAO.isExists(feedback)) {
             throw new ResourceAlreadyExistsException("[Info] This feedback has already existed in system!");
         }
-
         String newFeedbackId = feedbackDAO.insert(feedback);
         if (newFeedbackId == null) {
             throw new InternalServerErrorException("[Error] Failed insert new feedback!");
@@ -49,8 +43,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public void update(Feedback feedback, String feedbackId) {
-        // check
-
         Feedback oldFeedback = feedbackDAO.findById(feedbackId);
         if (oldFeedback == null) {
             throw new ResourceNotFoundException("[Info] Cannot find feedback with id=" + feedbackId);
@@ -72,8 +64,9 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (feedbackDAO.findById(feedbackId) == null) {
             throw new ResourceNotFoundException("[Info] Cannot find feedback with id=" + feedbackId);
         } else {
-            if (feedbackDAO.delete(feedbackId, updateBy) == 0)
+            if (feedbackDAO.delete(feedbackId, updateBy) == 0) {
                 throw new InternalServerErrorException("[Error] Failed to remove this feedback!");
+            }
         }
     }
 

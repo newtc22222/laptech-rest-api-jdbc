@@ -3,7 +3,7 @@ package com.laptech.restapi.common.runner;
 import com.laptech.restapi.common.enums.Gender;
 import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 
 import java.time.LocalDate;
@@ -16,9 +16,9 @@ import java.util.List;
  * @since 2023-02-12
  */
 //@Component
+    @RequiredArgsConstructor
 public class Database implements CommandLineRunner {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
 
     @Override
