@@ -16,6 +16,7 @@ public class LogSystemMapper implements RowMapper<LogSystem> {
         log.setActionTime(ConvertDateTime.getDateTimeFromResultSet(rs, "action_time"));
         log.setActionBy(rs.getNString("action_by"));
         log.setActionName(rs.getString("action_name"));
+        log.setActionDescription(rs.getString("action_description"));
         return log;
     }
 }

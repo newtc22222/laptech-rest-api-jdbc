@@ -22,6 +22,7 @@ public class LogSystem {
     private LocalDateTime actionTime;
     private String actionBy;
     private String actionName;
+    private String actionDescription;
 
     @Override
     public String toString() {
@@ -32,6 +33,7 @@ public class LogSystem {
                 ", actionDate=" + actionTime +
                 ", actionBy='" + actionBy + '\'' +
                 ", actionName='" + actionName + '\'' +
+                ", actionDescription='" + actionDescription + '\'' +
                 '}';
     }
 }

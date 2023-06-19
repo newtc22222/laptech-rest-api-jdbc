@@ -91,7 +91,7 @@ public class LogSystemDAOImpl implements LogSystemDAO {
             );
             return Objects.requireNonNull(count);
         } catch (NullPointerException | DataAccessException err) {
-            log.error("[COUNT ALL] {}", err.getLocalizedMessage());
+            log.error("[COUNT WITH CONDITION] {}", err.getLocalizedMessage());
             return 0;
         }
     }
