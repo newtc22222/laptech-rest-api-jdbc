@@ -36,10 +36,9 @@ public class ExcelServiceImpl implements ExcelService {
 
     private Map<String, Collection<Object[]>> getAllRecords(Collection<String> options) {
         Map<String, Collection<Object[]>> records = new HashMap<>();
-        // common
-        Collection<Object[]> record = new ArrayList<>();
         // handle
         if(options.contains("all") || options.contains("banner")) {
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.bannerHeader);
             bannerDAO.findAll().forEach(banner -> {
                 Object[] row = {
@@ -57,7 +56,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("banner", record);
         }
         if(options.contains("all") || options.contains("brand")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.brandHeader);
             brandDAO.findAll().forEach(brand -> {
                 Object[] row = {
@@ -78,7 +77,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("brand", record);
         }
         if(options.contains("all") || options.contains("category")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.categoryHeader);
             categoryDAO.findAll().forEach(category -> {
                 Object[] row = {
@@ -94,7 +93,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("category", record);
         }
         if(options.contains("all") || options.contains("comment")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.commentHeader);
             commentDAO.findAll().forEach(comment -> {
                 Object[] row = {
@@ -112,7 +111,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("comment", record);
         }
         if(options.contains("all") || options.contains("discount")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.discountHeader);
             discountDAO.findAll().forEach(discount -> {
                 Object[] row = {
@@ -131,7 +130,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("discount", record);
         }
         if(options.contains("all") || options.contains("feedback")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.feedbackHeader);
             feedbackDAO.findAll().forEach(feedback -> {
                 Object[] row = {
@@ -149,7 +148,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("feedback", record);
         }
         if(options.contains("all") || options.contains("importProduct")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.importProductHeader);
             importProductDAO.findAll().forEach(importProduct -> {
                 Object[] row = {
@@ -166,7 +165,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("import product", record);
         }
         if(options.contains("all") || options.contains("invoice")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.invoiceHeader);
             invoiceDAO.findAll().forEach(invoice -> {
                 Object[] row = {
@@ -192,7 +191,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("invoice", record);
         }
         if(options.contains("all") || options.contains("label")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.labelHeader);
             labelDAO.findAll().forEach(label -> {
                 Object[] row = {
@@ -208,7 +207,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("label", record);
         }
         if(options.contains("all") || options.contains("product")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.productHeader);
             productDAO.findAll().forEach(product -> {
                 Object[] row = {
@@ -227,7 +226,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("product", record);
         }
         if(options.contains("all") || options.contains("role")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.roleHeader);
             roleDAO.findAll().forEach(role -> {
                 Object[] row = {
@@ -242,7 +241,7 @@ public class ExcelServiceImpl implements ExcelService {
             records.put("role", record);
         }
         if(options.contains("all") || options.contains("user")) {
-            record.clear();
+            Collection<Object[]> record = new ArrayList<>();
             record.add(ExcelHeader.userHeader);
             userDAO.findAll().forEach(user -> {
                 Object[] row = {
@@ -282,7 +281,7 @@ public class ExcelServiceImpl implements ExcelService {
                 Row newRow = sheet.createRow(rowCount.getAndIncrement());
                 for (int i = 0; i < row.length; i++) {
                     Cell cell = newRow.createCell(i);
-                    cell.setCellValue((String) row[i]);
+                    cell.setCellValue(row[i].toString());
                 }
             });
         });
