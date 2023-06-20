@@ -10,7 +10,6 @@ import com.laptech.restapi.dto.filter.UserFilter;
 import com.laptech.restapi.dto.request.UserDTO;
 import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.UserService;
-import com.laptech.restapi.util.AuditUtil;
 import com.laptech.restapi.util.ConvertMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -192,10 +191,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByPhone(String phone) {
-        String auditPhone = AuditUtil.getPhoneAudit(phone);
-        if (!auditPhone.equals("")) {
-            throw new InvalidArgumentException(auditPhone);
-        }
         return userDAO.findUserByPhone(phone);
     }
 }

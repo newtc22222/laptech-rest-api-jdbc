@@ -2,7 +2,6 @@ package com.laptech.restapi.service.impl;
 
 import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
-import com.laptech.restapi.common.exception.InvalidArgumentException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.CommentDAO;
@@ -10,7 +9,6 @@ import com.laptech.restapi.dao.ProductDAO;
 import com.laptech.restapi.dto.filter.CommentFilter;
 import com.laptech.restapi.model.Comment;
 import com.laptech.restapi.service.CommentService;
-import com.laptech.restapi.util.AuditUtil;
 import com.laptech.restapi.util.ConvertMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -110,10 +108,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Set<Comment> getAllCommentsOfUser(String phone) {
-        String errorPhone = AuditUtil.getPhoneAudit(phone);
-        if (!errorPhone.equals("")) {
-            throw new InvalidArgumentException(errorPhone);
-        }
         return new HashSet<>(commentDAO.findCommentByUserPhone(phone));
     }
 }

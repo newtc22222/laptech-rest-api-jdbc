@@ -13,6 +13,10 @@ import java.util.Collection;
 public interface LogSystemDAO {
     Collection<LogSystem> findAll(PagingOptionDTO pagingOption);
 
+    default Collection<LogSystem> findAll() {
+        return this.findAll(new PagingOptionDTO(null, null, null, null));
+    }
+
     Collection<LogSystem> findByFilter(LogSystemFilter filter);
 
     long count();
