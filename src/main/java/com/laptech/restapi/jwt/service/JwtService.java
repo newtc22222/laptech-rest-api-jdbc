@@ -1,5 +1,6 @@
 package com.laptech.restapi.jwt.service;
 
+import com.laptech.restapi.common.exception.ForbiddenException;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
 import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.common.exception.TokenInvalidException;
@@ -65,6 +66,9 @@ public class JwtService implements UserDetailsService {
         String generateNewToken = jwtUtil.generateJwtAccessToken(userDetails);
 
         User user = userDAO.findUserByPhone(phone);
+        if (!user.isActive()) {
+            throw new ForbiddenException("[Error] This account has been blocked by admin!\nIf this is error, please contact with admin!");
+        }
         List<Role> roleList = roleDAO.findRoleByUserId(user.getId());
 
         RefreshToken refreshToken = new RefreshToken();
