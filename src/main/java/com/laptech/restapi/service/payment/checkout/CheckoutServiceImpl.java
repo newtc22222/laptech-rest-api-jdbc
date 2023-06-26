@@ -2,12 +2,15 @@ package com.laptech.restapi.service.payment.checkout;
 
 import com.laptech.restapi.common.enums.OrderStatus;
 import com.laptech.restapi.common.exception.InternalServerErrorException;
+import com.laptech.restapi.common.exception.InvalidArgumentException;
 import com.laptech.restapi.common.exception.ResourceAlreadyExistsException;
 import com.laptech.restapi.dao.CartDAO;
 import com.laptech.restapi.dao.InvoiceDAO;
+import com.laptech.restapi.dao.ProductDAO;
 import com.laptech.restapi.dao.ProductUnitDAO;
 import com.laptech.restapi.dto.request.CheckoutDTO;
 import com.laptech.restapi.model.Invoice;
+import com.laptech.restapi.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +21,19 @@ import java.util.UUID;
 public class CheckoutServiceImpl implements CheckoutService {
     private final CartDAO cartDAO;
     private final InvoiceDAO invoiceDAO;
+    private final ProductDAO productDAO;
     private final ProductUnitDAO productUnitDAO;
 
     @Override
     public void checkout(CheckoutDTO checkoutDTO) {
+        // check quantity
+        checkoutDTO.getProductUnitList().forEach(productUnit -> {
+            Product product = productDAO.findById(productUnit.getId());
+            if (product.getQuantityInStock() < productUnit.getQuantity()) {
+                throw new InvalidArgumentException("[Error] Product " + product.getName() + " don't have enough item for this invoices!");
+            }
+        });
+
         String newInvoiceId;
         // new user + new invoices
         if (checkoutDTO.getCartId() == null) {
@@ -57,6 +69,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         if (newInvoiceIdInsert == null) {
             throw new InternalServerErrorException("[Error] Failed to insert new invoice!");
         }
+
         checkoutDTO.getProductUnitList().stream().parallel().forEach(productUnit -> {
             productUnit.setCartId(null);
             productUnit.setInvoiceId(newInvoiceIdInsert);
