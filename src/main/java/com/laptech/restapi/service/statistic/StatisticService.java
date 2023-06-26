@@ -31,10 +31,9 @@ public interface StatisticService {
     Map<String, BigDecimal> getIncomeInYear(String productId);
     Map<String, BigDecimal> getPayingInYear(String productId);
 
-    // system
     /**
      * @param dateFilter use this to filter by month or system with get all data
-     * @return map of user who has paying in system (with total value)
+     * @return list of user who has paying in system (with total value)
      */
     List<Map<String, Object>> getTopUserValue(LocalDate dateFilter);
     List<Map<String, Object>> getTopUserAccess(LocalDate dateFilter);

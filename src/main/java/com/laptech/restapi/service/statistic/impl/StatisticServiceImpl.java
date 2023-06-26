@@ -34,9 +34,7 @@ public class StatisticServiceImpl implements StatisticService {
         invoices
                 .stream()
                 .filter(invoice -> invoice.getOrderStatus().equals(OrderStatus.RECEIVED))
-                .forEach(invoice -> {
-                    productUnits.addAll(productUnitDAO.findProductUnitByInvoiceId(invoice.getId()));
-                });
+                .forEach(invoice -> productUnits.addAll(productUnitDAO.findProductUnitByInvoiceId(invoice.getId())));
         return productUnits;
     }
 
@@ -115,9 +113,7 @@ public class StatisticServiceImpl implements StatisticService {
                         && invoice.getCreatedDate().getYear() == LocalDate.now().getYear())
                 .collect(Collectors.toList());
         Collection<ProductUnit> productUnits = new ArrayList<>();
-        invoicesInMonth.forEach(invoice -> {
-            productUnits.addAll(productUnitDAO.findProductUnitByInvoiceId(invoice.getId()));
-        });
+        invoicesInMonth.forEach(invoice -> productUnits.addAll(productUnitDAO.findProductUnitByInvoiceId(invoice.getId())));
 
         // Flatten items -> products list (allow duplicate)
         List<Product> products = productUnits.stream()
@@ -206,9 +202,7 @@ public class StatisticServiceImpl implements StatisticService {
                 .findAll()
                 .stream()
                 .filter(feedback -> feedback.getProductId().equals(productId))
-                .forEach(feedback -> {
-                    rating[feedback.getRatingPoint() - 1]++;
-                });
+                .forEach(feedback -> rating[feedback.getRatingPoint() - 1]++);
         return rating;
     }
 
@@ -221,9 +215,7 @@ public class StatisticServiceImpl implements StatisticService {
         feedbackCollection
                 .stream()
                 .filter(feedback -> productId == null || Objects.equals(feedback.getProductId(), productId))
-                .forEach(feedback -> {
-                    userList.add(userDAO.findById(feedback.getUserId()));
-                });
+                .forEach(feedback -> userList.add(userDAO.findById(feedback.getUserId())));
         commentCollection
                 .stream()
                 .filter(comment -> productId == null || Objects.equals(comment.getProductId(), productId))
@@ -383,15 +375,13 @@ public class StatisticServiceImpl implements StatisticService {
         Collection<RefreshToken> refreshTokens = refreshTokenDAO.findAll();
 
         Map<LocalDate, Long> accessInMonth = new HashMap<>();
-        dateCollection.forEach(localDate -> {
-            accessInMonth.put(
-                    localDate,
-                    refreshTokens
-                            .stream()
-                            .filter(refreshToken -> refreshToken.getCreatedDate().toLocalDate().equals(localDate))
-                            .count()
-            );
-        });
+        dateCollection.forEach(localDate -> accessInMonth.put(
+                localDate,
+                refreshTokens
+                        .stream()
+                        .filter(refreshToken -> refreshToken.getCreatedDate().toLocalDate().equals(localDate))
+                        .count()
+        ));
         return accessInMonth;
     }
 
@@ -422,15 +412,13 @@ public class StatisticServiceImpl implements StatisticService {
         Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListDayToDate(LocalDate.now(), 30);
         Collection<LogSystem> logSystemCollection = logSystemDAO.findAll();
         Map<LocalDate, Long> interactInMonth = new HashMap<>();
-        dateCollection.forEach(localDate -> {
-            interactInMonth.put(
-                    localDate,
-                    logSystemCollection
-                            .stream()
-                            .filter(logSystem -> logSystem.getActionTime().toLocalDate().equals(localDate))
-                            .count()
-            );
-        });
+        dateCollection.forEach(localDate -> interactInMonth.put(
+                localDate,
+                logSystemCollection
+                        .stream()
+                        .filter(logSystem -> logSystem.getActionTime().toLocalDate().equals(localDate))
+                        .count()
+        ));
         return interactInMonth;
     }
 
