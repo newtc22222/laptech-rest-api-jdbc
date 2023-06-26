@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,40 @@ public class StatisticServiceImpl implements StatisticService {
     private final RoleDAO roleDAO;
     private final UserDAO userDAO;
 
+    private Collection<ProductUnit> getFlattenProductUnitCollection(Collection<Invoice> invoices) {
+        Collection<ProductUnit> productUnits = new ArrayList<>();
+        invoices
+                .stream()
+                .filter(invoice -> invoice.getOrderStatus().equals(OrderStatus.RECEIVED))
+                .forEach(invoice -> {
+                    productUnits.addAll(productUnitDAO.findProductUnitByInvoiceId(invoice.getId()));
+                });
+        return productUnits;
+    }
+
+    private BigDecimal calculateIncomeTotalValue(Collection<Invoice> invoices, String productId) {
+        if(invoices != null) {
+            Collection<ProductUnit> productUnits = getFlattenProductUnitCollection(invoices);
+            // Calculate
+            return productUnits
+                    .stream()
+                    .filter(productUnit -> productUnit.getProductId().equals(productId))
+                    .map(productUnit -> productUnit.getDiscountPrice().multiply(BigDecimal.valueOf(productUnit.getQuantity())))
+                    .reduce(BigDecimal.valueOf(0), BigDecimal::add);
+        }
+        return BigDecimal.valueOf(0);
+    }
+
+    private BigDecimal calculatePayingTotalValue(Collection<ImportProduct> importProducts, String productId) {
+        if(importProducts != null) {
+            return importProducts
+                    .stream()
+                    .filter(importProduct -> importProduct.getProductId().equals(productId))
+                    .map(importProduct -> importProduct.getImportedPrice().multiply(BigDecimal.valueOf(importProduct.getQuantity())))
+                    .reduce(BigDecimal.valueOf(0), BigDecimal::add);
+        }
+        return BigDecimal.valueOf(0);
+    }
 
     @Override
     public long getBillInDay(LocalDate date) {
@@ -227,15 +262,28 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     public Map<LocalDate, BigDecimal> getIncomeInMonth(String productId) {
-        return null;
+        Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListDayToDate(LocalDate.now(), 30);
+
+        Map<LocalDate, BigDecimal> incomeInMonth = new HashMap<>();
+        dateCollection.forEach(localDate -> {
+            // get all item was sold
+            Collection<Invoice> invoices = invoiceDAO.findInvoiceByDate(localDate);
+            incomeInMonth.put(localDate, calculateIncomeTotalValue(invoices, productId));
+        });
+        return incomeInMonth;
     }
 
     @Override
     public Map<LocalDate, BigDecimal> getPayingInMonth(String productId) {
-        if (productId != null) {
-            return new HashMap<>();
-        }
-        return null;
+        Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListDayToDate(LocalDate.now(), 30);
+
+        // get all items
+        Map<LocalDate, BigDecimal> payingInMonth = new HashMap<>();
+        dateCollection.forEach(localDate -> {
+            Collection<ImportProduct> importProducts = importProductDAO.findImportProductByDate(localDate);
+            payingInMonth.put(localDate, calculatePayingTotalValue(importProducts, productId));
+        });
+        return payingInMonth;
     }
 
     @Override
@@ -245,46 +293,165 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     public Map<String, BigDecimal> getIncomeInYear(String productId) {
-        if (productId != null) {
-            return new HashMap<>();
-        }
-        return null;
+        Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListMonthToDate(LocalDate.now(), 12);
+
+        Map<String, BigDecimal> incomeInYear = new HashMap<>();
+        dateCollection.forEach(localDate -> {
+            String key = localDate.getMonth() + "-" + localDate.getYear();
+            Collection<Invoice> invoices = invoiceDAO.findInvoiceByDateRange(
+                    LocalDate.of(localDate.getYear(), localDate.getMonth(), 1).atStartOfDay(),
+                    LocalDate.of(localDate.getYear(), localDate.getMonth().plus(1), 1).atStartOfDay()
+            );
+            incomeInYear.put(key, calculateIncomeTotalValue(invoices, productId));
+        });
+        return incomeInYear;
     }
 
     @Override
     public Map<String, BigDecimal> getPayingInYear(String productId) {
-        if (productId != null) {
-            return new HashMap<>();
-        }
-        return null;
+        Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListMonthToDate(LocalDate.now(), 12);
+
+        Map<String, BigDecimal> payingInYear = new HashMap<>();
+        dateCollection.forEach(localDate -> {
+            String key = localDate.getMonth() + "-" + localDate.getYear();
+            Collection<ImportProduct> importProducts = importProductDAO.findImportProductByDateRange(
+                    LocalDate.of(localDate.getYear(), localDate.getMonth(), 1).atStartOfDay(),
+                    LocalDate.of(localDate.getYear(), localDate.getMonth().plus(1), 1).atStartOfDay()
+            );
+            payingInYear.put(key, calculatePayingTotalValue(importProducts, productId));
+        });
+        return payingInYear;
     }
 
     @Override
-    public Map<User, BigDecimal> getTopUserValue() {
-        return null;
+    public List<Map<String, Object>> getTopUserValue(LocalDate dateFilter) {
+        Collection<Invoice> invoices = invoiceDAO.findAll()
+                .stream()
+                .filter(invoice -> invoice.getOrderStatus().equals(OrderStatus.RECEIVED))
+                .filter(invoice -> dateFilter == null
+                        || (invoice.getModifiedDate().getMonth().equals(dateFilter.getMonth()) && invoice.getModifiedDate().getYear() == dateFilter.getYear()))
+                .collect(Collectors.toList());
+
+        Map<User, BigDecimal> userPaying = new HashMap<>();
+        invoices.forEach(invoice -> {
+            User user = userDAO.findById(invoice.getUserId());
+            userPaying.put(user, userPaying.getOrDefault(user, BigDecimal.valueOf(0)).add(invoice.getPaymentTotal()));
+        });
+
+        List<Map.Entry<User, BigDecimal>> sortedUserPaying = new ArrayList<>(userPaying.entrySet());
+        sortedUserPaying.sort(Map.Entry.comparingByValue());
+        List<Map<String,Object >> topUserPaying = new ArrayList<>();
+        sortedUserPaying
+                .forEach(userBigDecimalEntry -> {
+                    Map<String, Object> userBigDecimalMap = new HashMap<>();
+                    userBigDecimalMap.put("user", userBigDecimalEntry.getKey());
+                    userBigDecimalMap.put("value", userBigDecimalEntry.getValue());
+                    topUserPaying.add(userBigDecimalMap);
+                });
+        return topUserPaying;
     }
 
     @Override
-    public Map<User, Long> getTopUserAccess() {
+    public List<Map<String, Object>> getTopUserAccess(LocalDate dateFilter) {
+        Collection<RefreshToken> refreshTokens = refreshTokenDAO.findAll();
+        Map<User, Long> userAccess = new HashMap<>();
+        refreshTokens
+                .stream()
+                .filter(refreshToken -> dateFilter == null || refreshToken.getCreatedDate().toLocalDate().equals(dateFilter))
+                .forEach(refreshToken -> {
+                    User user = userDAO.findById(refreshToken.getUserId());
+                    userAccess.put(user, userAccess.getOrDefault(user, 0L) + 1);
+                });
+        List<Map.Entry<User, Long>> sortedUserAccess = new ArrayList<>(userAccess.entrySet());
+        sortedUserAccess.sort(Map.Entry.comparingByValue());
 
-        return null;
+        List<Map<String, Object>> topUserAccess = new ArrayList<>();
+        sortedUserAccess.forEach(userLongEntry -> {
+            Map<String, Object> topUser = new HashMap<>();
+            topUser.put("user", userLongEntry.getKey());
+            topUser.put("role", roleDAO.findRoleByUserId(userLongEntry.getKey().getId()));
+            topUser.put("accessTime", userLongEntry.getValue());
+            topUserAccess.add(topUser);
+        });
+
+        return topUserAccess;
     }
 
     @Override
     public Map<LocalDate, Long> getAccessInMonth() {
-        Collection<LogSystem> logSystemCollection = logSystemDAO.findAll();
-
-        // Get list 30 days
         Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListDayToDate(LocalDate.now(), null);
-        return null;
+        Collection<RefreshToken> refreshTokens = refreshTokenDAO.findAll();
+
+        Map<LocalDate, Long> accessInMonth = new HashMap<>();
+        dateCollection.forEach(localDate -> {
+            accessInMonth.put(
+                    localDate,
+                    refreshTokens
+                            .stream()
+                            .filter(refreshToken -> refreshToken.getCreatedDate().toLocalDate().equals(localDate))
+                            .count()
+            );
+        });
+        return accessInMonth;
     }
 
     @Override
     public Map<String, Long> getAccessInYear() {
-        Collection<LogSystem> logSystemCollection = logSystemDAO.findAll();
-
-        // Get list 12 month
         Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListMonthToDate(LocalDate.now(), null);
-        return null;
+        Collection<RefreshToken> refreshTokens = refreshTokenDAO.findAll();
+
+        Map<String, Long> accessInYear = new HashMap<>();
+        dateCollection.forEach(localDate -> {
+            String key = localDate.format(DateTimeFormatter.ofPattern("MM-yyyy"));
+            LocalDate startDate = LocalDate.of(localDate.getYear(), localDate.getMonth(), 1);
+            LocalDate endDate = LocalDate.of(localDate.getYear(), localDate.getMonth().plus(1), 1);
+            accessInYear.put(
+                    key,
+                    refreshTokens
+                            .stream()
+                            .filter(refreshToken -> refreshToken.getCreatedDate().isAfter(startDate.atStartOfDay()))
+                            .filter(refreshToken -> refreshToken.getCreatedDate().isBefore(endDate.atStartOfDay()))
+                            .count()
+            );
+        });
+        return accessInYear;
+    }
+
+    @Override
+    public Map<LocalDate, Long> getInteractInMonth() {
+        Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListDayToDate(LocalDate.now(), 30);
+        Collection<LogSystem> logSystemCollection = logSystemDAO.findAll();
+        Map<LocalDate, Long> interactInMonth = new HashMap<>();
+        dateCollection.forEach(localDate -> {
+            interactInMonth.put(
+                    localDate,
+                    logSystemCollection
+                            .stream()
+                            .filter(logSystem -> logSystem.getActionTime().toLocalDate().equals(localDate))
+                            .count()
+            );
+        });
+        return interactInMonth;
+    }
+
+    @Override
+    public Map<String, Long> getInteractInYear() {
+        Collection<LocalDate> dateCollection = BuildDateTimeCollection.getListMonthToDate(LocalDate.now(), 12);
+        Collection<LogSystem> logSystemCollection = logSystemDAO.findAll();
+        Map<String, Long> interactInYear = new HashMap<>();
+        dateCollection.forEach(localDate -> {
+            String key = localDate.getMonth() + "-" + localDate.getYear();
+            LocalDate startDate = LocalDate.of(localDate.getYear(), localDate.getMonth(), 1);
+            LocalDate endDate = LocalDate.of(localDate.getYear(), localDate.getMonth().plus(1), 1);
+            interactInYear.put(
+                    key,
+                    logSystemCollection
+                            .stream()
+                            .filter(logSystem -> logSystem.getActionTime().isAfter(startDate.atStartOfDay()))
+                            .filter(logSystem -> logSystem.getActionTime().isBefore(endDate.atStartOfDay()))
+                            .count()
+            );
+        });
+        return interactInYear;
     }
 }

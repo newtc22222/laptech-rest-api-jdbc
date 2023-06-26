@@ -1,7 +1,6 @@
 package com.laptech.restapi.service.statistic;
 
 import com.laptech.restapi.model.Product;
-import com.laptech.restapi.model.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -33,8 +32,14 @@ public interface StatisticService {
     Map<String, BigDecimal> getPayingInYear(String productId);
 
     // system
-    Map<User, BigDecimal> getTopUserValue();
-    Map<User, Long> getTopUserAccess();
+    /**
+     * @param dateFilter use this to filter by month or system with get all data
+     * @return map of user who has paying in system (with total value)
+     */
+    List<Map<String, Object>> getTopUserValue(LocalDate dateFilter);
+    List<Map<String, Object>> getTopUserAccess(LocalDate dateFilter);
     Map<LocalDate, Long> getAccessInMonth();
     Map<String, Long> getAccessInYear();
+    Map<LocalDate, Long> getInteractInMonth();
+    Map<String, Long> getInteractInYear();
 }

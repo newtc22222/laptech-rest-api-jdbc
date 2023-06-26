@@ -26,7 +26,7 @@ public class StatisticController {
     public Map<String, Object> getDashboardStatistic(@RequestParam(required = false) String date) {
         Map<String, Object> data = new HashMap<>();
         LocalDate filterDate = LocalDate.now();
-        if (!date.isEmpty()) {
+        if (date != null) {
             filterDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
 
@@ -38,8 +38,7 @@ public class StatisticController {
     }
 
     @GetMapping("/products")
-    public Map<String, Object> getFigureOfAllProducts(@RequestParam(required = false) String date,
-                                                      @RequestParam(required = false) Long brandId,
+    public Map<String, Object> getFigureOfAllProducts(@RequestParam(required = false) Long brandId,
                                                       @RequestParam(required = false) Long categoryId,
                                                       @RequestParam(required = false) Long limit) {
         Map<String, Object> figures = new HashMap<>();
@@ -50,30 +49,49 @@ public class StatisticController {
     }
 
     @GetMapping("/products/{id}")
-    public Map<String, Object> getFigureOfProduct(@PathVariable(value = "id") String productId) {
+    public Map<String, Object> getFigureOfProduct(@PathVariable(value = "id") String productId,
+                                                  @RequestParam(defaultValue = "month", required = false) String range) {
         Map<String, Object> figures = new HashMap<>();
         figures.put("rating", statisticService.getProductRating(productId));
-        figures.put("priceFigures", statisticService.getPriceInMonth(productId));
-        figures.put("incomeInMonth", statisticService.getIncomeInMonth(productId));
-        figures.put("payingInMonth", statisticService.getPayingInMonth(productId));
         figures.put("topUserFollow", statisticService.getTopUserFollower(productId));
+        if (range.equals("month")) {
+            figures.put("priceFigures", statisticService.getPriceInMonth(productId));
+            figures.put("incomeFigures", statisticService.getIncomeInMonth(productId));
+            figures.put("payingFigures", statisticService.getPayingInMonth(productId));
+        } else {
+            figures.put("priceFigures", statisticService.getPriceInYear(productId));
+            figures.put("incomeFigures", statisticService.getIncomeInYear(productId));
+            figures.put("payingFigures", statisticService.getPayingInYear(productId));
+        }
         return figures;
     }
 
     @GetMapping("/profits")
-    public Map<String, Object> getFigureProfits(@RequestParam(required = false) String date) {
+    public Map<String, Object> getFigureProfits(@RequestParam(defaultValue = "month", required = false) String range) {
         Map<String, Object> figures = new HashMap<>();
-        figures.put("incomeInMonth", statisticService.getIncomeInMonth(null));
-        figures.put("payingInMonth", statisticService.getPayingInMonth(null));
+        if (range.equals("month")) {
+            figures.put("incomeFigures", statisticService.getIncomeInMonth(null));
+            figures.put("payingFigures", statisticService.getPayingInMonth(null));
+        } else {
+            figures.put("incomeFigures", statisticService.getIncomeInYear(null));
+            figures.put("payingFigures", statisticService.getPayingInYear(null));
+        }
         return figures;
     }
 
     @GetMapping("/users")
-    public Map<String, Object> getFigureOfAllUsers() {
+    public Map<String, Object> getFigureOfAllUsers(@RequestParam(required = false) LocalDate dateFilter,
+                                                   @RequestParam(defaultValue = "month", required = false) String range) {
         Map<String, Object> figures = new HashMap<>();
-        figures.put("topUserValue", statisticService.getTopUserValue());
-        figures.put("topUserAccess", statisticService.getTopUserAccess());
-        figures.put("accessInMonth", statisticService.getAccessInMonth());
+        figures.put("topUserValue", statisticService.getTopUserValue(dateFilter));
+        figures.put("topUserAccess", statisticService.getTopUserAccess(dateFilter));
+        if (range.equals("month")) {
+            figures.put("accessFigures", statisticService.getAccessInMonth());
+            figures.put("interactFigures", statisticService.getInteractInMonth());
+        } else {
+            figures.put("accessFigures", statisticService.getAccessInYear());
+            figures.put("interactFigures", statisticService.getInteractInYear());
+        }
         return figures;
     }
 }
