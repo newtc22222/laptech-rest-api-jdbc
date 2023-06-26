@@ -10,3 +10,14 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant-path-matcher
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sunflynf@gmail.com
+    password: ezwealdkqsasicqg
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

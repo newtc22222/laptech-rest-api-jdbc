@@ -3,11 +3,13 @@ package com.laptech.restapi.service.impl;
 import com.laptech.restapi.common.dto.PagingOptionDTO;
 import com.laptech.restapi.common.enums.RoleType;
 import com.laptech.restapi.common.exception.*;
+import com.laptech.restapi.dao.ResetPasswordDAO;
 import com.laptech.restapi.dao.RoleDAO;
 import com.laptech.restapi.dao.UserDAO;
 import com.laptech.restapi.dao.UserRoleDAO;
 import com.laptech.restapi.dto.filter.UserFilter;
 import com.laptech.restapi.dto.request.UserDTO;
+import com.laptech.restapi.model.ResetPassword;
 import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.UserService;
 import com.laptech.restapi.util.ConvertMap;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -26,6 +29,7 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
+    private final ResetPasswordDAO resetPasswordDAO;
 
     private final RoleDAO roleDAO;
     private final UserRoleDAO userRoleDAO;
@@ -192,5 +196,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByPhone(String phone) {
         return userDAO.findUserByPhone(phone);
+    }
+
+    @Override
+    public void insertPasswordResetToken(Long userId, String token) {
+        ResetPassword resetPassword = new ResetPassword();
+        resetPassword.setUserId(userId);
+        resetPassword.setToken(token);
+        resetPassword.setExpiredTime(LocalDateTime.now().plusMinutes(5)); // 5 minutes
+        if (resetPasswordDAO.insert(resetPassword) == 0) {
+            throw new InternalServerErrorException("[Error] Failed to insert reset password token!");
+        }
+    }
+
+    @Override
+    public User findUserByPasswordResetToken(String token) {
+        ResetPassword resetPassword = resetPasswordDAO.findResetPasswordTokenByToken(token);
+        if (resetPassword == null) {
+            throw new ResourceNotFoundException("Can not find this token in system!");
+        }
+        if (LocalDateTime.now().isAfter(resetPassword.getExpiredTime())) { // now > exp
+            throw new TokenInvalidException("Your reset password token was expired!");
+        }
+        return userDAO.findById(resetPassword.getUserId());
     }
 }

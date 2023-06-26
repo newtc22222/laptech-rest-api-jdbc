@@ -19,4 +19,7 @@ public interface UserService extends BaseService<User, Long> {
     void removeRole(long userId, int roleId);
 
     User findUserByPhone(String phone);
+
+    void insertPasswordResetToken(Long userId, String token);
+    User findUserByPasswordResetToken(String token);
 }
