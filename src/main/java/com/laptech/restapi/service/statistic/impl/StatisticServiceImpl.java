@@ -26,7 +26,6 @@ public class StatisticServiceImpl implements StatisticService {
 
     private final LogSystemDAO logSystemDAO;
     private final RefreshTokenDAO refreshTokenDAO;
-    private final RoleDAO roleDAO;
     private final UserDAO userDAO;
 
     private Collection<ProductUnit> getFlattenProductUnitCollection(Collection<Invoice> invoices) {
@@ -358,13 +357,12 @@ public class StatisticServiceImpl implements StatisticService {
         sortedUserAccess.sort(Map.Entry.comparingByValue());
 
         List<Map<String, Object>> topUserAccess = new ArrayList<>();
-        sortedUserAccess.forEach(userLongEntry -> {
+        for (Map.Entry<User, Long> userLongEntry : sortedUserAccess) {
             Map<String, Object> topUser = new HashMap<>();
             topUser.put("user", userLongEntry.getKey());
-            topUser.put("role", roleDAO.findRoleByUserId(userLongEntry.getKey().getId()));
             topUser.put("accessTime", userLongEntry.getValue());
             topUserAccess.add(topUser);
-        });
+        }
 
         return topUserAccess;
     }
