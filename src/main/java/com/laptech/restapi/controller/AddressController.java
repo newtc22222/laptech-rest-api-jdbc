@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-24
  */
-@Api(tags = "Address Of User", value = "address CRUD and get address of User")
+@Api(tags = "Address Controller", description = "Address of User")
 @CrossOrigin(value = {"*"})
 @RestController
 @RequestMapping("/api/v1")

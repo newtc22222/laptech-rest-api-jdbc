@@ -23,7 +23,7 @@ import java.util.Map;
  * @version 1.2
  * @since 2022-11-22 (update 2023-02-07
  */
-@Api(tags = "Product CRUD apis", value = "Product controller")
+@Api(description = "Product CRUD apis", tags = "Product controller")
 @CrossOrigin
 @RequiredArgsConstructor
 @RestController

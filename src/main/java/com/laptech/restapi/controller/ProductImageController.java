@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * @author Nhat Phi
  * @since 2022-11-24
  */
-@Api(tags = "Image of product", value = "ProductImage controller")
+@Api(description = "Image collection of product", tags = "Product Image controller")
 @CrossOrigin
 @RequiredArgsConstructor
 @RestController

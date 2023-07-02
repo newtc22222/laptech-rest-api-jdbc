@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-24
  */
-@Api(tags = "Comment of product", value = "Comment controller")
+@Api(description = "Comment of product", tags = "Comment controller")
 @CrossOrigin
 @RequiredArgsConstructor
 @RestController

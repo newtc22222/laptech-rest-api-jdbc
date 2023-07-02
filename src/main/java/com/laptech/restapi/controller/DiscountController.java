@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-24
  */
-@Api(tags = "Discount code in system", value = "Discount controller")
+@Api(description = "Discount code and voucher in system", tags = "Discount controller")
 @CrossOrigin(value = {"*"})
 @RestController
 @RequestMapping("/api/v1/")

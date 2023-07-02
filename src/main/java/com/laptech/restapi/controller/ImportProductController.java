@@ -21,7 +21,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-24
  */
-@Api(tags = "Ticket to import products", value = "Import Product controller")
+@Api(description = "Ticket to import products into shop", tags = "Import Product controller")
 @CrossOrigin(value = {"*"})
 @RestController
 @RequestMapping("/api/v1/")

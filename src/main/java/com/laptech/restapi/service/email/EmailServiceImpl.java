@@ -1,5 +1,6 @@
 package com.laptech.restapi.service.email;
 
+import com.laptech.restapi.dao.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -11,6 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 @Service
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
+    // invoice
+    private final InvoiceDAO invoiceDAO;
+    private final ProductDAO productDAO;
+    private final UserDAO userDAO;
+    private final ProductImageDAO productImageDAO;
+    private final ProductUnitDAO productUnitDAO;
 
     @Override
     public void sendPasswordResetEmail(HttpServletRequest request, String passwordResetUrl, String token, String toEmail) {
@@ -22,5 +29,10 @@ public class EmailServiceImpl implements EmailService {
                 + token
                 + "\nUse this to set new password");
         mailSender.send(message);
+    }
+
+    @Override
+    public void sendInvoiceToEmail(String toEmail, String invoiceId) {
+
     }
 }

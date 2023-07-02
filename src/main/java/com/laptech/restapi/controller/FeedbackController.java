@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @author Nhat Phi
  * @since 2022-11-24
  */
-@Api(tags = "Feedback of Product", value = "Feedback controller")
+@Api(description = "Feedback of user about product", tags = "Feedback controller")
 @CrossOrigin(value = {"*"})
 @RestController
 @RequestMapping("/api/v1/")

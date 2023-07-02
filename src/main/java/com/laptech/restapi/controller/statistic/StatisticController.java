@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * @since 2023-06-01
  */
-@Api(tags = "Statistic API", value = "Statistic Controller")
+@Api(value = "Statistic API: products, profits", tags = "Statistic Controller")
 @CrossOrigin
 @RequiredArgsConstructor
 @RestController

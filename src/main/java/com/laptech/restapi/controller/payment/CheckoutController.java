@@ -15,7 +15,7 @@ import javax.validation.Valid;
 /**
  * @since 2023-06-01
  */
-@Api(tags = "CHECK OUT REST API", value = "Check out Controller")
+@Api(description = "Check out API with checking quantity and calculate value", tags = "Check out Controller")
 @CrossOrigin
 @RequiredArgsConstructor
 @RestController

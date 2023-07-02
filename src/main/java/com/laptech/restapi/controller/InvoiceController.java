@@ -6,9 +6,10 @@ import com.laptech.restapi.dto.response.BaseResponse;
 import com.laptech.restapi.dto.response.DataResponse;
 import com.laptech.restapi.model.Invoice;
 import com.laptech.restapi.service.InvoiceService;
+import com.laptech.restapi.service.email.EmailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +22,14 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-24
  */
-@Api(tags = "Receipt of user", value = "Invoice Controller")
+@Api(description = "Receipt of user's order", tags = "Invoice Controller")
 @CrossOrigin
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class InvoiceController {
-    @Autowired
-    private InvoiceService invoiceService;
+    private final EmailService emailService;
+    private final InvoiceService invoiceService;
 
     @ApiOperation(value = "Get all invoices", response = Invoice.class)
     @GetMapping("/invoices")
@@ -120,10 +122,9 @@ public class InvoiceController {
     @PostMapping("/invoices")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<DataResponse> createNewInvoice(@RequestBody InvoiceDTO invoiceDTO) {
-        return DataResponse.success(
-                "Create new invoice",
-                invoiceService.insert(InvoiceDTO.transform(invoiceDTO))
-        );
+        Invoice newInvoice = invoiceService.insert(InvoiceDTO.transform(invoiceDTO));
+
+        return DataResponse.success("Create new invoice", newInvoice);
     }
 
     @ApiOperation(value = "Update all information of Invoice", response = BaseResponse.class)

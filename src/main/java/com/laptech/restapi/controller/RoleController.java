@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * @since 2023-02-07
  */
-@Api(tags = "Role of user in system", value = "Role controller")
+@Api(description = "Role of user in system", tags = "Role controller")
 @CrossOrigin(value = {"*"})
 @RestController
 @RequestMapping("/api/v1")

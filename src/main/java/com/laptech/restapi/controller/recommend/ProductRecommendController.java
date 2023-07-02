@@ -8,10 +8,7 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -19,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Api(tags = "Recommend system API", value = "Product Recommend System Controller")
+@Api(description = "Recommend system API", tags = "Product Recommend System Controller")
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +27,8 @@ public class ProductRecommendController {
     private final ProductService productService;
 
     @GetMapping("on-sale")
-    public ResponseEntity<Collection<Product>> getProductOnSale() {
+    public ResponseEntity<Collection<?>> getProductOnSale(@RequestParam(required = false, defaultValue = "false") String isCard) {
+        boolean isCardBoolean = Boolean.parseBoolean(isCard);
         Collection<Product> productOnSaleList = productService.findAll()
                 .stream()
                 // get product has discount on date
@@ -40,6 +38,9 @@ public class ProductRecommendController {
                         .anyMatch(discount -> discount.getAppliedDate().isBefore(LocalDateTime.now())
                                 && discount.getEndedDate().isAfter(LocalDateTime.now())))
                 .collect(Collectors.toList());
+        if(isCardBoolean) {
+            return ResponseEntity.ok(productService.getProductCardDTO(productOnSaleList));
+        }
         return ResponseEntity.ok(productOnSaleList);
     }
 

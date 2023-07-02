@@ -21,7 +21,7 @@ import java.util.Set;
  * @author Nhat Phi
  * @since 2022-11-22
  */
-@Api(tags = "Big image for advertise", value = "Banner Controller")
+@Api(description = "Big image for advertise", tags = "Banner Controller")
 @CrossOrigin
 @RequiredArgsConstructor
 @RestController

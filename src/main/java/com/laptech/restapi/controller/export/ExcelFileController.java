@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
-@Api(tags = "Export Excel API", value = "Export Excel Controller")
+@Api(description = "Export Excel API", tags = "Export Excel Controller")
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor

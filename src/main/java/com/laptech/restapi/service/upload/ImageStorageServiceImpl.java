@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -24,7 +25,7 @@ import java.util.stream.Stream;
  */
 @Service
 public class ImageStorageServiceImpl implements IStorageService {
-    private static final String WEB_ABSOLUTE_PATH = "http://localhost:8088/api/v1/files/";
+    private static final String API_ABSOLUTE_PATH = "/api/v1/files/";
     private final Path storageFolder = Paths.get("uploads");
 
     public ImageStorageServiceImpl() {
@@ -42,7 +43,7 @@ public class ImageStorageServiceImpl implements IStorageService {
     }
 
     @Override
-    public String storeFile(MultipartFile file) {
+    public String storeFile(MultipartFile file, HttpServletRequest request) {
         try {
             if (file.isEmpty()) {
                 throw new RuntimeException("Failed to store empty file!");
@@ -68,7 +69,8 @@ public class ImageStorageServiceImpl implements IStorageService {
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFilePath, StandardCopyOption.REPLACE_EXISTING);
             }
-            return WEB_ABSOLUTE_PATH + destinationFilePath.getFileName().toString();
+            final String BASE_PATH = "http://" + request.getServerName() + ":" + request.getServerPort() + API_ABSOLUTE_PATH;
+            return BASE_PATH + destinationFilePath.getFileName().toString();
         } catch (IOException err) {
             throw new RuntimeException(err);
         }

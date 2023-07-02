@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-24
  */
-@Api(tags = "Type of Product", value = "Category controller")
+@Api(description = "Type of Product", tags = "Category controller")
 @CrossOrigin(value = {"*"})
 @RestController
 @RequestMapping("/api/v1/categories")

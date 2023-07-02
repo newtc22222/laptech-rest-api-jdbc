@@ -1,11 +1,7 @@
 package com.laptech.restapi.controller.export;
 
-import com.laptech.restapi.model.Invoice;
-import com.laptech.restapi.model.Product;
-import com.laptech.restapi.model.ProductUnit;
-import com.laptech.restapi.service.InvoiceService;
-import com.laptech.restapi.service.ProductService;
-import com.laptech.restapi.service.ProductUnitService;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.DocumentException;
 import com.laptech.restapi.service.export.PdfService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -13,33 +9,26 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.IOException;
 
-@Api("Export PDF Controller")
+@Api(tags = "Export PDF Controller", description = "Export order or import file")
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
 public class PdfFileController {
-    private final InvoiceService invoiceService;
-    private final ProductService productService;
-    private final ProductUnitService productUnitService;
-
     private final PdfService pdfService;
 
-    @PostMapping("invoices/{id}/export-pdf")
+    @GetMapping("invoices/{id}/export-pdf")
     public void exportInvoice(@PathVariable("id") String invoiceId,
-                              HttpServletResponse response) {
-        Invoice invoice = invoiceService.findById(invoiceId);
-        Collection<ProductUnit> productUnits = productUnitService.getProductUnitByInvoiceId(invoiceId);
-        Collection<Product> products = new ArrayList<>();
-        productUnits.forEach(unit -> {
-            products.add(productService.findById(unit.getProductId()));
-        });
+                              HttpServletResponse response) throws DocumentException, IOException {
+        pdfService.writePDFOfInvoice(response, invoiceId);
+    }
 
-        System.out.println(products);
-        pdfService.writeDataToPDF(response);
+    @GetMapping("imported/{id}/export-pdf")
+    public void exportImportTicket(@PathVariable("id") String importedProductId,
+                                   HttpServletResponse response) throws BadElementException, IOException {
+        pdfService.writePDFOfImportTicket(response, importedProductId);
     }
 }

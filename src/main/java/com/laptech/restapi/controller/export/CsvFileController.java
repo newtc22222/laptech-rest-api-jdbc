@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Api(tags = "Export CSV API", value = "Export CSV Controller")
+@Api(description = "Export CSV API", tags = "Export CSV Controller")
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor

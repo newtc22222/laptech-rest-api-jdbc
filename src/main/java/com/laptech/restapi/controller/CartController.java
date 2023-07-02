@@ -17,7 +17,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-25
  */
-@Api(tags = "Store product item of user", value = "Cart Controller")
+@Api(description = "Store product item of user", tags = "Cart Controller")
 @CrossOrigin(value = {"*"})
 @RequestMapping("/api/v1")
 @RestController

@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * @since 2023-02-07
  */
-@Api(tags = "Label or tag of product's special accessories", value = "Label controller")
+@Api(description = "Label or tag of product's special accessories", tags = "Label controller")
 @CrossOrigin(value = {"*"})
 @RestController
 @RequestMapping("/api/v1")

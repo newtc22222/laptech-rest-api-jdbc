@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * @since 2022-12-01
  */
-@Api(tags = "Upload images", value = "File upload controller")
+@Api(value = "Api use for upload images", tags = "File upload controller")
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1")
@@ -29,18 +30,20 @@ public class FileUploadController {
     @ApiOperation(value = "Upload and save an image to server", response = DataResponse.class)
     @PostMapping("/uploads")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> uploadImageFile(@RequestParam("file") MultipartFile file) {
-        String generateFileName = storageService.storeFile(file);
+    public ResponseEntity<DataResponse> uploadImageFile(@RequestParam("file") MultipartFile file,
+                                                        HttpServletRequest request) {
+        String generateFileName = storageService.storeFile(file, request);
         return DataResponse.success("Upload image", generateFileName);
     }
 
     @ApiOperation(value = "Upload and save multiple images to server", response = DataResponse.class)
     @PostMapping("/uploads-multiple")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<DataResponse> uploadMultipleImageFiles(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<DataResponse> uploadMultipleImageFiles(@RequestParam("files") MultipartFile[] files,
+                                                                 HttpServletRequest request) {
         List<String> generateFileNameList = new ArrayList<>();
         Arrays.stream(files).forEach(file -> {
-            String generateFileName = storageService.storeFile(file);
+            String generateFileName = storageService.storeFile(file, request);
             generateFileNameList.add(generateFileName);
         });
         return DataResponse.success("Upload multiple image", generateFileNameList);

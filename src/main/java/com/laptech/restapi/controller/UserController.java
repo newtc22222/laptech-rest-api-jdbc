@@ -29,7 +29,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-22
  */
-@Api(tags = "User information in system", value = "User controller")
+@Api(description = "User information in system", tags = "User controller")
 @CrossOrigin
 @RequiredArgsConstructor
 @RestController

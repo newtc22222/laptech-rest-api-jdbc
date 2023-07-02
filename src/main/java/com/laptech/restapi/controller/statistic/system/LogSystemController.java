@@ -17,7 +17,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2023-03-02
  */
-@Api(tags = "Show log of system", value = "LogSystem Controller")
+@Api(value = "All actions in system", tags = "Log System Controller")
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor

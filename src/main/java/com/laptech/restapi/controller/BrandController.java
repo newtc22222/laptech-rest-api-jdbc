@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Nhat Phi
  * @since 2022-11-18
  */
-@Api(tags = "Brand of Product", value = "Brand Controller")
+@Api(description = "Brand of Product", tags = "Brand Controller")
 @CrossOrigin
 @RestController
 @RequestMapping("api/v1/brands")
