@@ -43,7 +43,7 @@ public class StatisticServiceImpl implements StatisticService {
             // Calculate
             return productUnits
                     .stream()
-                    .filter(productUnit -> productUnit.getProductId().equals(productId))
+                    .filter(productUnit -> productId == null || productUnit.getProductId().equals(productId))
                     .map(productUnit -> productUnit.getDiscountPrice().multiply(BigDecimal.valueOf(productUnit.getQuantity())))
                     .reduce(BigDecimal.valueOf(0), BigDecimal::add);
         }
@@ -54,7 +54,7 @@ public class StatisticServiceImpl implements StatisticService {
         if(importProducts != null) {
             return importProducts
                     .stream()
-                    .filter(importProduct -> importProduct.getProductId().equals(productId))
+                    .filter(importProduct -> productId == null || importProduct.getProductId().equals(productId))
                     .map(importProduct -> importProduct.getImportedPrice().multiply(BigDecimal.valueOf(importProduct.getQuantity())))
                     .reduce(BigDecimal.valueOf(0), BigDecimal::add);
         }
@@ -107,9 +107,9 @@ public class StatisticServiceImpl implements StatisticService {
         List<Invoice> invoicesInMonth = invoiceDAO.findAll()
                 .stream()
                 .filter(invoice -> invoice.getOrderStatus() == OrderStatus.RECEIVED)
-                .filter(invoice
-                        -> invoice.getCreatedDate().getMonth().equals(LocalDate.now().getMonth())
-                        && invoice.getCreatedDate().getYear() == LocalDate.now().getYear())
+//                .filter(invoice
+//                        -> invoice.getCreatedDate().getMonth().equals(LocalDate.now().getMonth())
+//                        && invoice.getCreatedDate().getYear() == LocalDate.now().getYear())
                 .collect(Collectors.toList());
         Collection<ProductUnit> productUnits = new ArrayList<>();
         invoicesInMonth.forEach(invoice -> productUnits.addAll(productUnitDAO.findProductUnitByInvoiceId(invoice.getId())));
@@ -148,7 +148,7 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public List<Map<String, Object>> getTopProductImport(Long brandId, Long categoryId, Long limit) {
         Collection<Product> products = productDAO.findAll();
-        Map<Product, Object[]> productImportValue = new HashMap<>();
+        Map<Product, BigDecimal[]> productImportValue = new HashMap<>();
 
         // Map product - total import value
         products
@@ -158,25 +158,25 @@ public class StatisticServiceImpl implements StatisticService {
                 .forEach(product -> {
                     Collection<ImportProduct> importProductCollection = importProductDAO.findImportProductByProductId(product.getId());
                     // quantity
-                    Long importQuantity = importProductCollection
+                    long importQuantity = importProductCollection
                             .stream()
                             .map(ImportProduct::getQuantity)
                             .reduce(0L, Long::sum);
                     // value
                     BigDecimal importValue = importProductCollection
                             .stream()
-                            .map(importProduct -> importProduct.getImportedPrice().multiply(new BigDecimal(importProduct.getQuantity())))
+                            .map(importProduct -> importProduct.getImportedPrice().multiply(BigDecimal.valueOf(importProduct.getQuantity())))
                             .reduce(BigDecimal.valueOf(0), BigDecimal::add);
                     // add quantity + value
-                    productImportValue.put(product, new Object[] { importQuantity, importValue });
+                    productImportValue.put(product, new BigDecimal[] { BigDecimal.valueOf(importQuantity), importValue });
                 });
 
         // sort
-        List<Map.Entry<Product, Object[]>> sortedProduct = new ArrayList<>(productImportValue.entrySet());
+        List<Map.Entry<Product, BigDecimal[]>> sortedProduct = new ArrayList<>(productImportValue.entrySet());
         sortedProduct.sort((entry1, entry2) -> {
-            BigDecimal entry1Value = new BigDecimal((char[]) entry1.getValue()[0]);
-            BigDecimal entry2Value = new BigDecimal((char[]) entry2.getValue()[0]);
-            return entry1Value.compareTo(entry2Value);
+            BigDecimal entry1Value = entry1.getValue()[1];
+            BigDecimal entry2Value = entry2.getValue()[1];
+            return entry1Value.compareTo(entry2Value) * (-1);
         });
 
         // Put it to list
