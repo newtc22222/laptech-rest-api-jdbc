@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +38,32 @@ public class ProductUnitServiceImpl implements ProductUnitService {
 
     @Override
     public ProductUnit insert(ProductUnit productUnit) {
-        // check
+         if (productUnitDAO.isExists(productUnit)) {
+             throw new ResourceAlreadyExistsException("[Info] This unit has already existed in system!");
+         }
 
-        if (productUnitDAO.isExists(productUnit)) {
-            throw new ResourceAlreadyExistsException("[Info] This unit has already existed in system!");
-        }
-        String newUnitId = productUnitDAO.insert(productUnit);
-        if (newUnitId == null) {
-            throw new InternalServerErrorException("[Error] Failed to insert new product unit");
-        }
+         if (productUnit.getCartId() != null) {
+            List<ProductUnit> itemInCart = new ArrayList<>(productUnitDAO.findProductUnitByCartId(productUnit.getCartId()));
+             ProductUnit currentUnit = itemInCart.stream()
+                     .filter(unit -> unit.getProductId().equals(productUnit.getProductId()))
+                     .findAny()
+                     .orElse(null);
+             if(currentUnit != null) {
+                currentUnit.setQuantity(currentUnit.getQuantity() + productUnit.getQuantity());
+                productUnitDAO.update(currentUnit);
+                return productUnitDAO.findById(currentUnit.getId());
+             } else {
+                 String newUnitId = productUnitDAO.insert(productUnit);
+                 if (newUnitId == null) {
+                     throw new InternalServerErrorException("[Error] Failed to insert new product unit");
+                 }
+                 return productUnitDAO.findById(newUnitId);
+             }
+         }
+         String newUnitId = productUnitDAO.insert(productUnit);
+         if (newUnitId == null) {
+             throw new InternalServerErrorException("[Error] Failed to insert new product unit");
+         }
         return productUnitDAO.findById(newUnitId);
     }
 

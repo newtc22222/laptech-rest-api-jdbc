@@ -28,7 +28,7 @@ public class CheckoutServiceImpl implements CheckoutService {
     public void checkout(CheckoutDTO checkoutDTO) {
         // check quantity
         checkoutDTO.getProductUnitList().forEach(productUnit -> {
-            Product product = productDAO.findById(productUnit.getId());
+            Product product = productDAO.findById(productUnit.getProductId());
             if (product.getQuantityInStock() < productUnit.getQuantity()) {
                 throw new InvalidArgumentException("[Error] Product " + product.getName() + " don't have enough item for this invoices!");
             }
@@ -76,9 +76,8 @@ public class CheckoutServiceImpl implements CheckoutService {
             if (productUnitDAO.isExists(productUnit)) {
                 throw new ResourceAlreadyExistsException("[Info] This unit has already existed in system!");
             }
-            String newUnitId = productUnitDAO.insert(productUnit);
-            if (newUnitId == null) {
-                throw new InternalServerErrorException("[Error] Failed to insert new product unit");
+            if (productUnitDAO.update(productUnit) == 0) {
+                throw new InternalServerErrorException("[Error] Failed to insert new | update product unit");
             }
         });
     }

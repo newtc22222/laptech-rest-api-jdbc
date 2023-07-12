@@ -21,7 +21,7 @@ public class CheckoutDTO {
     private Long userId;
     @ApiModelProperty(required = true)
     @NotEmpty
-    @Size(min = 20, max = 255)
+    @Size(min = 10, max = 255)
     private String address;
     @ApiModelProperty(required = true)
     @NotEmpty

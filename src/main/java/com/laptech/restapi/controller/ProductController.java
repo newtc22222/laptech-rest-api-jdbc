@@ -42,7 +42,7 @@ public class ProductController {
         Collection<?> collection = (isCard) ? productService.getProductCardDTO(products) : products; // how?
         return DataResponse.getCollectionSuccess(
                 "Get all products",
-                productService.count(),
+                productService.findAll().size(),
                 collection
         );
     }

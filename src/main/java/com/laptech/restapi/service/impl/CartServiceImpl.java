@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -77,6 +78,14 @@ public class CartServiceImpl implements CartService {
      */
     @Override
     public Cart findById(Long userId) {
-        return cartDAO.findCartByUserId(userId);
+        Cart currentCart = cartDAO.findCartByUserId(userId);
+        if (currentCart == null) {
+            currentCart = new Cart();
+            currentCart.setId(UUID.randomUUID().toString().replace("-", ""));
+            currentCart.setUserId(userId);
+            currentCart.setUpdateBy("SYSTEM");
+            cartDAO.insert(currentCart);
+        }
+        return currentCart;
     }
 }

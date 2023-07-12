@@ -1,13 +1,14 @@
 package com.laptech.restapi.controller.recommend;
 
+import com.laptech.restapi.dto.response.DataResponse;
 import com.laptech.restapi.model.Product;
 import com.laptech.restapi.model.User;
 import com.laptech.restapi.service.DiscountService;
 import com.laptech.restapi.service.ProductService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -21,14 +22,13 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
-@PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
 public class ProductRecommendController {
     private final DiscountService discountService;
     private final ProductService productService;
 
+    @ApiOperation(value = "Get product has discount", response = DataResponse.class)
     @GetMapping("on-sale")
-    public ResponseEntity<Collection<?>> getProductOnSale(@RequestParam(required = false, defaultValue = "false") String isCard) {
-        boolean isCardBoolean = Boolean.parseBoolean(isCard);
+    public ResponseEntity<DataResponse> getProductOnSale(@RequestParam(defaultValue = "false") boolean isCard) {
         Collection<Product> productOnSaleList = productService.findAll()
                 .stream()
                 // get product has discount on date
@@ -38,10 +38,10 @@ public class ProductRecommendController {
                         .anyMatch(discount -> discount.getAppliedDate().isBefore(LocalDateTime.now())
                                 && discount.getEndedDate().isAfter(LocalDateTime.now())))
                 .collect(Collectors.toList());
-        if(isCardBoolean) {
-            return ResponseEntity.ok(productService.getProductCardDTO(productOnSaleList));
+        if(isCard) {
+            return DataResponse.getCollectionSuccess("Get product on sales", productService.getProductCardDTO(productOnSaleList));
         }
-        return ResponseEntity.ok(productOnSaleList);
+        return DataResponse.getCollectionSuccess("Get product on sales", productOnSaleList);
     }
 
     /**

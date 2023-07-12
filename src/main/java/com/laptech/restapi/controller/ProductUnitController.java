@@ -95,7 +95,7 @@ public class ProductUnitController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseResponse> updateProductUnitProperties(@PathVariable("id") String unitId,
                                                                     @RequestBody Map<String, String> body) {
-        int quantity = Integer.getInteger(body.get("quantity"));
+        int quantity = Integer.parseInt(body.get("quantity"));
         BigDecimal price = new BigDecimal(body.get("price"));
         BigDecimal discountPrice = new BigDecimal(body.get("discountPrice"));
         productUnitService.updateProductUnitProperties(unitId, quantity, price, discountPrice, body.get("updateBy"));
