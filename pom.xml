@@ -157,7 +157,7 @@
                         </exclude>
                     </excludes>
                     <profiles>
-                        <profile>dev</profile>
+<!--                        <profile>dev</profile>-->
                     </profiles>
                 </configuration>
             </plugin>
