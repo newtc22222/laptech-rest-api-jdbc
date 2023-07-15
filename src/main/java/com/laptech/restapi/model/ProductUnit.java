@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 public class ProductUnit extends BaseModel {
     private String id;
     private String productId;
+    private String productName;
     private String cartId;
     private String invoiceId;
     private int quantity;
@@ -33,6 +34,7 @@ public class ProductUnit extends BaseModel {
                 ", cartId='" + cartId + '\'' +
                 ", invoiceId='" + invoiceId + '\'' +
                 ", productId='" + productId + '\'' +
+                ", productName='" + productName + '\'' +
                 ", quantity=" + quantity +
                 ", price=" + price +
                 ", discountPrice=" + discountPrice +

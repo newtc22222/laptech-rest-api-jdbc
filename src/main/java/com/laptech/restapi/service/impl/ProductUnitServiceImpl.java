@@ -8,6 +8,7 @@ import com.laptech.restapi.common.exception.ResourceNotFoundException;
 import com.laptech.restapi.dao.*;
 import com.laptech.restapi.dto.filter.ProductUnitFilter;
 import com.laptech.restapi.dto.response.ProductUnitCardDTO;
+import com.laptech.restapi.model.Product;
 import com.laptech.restapi.model.ProductImage;
 import com.laptech.restapi.model.ProductUnit;
 import com.laptech.restapi.service.ProductUnitService;
@@ -42,8 +43,12 @@ public class ProductUnitServiceImpl implements ProductUnitService {
              throw new ResourceAlreadyExistsException("[Info] This unit has already existed in system!");
          }
 
+         if(productUnit.getProductName() == null) {
+             Product product = productDAO.findById(productUnit.getProductId());
+             productUnit.setProductName(product.getName());
+         }
          if (productUnit.getCartId() != null) {
-            List<ProductUnit> itemInCart = new ArrayList<>(productUnitDAO.findProductUnitByCartId(productUnit.getCartId()));
+             List<ProductUnit> itemInCart = new ArrayList<>(productUnitDAO.findProductUnitByCartId(productUnit.getCartId()));
              ProductUnit currentUnit = itemInCart.stream()
                      .filter(unit -> unit.getProductId().equals(productUnit.getProductId()))
                      .findAny()

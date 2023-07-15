@@ -19,6 +19,7 @@ public class ProductUnitMapper implements RowMapper<ProductUnit> {
         unit.setCartId(rs.getString("cart_id"));
         unit.setInvoiceId(rs.getString("invoice_id"));
         unit.setProductId(rs.getString("product_id"));
+        unit.setProductName(rs.getString("product_name"));
         unit.setQuantity(rs.getInt("quantity"));
         unit.setPrice(rs.getBigDecimal("price"));
         unit.setDiscountPrice(rs.getBigDecimal("discount_price"));

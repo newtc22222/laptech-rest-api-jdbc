@@ -65,6 +65,7 @@ public class ProductUnitDAOImpl implements ProductUnitDAO {
                     INSERT,
                     unit.getId(),
                     unit.getProductId(),
+                    unit.getProductName(),
                     unit.getCartId(),
                     unit.getInvoiceId(),
                     unit.getQuantity(),

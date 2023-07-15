@@ -1,6 +1,8 @@
 package com.laptech.restapi.dto.filter;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -18,23 +20,12 @@ import java.util.Map;
 @Setter
 public class ProductUnitFilter extends BaseFilter {
     private String productId;
+    private String productName;
     private String cartId;
     private String invoiceId;
     private Integer quantity;
     private BigDecimal price;
     private BigDecimal discountPrice; // maybe remove
-
-    public ProductUnitFilter(String sortBy, String sortDir, LocalDate createdDate, LocalDate modifiedDate,
-                             LocalDate deletedDate, Boolean isDel, String updateBy, String productId, String cartId,
-                             String invoiceId, Integer quantity, BigDecimal price, BigDecimal discountPrice) {
-        super(sortBy, sortDir, createdDate, modifiedDate, deletedDate, isDel, updateBy);
-        this.productId = productId;
-        this.cartId = cartId;
-        this.invoiceId = invoiceId;
-        this.quantity = quantity;
-        this.price = price;
-        this.discountPrice = discountPrice;
-    }
 
     public ProductUnitFilter(Map<String, String> params) {
         super(params);

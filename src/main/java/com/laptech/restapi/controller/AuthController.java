@@ -98,7 +98,7 @@ public class AuthController {
             throw new ForbiddenException("[Error] This account has been blocked by admin!\nIf this is error, please contact with admin!");
         }
         // create, add token to db and build link
-        String token = UUID.randomUUID().toString();
+        String token = String.valueOf(Math.round(Math.random() * 10_000_000)); // 7 digits
 
         if (dto.getEmail() == null || dto.getEmail().isEmpty()) {
             // another method to reset - username + account create date

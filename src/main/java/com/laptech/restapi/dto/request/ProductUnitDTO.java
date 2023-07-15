@@ -3,7 +3,9 @@ package com.laptech.restapi.dto.request;
 import com.laptech.restapi.model.ProductUnit;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
@@ -18,6 +20,8 @@ import java.util.UUID;
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel("Class representing for ProductItem request body")
 public class ProductUnitDTO {
     private String id;
@@ -28,6 +32,7 @@ public class ProductUnitDTO {
     @ApiModelProperty(required = true)
     @NotEmpty
     private String productId;
+    private String productName;
     @ApiModelProperty(required = true)
     @NotNull
     private Integer quantity;
@@ -39,21 +44,6 @@ public class ProductUnitDTO {
     private BigDecimal discountPrice;
     @Size(max = 100)
     private String updateBy;
-
-    public ProductUnitDTO() {
-    }
-
-    public ProductUnitDTO(String id, String cartId, String invoiceId, String productId, Integer quantity,
-                          BigDecimal price, BigDecimal discountPrice, String updateBy) {
-        this.id = id;
-        this.cartId = cartId;
-        this.invoiceId = invoiceId;
-        this.productId = productId;
-        this.quantity = quantity;
-        this.price = price;
-        this.discountPrice = discountPrice;
-        this.updateBy = updateBy;
-    }
 
     public static ProductUnit transform(ProductUnitDTO dto) {
         String newProductUnitId = dto.getId() == null
@@ -69,6 +59,7 @@ public class ProductUnitDTO {
             unit.setInvoiceId(dto.getInvoiceId());
         }
         unit.setProductId(dto.getProductId());
+        unit.setProductName(dto.getProductName());
         unit.setQuantity(dto.getQuantity());
         unit.setPrice(dto.getPrice());
         unit.setDiscountPrice(dto.getDiscountPrice());
