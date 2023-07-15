@@ -10,6 +10,7 @@ import com.laptech.restapi.payment.processor.CreateOrderMoMo;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 @Service
 public class MomoServiceImpl implements MomoService{
@@ -18,7 +19,8 @@ public class MomoServiceImpl implements MomoService{
         Environment environment = Environment.selectEnv("dev");
         String requestId = String.valueOf(System.currentTimeMillis());
         String orderId = String.valueOf(System.currentTimeMillis());
-        String notifyURL = "https://webhook.site/b451f52e-dc81-435f-a082-ff4b57d72296";
+        String notifyURL = "http://" + request1.getServerName() + ":" + request1.getServerPort() + "/api/v1/checkout/momo-success";
+        //"https://webhook.site/b451f52e-dc81-435f-a082-ff4b57d72296";
         /*
         * Type 0: Create QR payment link
         * Type 1: Create ATM payment link
@@ -79,7 +81,7 @@ public class MomoServiceImpl implements MomoService{
                         Boolean.TRUE
                 );
             }
-            return captureWalletMoMoResponse.getPayUrl();
+            return Objects.requireNonNull(captureWalletMoMoResponse).getPayUrl();
         } catch (Exception exception) {
             throw new InternalServerErrorException(exception.getMessage());
         }

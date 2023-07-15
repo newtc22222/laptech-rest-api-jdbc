@@ -46,6 +46,7 @@ public class WebSecurityConfig {
     private static final String[] WHITE_LIST = new String[]{
             "/api/v1/auth/*",
             "/api/v1/comments",
+            "/api/v1/checkout/momo-success", // checkout with momo
             "/swagger-ui.html",
             "/swagger-ui.html*/**",
             "/swagger-resources/**",

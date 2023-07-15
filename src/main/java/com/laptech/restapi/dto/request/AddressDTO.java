@@ -2,7 +2,9 @@ package com.laptech.restapi.dto.request;
 
 import com.laptech.restapi.model.Address;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
@@ -15,11 +17,12 @@ import java.util.UUID;
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressDTO {
-    @Size(max = 25)
     private String id;
-    @NotEmpty
-    private Long userId;
+    private long userId;
+
     @ApiModelProperty(required = true, example = "Viet Nam")
     @NotEmpty
     @Size(min = 2, max = 25, message = "Country must be pass!")
@@ -44,25 +47,13 @@ public class AddressDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public AddressDTO() {
-    }
-
-    public AddressDTO(String id, long userId, String country, String line1, String line2, String line3,
-                      String street, Boolean isDefault, String updateBy) {
-        this.id = (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id;
-        this.userId = userId;
-        this.country = country;
-        this.line1 = line1;
-        this.line2 = line2;
-        this.line3 = line3;
-        this.street = street;
-        this.isDefault = isDefault;
-        this.updateBy = updateBy;
-    }
-
     public static Address transform(AddressDTO dto) {
+        String newAddressId = (dto.getId() == null)
+                ? UUID.randomUUID().toString().replace("-", "").substring(0, 15)
+                : dto.getId();
         Address address = new Address();
-        address.setId(dto.getId());
+        address.setId(newAddressId);
+        address.setUserId(dto.getUserId());
         address.setCountry(dto.getCountry());
         address.setLine1(dto.getLine1());
         address.setLine2(dto.getLine2());

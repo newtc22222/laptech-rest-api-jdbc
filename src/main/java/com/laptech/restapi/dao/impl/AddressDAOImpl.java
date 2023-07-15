@@ -55,7 +55,7 @@ public class AddressDAOImpl implements AddressDAO {
     @Override
     public String insert(Address address) {
         try {
-            return jdbcTemplate.queryForObject(
+            jdbcTemplate.queryForObject(
                     INSERT,
                     String.class,
                     address.getId(),
@@ -68,6 +68,7 @@ public class AddressDAOImpl implements AddressDAO {
                     address.isDefault(),
                     address.getUpdateBy()
             );
+            return address.getId();
         } catch (DataAccessException err) {
             log.error("[INSERT] {}", err.getLocalizedMessage());
             return null;
@@ -149,8 +150,7 @@ public class AddressDAOImpl implements AddressDAO {
                     address.getLine1(),
                     address.getLine2(),
                     address.getLine3(),
-                    address.getStreet(),
-                    address.isDefault()
+                    address.getStreet()
             );
             return existAddress.size() > 0;
         } catch (DataAccessException err) {
