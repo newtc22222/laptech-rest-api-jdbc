@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class InvoiceController {
-    private final EmailService emailService;
     private final InvoiceService invoiceService;
 
     @ApiOperation(value = "Get all invoices", response = Invoice.class)
@@ -121,16 +121,15 @@ public class InvoiceController {
     @ApiOperation(value = "Create a new Invoice", response = DataResponse.class)
     @PostMapping("/invoices")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<DataResponse> createNewInvoice(@RequestBody InvoiceDTO invoiceDTO) {
+    public ResponseEntity<DataResponse> createNewInvoice(@Valid @RequestBody InvoiceDTO invoiceDTO) {
         Invoice newInvoice = invoiceService.insert(InvoiceDTO.transform(invoiceDTO));
-
         return DataResponse.success("Create new invoice", newInvoice);
     }
 
     @ApiOperation(value = "Update all information of Invoice", response = BaseResponse.class)
     @PutMapping("/invoices/{id}")
     public ResponseEntity<BaseResponse> updateInvoice(@PathVariable("id") String invoiceId,
-                                                      @RequestBody InvoiceDTO invoiceDTO) {
+                                                      @Valid @RequestBody InvoiceDTO invoiceDTO) {
         invoiceService.update(InvoiceDTO.transform(invoiceDTO), invoiceId);
         return DataResponse.success("Update invoice");
     }

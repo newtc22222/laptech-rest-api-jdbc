@@ -25,7 +25,7 @@ public class InvoiceDTO {
     private Long userId;
     @ApiModelProperty(required = true)
     @NotEmpty
-    @Size(min = 20, max = 255)
+    @Size(min = 10, max = 255)
     private String address;
     @ApiModelProperty(required = true)
     @NotEmpty
@@ -56,28 +56,6 @@ public class InvoiceDTO {
     @Size(max = 100)
     private String updateBy;
 
-    public InvoiceDTO() {
-    }
-
-    public InvoiceDTO(String id, Long userId, String address, String phone, BigDecimal paymentAmount, Double shipCost,
-                      BigDecimal discountAmount, BigDecimal tax, BigDecimal paymentTotal, String paymentType,
-                      Boolean isPaid, String orderStatus, String note, String updateBy) {
-        this.id = id;
-        this.userId = userId;
-        this.address = address;
-        this.phone = phone;
-        this.paymentAmount = paymentAmount;
-        this.shipCost = shipCost;
-        this.discountAmount = discountAmount;
-        this.tax = tax;
-        this.paymentTotal = paymentTotal;
-        this.paymentType = paymentType;
-        this.isPaid = isPaid;
-        this.orderStatus = orderStatus;
-        this.note = note;
-        this.updateBy = updateBy;
-    }
-
     public static Invoice transform(InvoiceDTO dto) {
         String newInvoiceId = dto.getId() != null
                 ? dto.getId()
@@ -93,7 +71,7 @@ public class InvoiceDTO {
         invoice.setDiscountAmount(dto.getDiscountAmount());
         invoice.setTax(dto.getTax());
         invoice.setPaymentTotal(dto.getPaymentTotal());
-        invoice.setPaymentType(dto.getPaymentType());
+        invoice.setPaymentType(dto.getPaymentType() != null ? dto.getPaymentType() : "cash");
         invoice.setPaid(dto.getIsPaid());
         invoice.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus().trim().toUpperCase()));
         invoice.setNote(dto.getNote());
